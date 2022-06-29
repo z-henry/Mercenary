@@ -118,9 +118,10 @@ namespace Mercenary
 		{
 			NetCache.NetCacheMercenariesVillageVisitorInfo netObject = NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>();
 			List<Task> list = new List<Task>();
-			foreach (MercenariesVisitorState mercenariesVisitorState in netObject.VisitorStates)
+			for (int i = netObject.VisitorStates.Count; i>1; --i)
+// 			foreach (MercenariesVisitorState mercenariesVisitorState in netObject.VisitorStates)
 			{
-				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(mercenariesVisitorState.ActiveTaskState.TaskId);
+				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(netObject.VisitorStates[i-1].ActiveTaskState.TaskId);
 				if ((MercenaryVisitor.VillageVisitorType)Traverse.Create(LettuceVillageDataUtil.GetVisitorRecordByID(taskRecordByID.MercenaryVisitorId)).Field("m_visitorType").GetValue() == MercenaryVisitor.VillageVisitorType.STANDARD)
 				{
 					HsGameUtils.SetTask(taskRecordByID, list);
