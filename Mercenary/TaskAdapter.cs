@@ -397,7 +397,7 @@ namespace Mercenary
 		}
 
 		private static Dictionary<string, int> m_dictSkillEquip = new Dictionary<string, int>{
-			{ "大地践踏", EquipConst.雷霆饰带 }
+			{ "大地践踏", EquipConst.雷霆饰带 }// 凯恩·血蹄|大地践踏|雷霆饰带
 		};
 
 	}
