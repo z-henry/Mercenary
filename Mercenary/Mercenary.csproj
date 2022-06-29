@@ -81,7 +81,7 @@
     <Compile Include="Out.cs" />
     <Compile Include="Mode.cs" />
     <Compile Include="MercenaryEntity.cs" />
-    <Compile Include="MercConst.cs" />
+    <Compile Include="Const.cs" />
     <Compile Include="MapUtils.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="HsGameUtils.cs" />

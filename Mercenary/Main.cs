@@ -517,6 +517,37 @@ namespace Mercenary
 				UIStatus.Get().AddInfo(Main.isRunning ? "插件启动" : "插件关闭");
 				Main.runningConf.Value = Main.isRunning;
 			}
+			if (Input.GetKeyUp(KeyCode.F3))
+			{
+				Logger.LogInfo("F3查询");
+
+// 				Network.Get().UpgradeMercenaryEquipment(18, 139);
+				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries(null, true);
+				foreach (LettuceMercenary mercy in result.m_mercenaries)
+				{
+					foreach (LettuceAbility ability in mercy.m_abilityList)
+					{
+						string upgrade = "不可升级";
+						if (mercy.IsCardReadyForUpgrade(ability.ID, CollectionUtils.MercenariesModeCardType.Ability))
+							upgrade = "可升级";
+						Logger.LogInfo(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][技能ID:{3}][{4}]",
+							mercy.m_mercName, mercy.ID, ability.GetCardName(), ability.ID, upgrade));
+					}
+					foreach (LettuceAbility ability in mercy.m_equipmentList)
+					{
+						string upgrade = "不可升级";
+						if (mercy.IsCardReadyForUpgrade(ability.ID, CollectionUtils.MercenariesModeCardType.Equipment))
+						{
+							Network.Get().UpgradeMercenaryEquipment(mercy.ID, ability.ID);
+							upgrade = "可升级";
+						}
+						Logger.LogInfo(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][装备ID:{3}][{4}]",
+							mercy.m_mercName, mercy.ID, ability.GetCardName(), ability.ID, upgrade));
+					}
+				}
+				Logger.LogInfo("F3查询完成");
+			}
+
 			if (!Main.isRunning)
 			{
 				return;
