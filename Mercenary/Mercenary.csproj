@@ -55,7 +55,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>../../hs-plugin\HsMercenaryStrategy.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\hs-plugin\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="UnityEngine">
       <HintPath>E:/Hearthstone/Hearthstone_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -88,6 +94,9 @@
     <Compile Include="DefaultStrategy.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

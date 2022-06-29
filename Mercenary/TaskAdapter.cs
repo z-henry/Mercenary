@@ -44,7 +44,7 @@ namespace Mercenary
 			}
 			if (title.Contains("完美圣光"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "裂解之光", 0),
 					TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
@@ -53,7 +53,7 @@ namespace Mercenary
 			}
 			if (title.Contains("全部烧光"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "熔岩冲击", 0),
 					TaskAdapter.GetMercenary(MercConst.AN_DONG_NI, null, 0)
@@ -87,7 +87,7 @@ namespace Mercenary
 			}
 			if (title.Contains("光明使者"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "复仇之怒", 0),
 					TaskAdapter.GetMercenary(MercConst.KaiRuiEr, "光明圣印", 0),
@@ -97,7 +97,7 @@ namespace Mercenary
 			}
 			if (title.Contains("烧烤弱鸡"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "活体炸弹", 0),
 					TaskAdapter.GetMercenary(MercConst.QU_QI, "小鱼快冲", 0)
@@ -149,7 +149,7 @@ namespace Mercenary
 			}
 			if (title.Contains("船上的厨子"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.PA_QI_SI, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
@@ -158,7 +158,7 @@ namespace Mercenary
 			}
 			if (title.Contains("侵略如火") || title.Contains("翻腾火流"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.YU_LONG, "玉火打击", 0),
 					TaskAdapter.GetMercenary(mercenaryId, "热力迸发", 0)
@@ -167,7 +167,7 @@ namespace Mercenary
 			}
 			if (title.Contains("雪球滚滚"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 5, "3-2", new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "3-2", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "雪球", 0),
 					TaskAdapter.GetMercenary(MercConst.晨拥, "急速冰冻", 0)
@@ -213,7 +213,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用恶魔造成"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.LA_SUO_LI_AN, "巨型大恶魔", 0)
@@ -222,7 +222,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用野兽造成"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.SHAN_HU, null, 0)
@@ -231,7 +231,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("神圣伤害"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
@@ -240,7 +240,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("冰霜伤害"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.晨拥, null, 0)
@@ -249,7 +249,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("暗影伤害"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.TA_MU_XIN, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
