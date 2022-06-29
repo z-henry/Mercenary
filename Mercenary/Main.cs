@@ -73,6 +73,7 @@ namespace Mercenary
 		private void Start()
 		{
 			base.Logger.LogInfo("plugin start");
+			Out.Log("plugin start");
 			Main.isRunning = Main.runningConf.Value;
 		}
 
