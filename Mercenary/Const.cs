@@ -13,7 +13,7 @@ namespace Mercenary
 		public const int KaiRuiEr = 18;
 
 		// Token: 0x0400001A RID: 26
-		public const int ZeRuiLA = 19;
+		public const int 泽瑞拉 = 19;
 
 		// Token: 0x0400001B RID: 27
 		public static int LUO_SI = 20;
@@ -22,7 +22,7 @@ namespace Mercenary
 		public static int JIA_DUN = 22;
 
 		// Token: 0x0400001D RID: 29
-		public const int ChenYong = 38;
+		public const int 晨拥 = 38;
 
 		// Token: 0x0400001E RID: 30
 		public static int TA_MU_XIN = 45;
@@ -76,5 +76,11 @@ namespace Mercenary
 			MercConst.LUO_KE_HUO_LA,
 			MercConst.CHI_JING
 		};
+	}
+
+	internal class EquipConst
+	{
+		// Token: 0x04000018 RID: 24
+		public const int 雷霆饰带 = 1;
 	}
 }

@@ -47,7 +47,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "裂解之光", 0),
-					TaskAdapter.GetMercenary(19, null, 0)
+					TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
 				}));
 				return;
 			}
@@ -90,7 +90,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "复仇之怒", 0),
-					TaskAdapter.GetMercenary(18, "光明圣印", 0),
+					TaskAdapter.GetMercenary(MercConst.KaiRuiEr, "光明圣印", 0),
 					TaskAdapter.GetMercenary(MercConst.KAO_NEI_LIU_SI, "牺牲祝福", 0)
 				}));
 				return;
@@ -170,7 +170,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 5, "3-2", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "雪球", 0),
-					TaskAdapter.GetMercenary(38, "急速冰冻", 0)
+					TaskAdapter.GetMercenary(MercConst.晨拥, "急速冰冻", 0)
 				}));
 				return;
 			}
@@ -234,7 +234,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
-					TaskAdapter.GetMercenary(19, null, 0)
+					TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
 				}));
 				return;
 			}
@@ -243,7 +243,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
-					TaskAdapter.GetMercenary(38, null, 0)
+					TaskAdapter.GetMercenary(MercConst.晨拥, null, 0)
 				}));
 				return;
 			}
@@ -335,7 +335,7 @@ namespace Mercenary
 			LettuceAbilityDbfRecord record2 = GameDbf.LettuceAbility.GetRecord(lettuceAbilityId);
 			tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 			{
-				TaskAdapter.GetMercenary(mercenaryId, record2.AbilityName, 0)
+				TaskAdapter.GetMercenary(mercenaryId, record2.AbilityName, GetEquipEnHanceSkill(record2.AbilityName))
 			}));
 		}
 
@@ -390,5 +390,15 @@ namespace Mercenary
 		{
 			return new MercenaryEntity(id, skill, eq);
 		}
+
+		private static int GetEquipEnHanceSkill(string skill)
+		{
+			return m_dictSkillEquip.ContainsKey(skill) ? m_dictSkillEquip[skill] : 0;
+		}
+
+		private static Dictionary<string, int> m_dictSkillEquip = new Dictionary<string, int>{
+			{ "大地践踏", EquipConst.雷霆饰带 }
+		};
+
 	}
 }
