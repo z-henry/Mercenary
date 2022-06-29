@@ -840,7 +840,7 @@ namespace Mercenary
 				{
 					card = list[0];
 				}
-				List<Card> cards = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards();
+				List<Card> cards = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER));
 				if (card == null)
 				{
 					card = list.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID]);
