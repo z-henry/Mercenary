@@ -171,7 +171,7 @@ namespace Mercenary
 			}
 			if (title.Contains("致命一击"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "H1-2", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "首脑的悬赏", 0),
 					TaskAdapter.GetMercenary(MercConst.帕奇斯, null, 0),
@@ -439,7 +439,8 @@ namespace Mercenary
 
 		private static Dictionary<string, int> m_dictSkillEquip = new Dictionary<string, int>{
 			{ "大地践踏", EquipConst.雷霆饰带 },// 凯恩·血蹄|大地践踏|雷霆饰带
-			{ "再生头颅", EquipConst.再生之鳞 }// 特里高雷|再生头颅|再生之鳞
+			{ "再生头颅", EquipConst.再生之鳞 },// 特里高雷|再生头颅|再生之鳞
+			{ "首脑的悬赏", EquipConst.公平分配 } // 迪菲亚|首脑的悬赏|公平分配
 		};
 
 	}
