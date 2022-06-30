@@ -35,9 +35,6 @@ namespace Mercenary
 		private void Awake()
 		{
 			this._harmony.PatchAll(typeof(Main));
-			try
-			{
-
 			Main.modeConf = base.Config.Bind<string>("配置", "插件运行模式", "刷图", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(new string[]
 			{
 				"刷图",
@@ -58,22 +55,12 @@ namespace Mercenary
 				"Advanced"
 			}));
 			Main.cleanTaskConf = base.Config.Bind<string>(new ConfigDefinition("配置", "自动清理任务时间"), "不开启", new ConfigDescription("会定时清理长时间没完成的任务（全自动模式生效）", new AcceptableValueList<string>(new List<string>(TaskUtils.CleanConf.Keys).ToArray()), Array.Empty<object>()));
-
-			}
-			catch (Exception ex)
-			{
-				base.Logger.LogInfo("空间名：" + ex.Source + "；" + '\n' +
-							  "方法名：" + ex.TargetSite + '\n' +
-							  "故障点：" + ex.StackTrace.Substring(ex.StackTrace.LastIndexOf("\\") + 1, ex.StackTrace.Length - ex.StackTrace.LastIndexOf("\\") - 1) + '\n' +
-							  "错误提示：" + ex.Message);
-			}
 		}
 
 		// Token: 0x06000007 RID: 7 RVA: 0x00002513 File Offset: 0x00000713
 		private void Start()
 		{
-			base.Logger.LogInfo("plugin start");
-			Out.Log("plugin start");
+			Out.Log("启动");
 			Main.isRunning = Main.runningConf.Value;
 		}
 
@@ -407,6 +394,7 @@ namespace Mercenary
 			}
 			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
 			{
+				// 先考虑全自动模式
 				if (Main.modeConf.Value == "全自动接任务做任务")
 				{
 					foreach (Task task in TaskUtils.GetTasks())
@@ -418,6 +406,8 @@ namespace Mercenary
 							{
 								HsGameUtils.UpdateEq(mercenaryEntity.ID, mercenaryEntity.Equipment);
 								lettuceTeam.AddMerc(mercenary, -1, null);
+								Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][EID:{1}]，因为全自动做任务",
+									mercenaryEntity.ID, mercenaryEntity.Equipment));
 								if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
 								{
 									break;
@@ -438,6 +428,8 @@ namespace Mercenary
 						if (!lettuceTeam.IsMercInTeam(lettuceMercenary2.ID, true) && !lettuceMercenary2.IsReadyForCrafting() && !lettuceMercenary2.IsMaxLevel())
 						{
 							lettuceTeam.AddMerc(lettuceMercenary2, -1, null);
+							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}]，因为未满级",
+								lettuceMercenary2.ID));
 							if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
 							{
 								break;
@@ -450,9 +442,11 @@ namespace Mercenary
 					foreach (int num2 in MercConst.First)
 					{
 						LettuceMercenary mercenary2 = HsGameUtils.GetMercenary(num2);
-						if (!lettuceTeam.IsMercInTeam(num2, true) && !mercenary2.IsReadyForCrafting() && !mercenary2.m_isFullyUpgraded)
+						if (!lettuceTeam.IsMercInTeam(num2, true) && !mercenary2.IsReadyForCrafting() && !mercenary2.m_isFullyUpgraded && mercenary2.m_owned)
 						{
 							lettuceTeam.AddMerc(mercenary2, -1, null);
+							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}]，因为满级优先级设置高",
+								mercenary2.ID));
 							if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
 							{
 								break;
@@ -467,6 +461,8 @@ namespace Mercenary
 						if (!lettuceTeam.IsMercInTeam(lettuceMercenary3.ID, true) && !lettuceMercenary3.IsReadyForCrafting() && !lettuceMercenary3.m_isFullyUpgraded && !MercConst.Ignore.Contains(lettuceMercenary3.ID))
 						{
 							lettuceTeam.AddMerc(lettuceMercenary3, -1, null);
+							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}]，满级",
+								lettuceMercenary3.ID));
 							if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
 							{
 								break;
@@ -481,6 +477,8 @@ namespace Mercenary
 						if (!lettuceTeam.IsMercInTeam(lettuceMercenary4.ID, true) && !lettuceMercenary4.IsReadyForCrafting())
 						{
 							lettuceTeam.AddMerc(lettuceMercenary4, -1, null);
+							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}]，满级优先级设置低",
+								lettuceMercenary4.ID));
 							if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
 							{
 								break;
@@ -571,7 +569,7 @@ namespace Mercenary
 			GameState gameState = GameState.Get();
 			if (gameMgr.IsFindingGame())
 			{
-				Out.Log("current is finding game");
+				Out.Log("[状态] 查找比赛，休息3秒");
 				Main.Sleep(3);
 				return;
 			}
@@ -579,7 +577,7 @@ namespace Mercenary
 			{
 				if (!(Main.modeConf.Value == "Pvp"))
 				{
-					Out.Log("current in village will go to map");
+					Out.Log("[状态] 目前处于村庄/角斗场，切换到地图，休息5秒");
 					HsGameUtils.GotoSceneMap();
 					Main.Sleep(5);
 					Main.ResetIdle();
@@ -589,6 +587,7 @@ namespace Mercenary
 				if (teams.Count == 0)
 				{
 					UIStatus.Get().AddInfo("请先创建队伍并在设置里选择队伍！");
+					Out.Log("未创建过队伍，插件暂停");
 					Main.isRunning = false;
 					return;
 				}
@@ -596,21 +595,23 @@ namespace Mercenary
 				if (lettuceTeam == null)
 				{
 					UIStatus.Get().AddInfo("请先在设置里选择队伍！");
+					Out.Log("没有预设名称对应的队伍，插件暂停");
 					Main.isRunning = false;
 					return;
 				}
-				Out.Log("current in village will go to pvp");
+				Out.Log("[状态] 目前处于村庄/角斗场，切换到PVP模式");
 				GameMgr.Get().FindGame(GameType.GT_MERCENARIES_PVP, FormatType.FT_WILD, 3743, 0, 0L, null, null, false, null, null, lettuceTeam.ID, GameType.GT_UNKNOWN);
 			}
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.HUB && gameState == null)
 			{
-				Out.Log("current in hub will go to village");
+				Out.Log("[状态] 目前处于主界面，切换到村庄，休息5秒");
 				HsGameUtils.GotoSceneVillage();
 				Main.Sleep(5);
 				return;
 			}
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_BOARD && gameState == null)
 			{
+				Out.Log(string.Format("[状态] 目前处于悬赏面板，选择[MAPID:{0}]，休息6秒", GetMapId()));
 				HsGameUtils.SelectBoss(this.GetMapId());
 				Main.ResetIdle();
 				Main.Sleep(6);
@@ -618,7 +619,7 @@ namespace Mercenary
 			}
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_TEAM_SELECT && gameState == null)
 			{
-				base.Logger.LogInfo("current is select team");
+				Out.Log("[状态] 目前处于队伍选择");
 				this.AutoUpdateSkill();
 				this.AutoCraft();
 				if (Main.modeConf.Value == "全自动接任务做任务")
@@ -626,10 +627,12 @@ namespace Mercenary
 					TaskUtils.UpdateTask();
 					foreach (Task task in TaskUtils.GetTasks())
 					{
-						Out.Log(task.Id.ToString() + " 任务 已持续： " + ((TaskUtils.Current() - task.StartAt) / 60L).ToString() + " min");
+						Out.Log(string.Format("[TID:{0}] 已持续：{1}s",
+							task.Id, (TaskUtils.Current() - task.StartAt)));
 						if (TaskUtils.CleanConf[Main.cleanTaskConf.Value] != -1 && TaskUtils.Current() - task.StartAt > (long)TaskUtils.CleanConf[Main.cleanTaskConf.Value])
 						{
-							Out.Log(task.Id.ToString() + " 任务过期，丢弃任务");
+							Out.Log(string.Format("[TID:{0}] 已过期，放弃",
+								task.Id));
 							HsGameUtils.CleanTask(task.Id);
 						}
 					}
@@ -790,7 +793,7 @@ namespace Mercenary
 		{
 			if (Main.idleTime > 60f)
 			{
-				Out.Log("idle time: " + Main.idleTime.ToString());
+				Out.Log(string.Format("[IDLE] idletime:{0}", idleTime));
 			}
 			Main.idleTime += Time.deltaTime;
 			if (Main.idleTime > 70f && Main.modeConf.Value != "Pvp")
@@ -801,6 +804,7 @@ namespace Mercenary
 				}
 				if (GameState.Get() != null)
 				{
+					Out.Log("[IDLE]240s 投降");
 					GameState.Get().Concede();
 				}
 			}
@@ -808,10 +812,12 @@ namespace Mercenary
 			{
 				if (Main.idleTime > 300f)
 				{
+					Out.Log("[IDLE] 300s 游戏关闭");
 					Application.Quit();
 				}
 				if (GameState.Get() != null)
 				{
+					Out.Log("[IDLE] 240s 投降");
 					GameState.Get().Concede();
 				}
 			}
@@ -820,7 +826,7 @@ namespace Mercenary
 		// Token: 0x06000024 RID: 36 RVA: 0x000036EC File Offset: 0x000018EC
 		private static void ResetIdle()
 		{
-			Debug.Log("reset idle");
+			Debug.Log("[IDLE] reset");
 			Main.idleTime = 0f;
 		}
 

@@ -27,6 +27,9 @@ namespace Mercenary
 		// Token: 0x0400001E RID: 30
 		public static int TA_MU_XIN = 45;
 
+
+		public static int 玛诺洛斯 = 54;
+
 		// Token: 0x0400001F RID: 31
 		public static int LA_SUO_LI_AN = 55;
 
@@ -63,11 +66,11 @@ namespace Mercenary
 		// Token: 0x0400002A RID: 42
 		public static readonly List<int> First = new List<int>
 		{
-			249,
-			17,
+			MercConst.BaLinDa,
+			MercConst.VaLiLa,
 			MercConst.LUO_SI,
 			MercConst.QU_QI,
-			71
+			MercConst.BinChiZhe
 		};
 
 		// Token: 0x0400002B RID: 43
