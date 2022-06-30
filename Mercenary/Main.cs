@@ -114,7 +114,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMissionEntity), "ShiftPlayZoneForGamePhase")]
 		public static void _PostShiftPlayZoneForGamePhase(int phase)
 		{
-			Out.Log("_PostShiftPlayZoneForGamePhase phase " + phase.ToString());
+// 			Out.Log("_PostShiftPlayZoneForGamePhase phase " + phase.ToString());
 			Main.phaseID = phase;
 		}
 
@@ -880,7 +880,7 @@ namespace Mercenary
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
 			{
-				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
+// 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
 				List<Card> list = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !i.GetEntity().IsStealthed());
 				Dictionary<int, int> dict = battleTargets.FindAll((BattleTarget i) => i.SkillId != -1).ToDictionary((BattleTarget i) => i.SkillId, (BattleTarget i) => i.TargetId);
 				Network.Options.Option.SubOption networkSubOption = GameState.Get().GetSelectedNetworkSubOption();
