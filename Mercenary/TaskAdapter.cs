@@ -146,7 +146,7 @@ namespace Mercenary
 			{
 				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
-					TaskAdapter.GetMercenary(MercConst.PA_QI_SI, null, 0),
+					TaskAdapter.GetMercenary(MercConst.帕奇斯, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
@@ -166,6 +166,16 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "雪球", 0),
 					TaskAdapter.GetMercenary(MercConst.晨拥, "急速冰冻", 0)
+				}));
+				return;
+			}
+			if (title.Contains("致命一击"))
+			{
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "首脑的悬赏", 0),
+					TaskAdapter.GetMercenary(MercConst.帕奇斯, null, 0),
+					TaskAdapter.GetMercenary(MercConst.尤朵拉, null, 0)
 				}));
 				return;
 			}
@@ -287,8 +297,6 @@ namespace Mercenary
 					{
 						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));
-					Out.Log(string.Format("[test] 添加[MID:{0}]，因为未满级",
-						mercenaryId));
 				}
 				else
 				{
@@ -296,8 +304,6 @@ namespace Mercenary
 					{
 						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));
-					Out.Log(string.Format("[test] 添加[MID:{0}]，因为满级了",
-						mercenaryId));
 				}
 				return;
 			}
@@ -432,7 +438,8 @@ namespace Mercenary
 		}
 
 		private static Dictionary<string, int> m_dictSkillEquip = new Dictionary<string, int>{
-			{ "大地践踏", EquipConst.雷霆饰带 }// 凯恩·血蹄|大地践踏|雷霆饰带
+			{ "大地践踏", EquipConst.雷霆饰带 },// 凯恩·血蹄|大地践踏|雷霆饰带
+			{ "再生头颅", EquipConst.再生之鳞 }// 特里高雷|再生头颅|再生之鳞
 		};
 
 	}
