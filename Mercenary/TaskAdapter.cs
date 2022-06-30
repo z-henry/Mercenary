@@ -9,14 +9,8 @@ namespace Mercenary
 		// Token: 0x06000053 RID: 83 RVA: 0x00005234 File Offset: 0x00003434
 		public static void SetTask(int taskId, int mercenaryId, string title, string desc, List<Task> tasks)
 		{
-			Out.Log(string.Concat(new string[]
-			{
-				mercenaryId.ToString(),
-				" ",
-				title,
-				" ",
-				desc
-			}));
+			Out.Log(string.Format("[TID:{0}][MID:{1}] {2} {3}",
+				taskId, mercenaryId, title, desc));
 			if (title.Contains("势均力敌") || title.Contains("无坚不摧"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
@@ -229,6 +223,15 @@ namespace Mercenary
 				}));
 				return;
 			}
+			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用元素造成"))
+			{
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.LUO_KE_HUO_LA, null, 0)
+				}));
+				return;
+			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("神圣伤害"))
 			{
 				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
@@ -256,6 +259,16 @@ namespace Mercenary
 				}));
 				return;
 			}
+			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("邪能伤害"))
+			{
+				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(MercConst.玛诺洛斯, null, 0),
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
+				}));
+				return;
+			}
+
 			if (desc.Contains("英雄难度"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 1, "H1-1", new MercenaryEntity[]
