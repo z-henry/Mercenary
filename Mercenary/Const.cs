@@ -88,5 +88,6 @@ namespace Mercenary
 		// Token: 0x04000018 RID: 24
 		public const int 雷霆饰带 = 1;
 		public const int 再生之鳞 = 2;
+		public const int 公平分配 = 2;
 	}
 }
