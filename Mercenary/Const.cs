@@ -48,6 +48,8 @@ namespace Mercenary
 		// Token: 0x04000024 RID: 36
 		public static int QU_QI = 149;
 
+		public static int 尤朵拉 = 236;
+
 		// Token: 0x04000025 RID: 37
 		public const int BaLinDa = 249;
 
@@ -61,7 +63,7 @@ namespace Mercenary
 		public static int CHI_JING = 286;
 
 		// Token: 0x04000029 RID: 41
-		public static int PA_QI_SI = 374;
+		public static int 帕奇斯 = 374;
 
 		// Token: 0x0400002A RID: 42
 		public static readonly List<int> First = new List<int>
@@ -85,5 +87,6 @@ namespace Mercenary
 	{
 		// Token: 0x04000018 RID: 24
 		public const int 雷霆饰带 = 1;
+		public const int 再生之鳞 = 2;
 	}
 }
