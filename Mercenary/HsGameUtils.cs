@@ -174,12 +174,13 @@ namespace Mercenary
 				ability
 			}).GetValue())
 			{
-				Out.UI("自动升级: " + mercenary.m_mercName + "技能: " + ability.m_abilityName);
 				if (ability.m_cardType == CollectionUtils.MercenariesModeCardType.Ability)
 				{
+					Out.Log(string.Format("[升级技能] [MID:{0}][SID:{1}]", mercenary.ID, ability.ID));
 					Network.Get().UpgradeMercenaryAbility(mercenary.ID, ability.ID);
 					return;
 				}
+				Out.Log(string.Format("[升级技能] [MID:{0}][EID:{1}]", mercenary.ID, ability.ID));
 				Network.Get().UpgradeMercenaryEquipment(mercenary.ID, ability.ID);
 			}
 		}

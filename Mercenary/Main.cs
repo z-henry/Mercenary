@@ -369,6 +369,8 @@ namespace Mercenary
 		// Token: 0x0600001B RID: 27 RVA: 0x00002A40 File Offset: 0x00000C40
 		private void AutoChangeTeam()
 		{
+			Out.Log("[队伍编辑]");
+
 			global::LettuceTeam lettuceTeam = HsGameUtils.GetAllTeams().Find((global::LettuceTeam t) => t.Name.Equals(Main.teamNameConf.Value));
 			if (lettuceTeam == null)
 			{
@@ -518,7 +520,7 @@ namespace Mercenary
 			}
 			if (Input.GetKeyUp(KeyCode.F3))
 			{
-				Logger.LogInfo("F3查询");
+				Out.Log("F3查询");
 
 // 				Network.Get().UpgradeMercenaryEquipment(18, 139);
 				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries(null, true);
@@ -529,7 +531,7 @@ namespace Mercenary
 						string upgrade = "不可升级";
 						if (mercy.IsCardReadyForUpgrade(ability.ID, CollectionUtils.MercenariesModeCardType.Ability))
 							upgrade = "可升级";
-						Logger.LogInfo(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][技能ID:{3}][{4}]",
+						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][技能ID:{3}][{4}]",
 							mercy.m_mercName, mercy.ID, ability.GetCardName(), ability.ID, upgrade));
 					}
 					foreach (LettuceAbility ability in mercy.m_equipmentList)
@@ -540,11 +542,10 @@ namespace Mercenary
 							Network.Get().UpgradeMercenaryEquipment(mercy.ID, ability.ID);
 							upgrade = "可升级";
 						}
-						Logger.LogInfo(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][装备ID:{3}][{4}]",
+						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][装备ID:{3}][{4}]",
 							mercy.m_mercName, mercy.ID, ability.GetCardName(), ability.ID, upgrade));
 					}
 				}
-				Logger.LogInfo("F3查询完成");
 			}
 
 			if (!Main.isRunning)
@@ -567,12 +568,17 @@ namespace Mercenary
 			SceneMgr sceneMgr = SceneMgr.Get();
 			SceneMgr.Mode mode = sceneMgr.GetMode();
 			GameState gameState = GameState.Get();
+
+			#region 查找比赛
 			if (gameMgr.IsFindingGame())
 			{
 				Out.Log("[状态] 查找比赛，休息3秒");
 				Main.Sleep(3);
 				return;
 			}
+			#endregion
+
+			#region 村子或者角斗场
 			if (gameType == GameType.GT_UNKNOWN && (mode == SceneMgr.Mode.LETTUCE_VILLAGE || mode == SceneMgr.Mode.LETTUCE_PLAY) && gameState == null)
 			{
 				if (!(Main.modeConf.Value == "Pvp"))
@@ -601,7 +607,11 @@ namespace Mercenary
 				}
 				Out.Log("[状态] 目前处于村庄/角斗场，切换到PVP模式");
 				GameMgr.Get().FindGame(GameType.GT_MERCENARIES_PVP, FormatType.FT_WILD, 3743, 0, 0L, null, null, false, null, null, lettuceTeam.ID, GameType.GT_UNKNOWN);
+				return;
 			}
+			#endregion
+
+			#region 主界面
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.HUB && gameState == null)
 			{
 				Out.Log("[状态] 目前处于主界面，切换到村庄，休息5秒");
@@ -609,17 +619,22 @@ namespace Mercenary
 				Main.Sleep(5);
 				return;
 			}
+			#endregion 
+
+			#region 悬赏面板
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_BOARD && gameState == null)
 			{
-				Out.Log(string.Format("[状态] 目前处于悬赏面板，选择[MAPID:{0}]，休息6秒", GetMapId()));
+				Out.Log(string.Format("[状态] 目前处于悬赏面板，切换到队伍选择，选择[MAPID:{0}]，休息6秒", GetMapId()));
 				HsGameUtils.SelectBoss(this.GetMapId());
 				Main.ResetIdle();
 				Main.Sleep(6);
 				return;
 			}
+			#endregion
+			
+			#region 队伍选择
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_TEAM_SELECT && gameState == null)
 			{
-				Out.Log("[状态] 目前处于队伍选择");
 				this.AutoUpdateSkill();
 				this.AutoCraft();
 				if (Main.modeConf.Value == "全自动接任务做任务")
@@ -648,6 +663,7 @@ namespace Mercenary
 				if (teams2.Count == 0)
 				{
 					UIStatus.Get().AddInfo("请先创建队伍并在设置里选择队伍！");
+					Out.Log("未创建过队伍，插件暂停");
 					Main.isRunning = false;
 					return;
 				}
@@ -655,6 +671,7 @@ namespace Mercenary
 				if (lettuceTeam2 == null)
 				{
 					UIStatus.Get().AddInfo("请先在设置里选择队伍！");
+					Out.Log("没有预设名称对应的队伍，插件暂停");
 					Main.isRunning = false;
 					return;
 				}
@@ -665,48 +682,59 @@ namespace Mercenary
 				lettuceSceneTransitionPayload.m_SelectedBounty = record;
 				lettuceSceneTransitionPayload.m_SelectedBountySet = record.BountySetRecord;
 				lettuceSceneTransitionPayload.m_IsHeroic = record.Heroic;
-				base.Logger.LogInfo("current will go to map: " + mapId.ToString());
+				Out.Log(string.Format("[状态] 目前处于队伍选择，选择[MAPID:{0}]", mapId));
 				SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_MAP, SceneMgr.TransitionHandlerType.CURRENT_SCENE, null, lettuceSceneTransitionPayload);
 				return;
 			}
-			else
+			#endregion
+
+			#region 地图
+			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_MAP && gameState == null && (double)Main.idleTime > 20.0)
 			{
-				if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_MAP && gameState == null && (double)Main.idleTime > 20.0)
-				{
-					sceneMgr.SetNextMode(SceneMgr.Mode.LETTUCE_VILLAGE, SceneMgr.TransitionHandlerType.SCENEMGR, null, null);
-					Main.sleepTime += 5f;
-					return;
-				}
-				if (gameState != null && ((gameType != GameType.GT_MERCENARIES_PVE && gameType != GameType.GT_MERCENARIES_PVP) || sceneMgr.GetMode() != SceneMgr.Mode.GAMEPLAY || !gameState.IsGameCreatedOrCreating()))
-				{
-					return;
-				}
-				if (gameState == null || gameState.IsGameOver())
-				{
-					if (EndGameScreen.Get())
-					{
-						PegUIElement hitbox = EndGameScreen.Get().m_hitbox;
-						if (hitbox != null)
-						{
-							hitbox.TriggerPress();
-							hitbox.TriggerRelease();
-							Main.sleepTime += 4f;
-							Main.ResetIdle();
-						}
-					}
-					return;
-				}
-				base.Logger.LogInfo("current is in game");
-				Main.sleepTime += 1f;
-				if (EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_NO_MORE_PLAYS)
-				{
-					base.Logger.LogInfo("no more plays will end ture");
-					InputManager.Get().DoEndTurnButton();
-					return;
-				}
-				this.HandlePlay();
+				Out.Log("[状态] 目前处于地图，空闲时间超过20s，返回村庄");
+				sceneMgr.SetNextMode(SceneMgr.Mode.LETTUCE_VILLAGE, SceneMgr.TransitionHandlerType.SCENEMGR, null, null);
+				Main.sleepTime += 5f;
 				return;
 			}
+			#endregion
+
+			#region 排队中
+			if (gameState != null && ((gameType != GameType.GT_MERCENARIES_PVE && gameType != GameType.GT_MERCENARIES_PVP) || sceneMgr.GetMode() != SceneMgr.Mode.GAMEPLAY || !gameState.IsGameCreatedOrCreating()))
+			{
+				Out.Log("[状态] 排队中");
+				Main.sleepTime += 1f;
+				return;
+			}
+			#endregion
+
+			#region 游戏结束
+			if (gameState == null || gameState.IsGameOver())
+			{
+				if (EndGameScreen.Get())
+				{
+					PegUIElement hitbox = EndGameScreen.Get().m_hitbox;
+					if (hitbox != null)
+					{
+						hitbox.TriggerPress();
+						hitbox.TriggerRelease();
+						Out.Log("[对局中] 游戏结束，点击");
+						Main.sleepTime += 4f;
+						Main.ResetIdle();
+					}
+				}
+				return;
+			}
+			#endregion
+
+			Out.Log("[状态] 对局进行中");
+			Main.sleepTime += 1f;
+			if (EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_NO_MORE_PLAYS)
+			{
+				Out.Log("[对局中] 点击结束按钮");
+				InputManager.Get().DoEndTurnButton();
+				return;
+			}
+			this.HandlePlay();
 		}
 
 		// Token: 0x0600001F RID: 31 RVA: 0x00003444 File Offset: 0x00001644
@@ -716,12 +744,13 @@ namespace Mercenary
 			{
 				return;
 			}
+			Out.Log("[制作佣兵]");
 			foreach (LettuceMercenary lettuceMercenary in CollectionManager.Get().FindOrderedMercenaries(null, new bool?(true), null, null, null).m_mercenaries)
 			{
 				if (lettuceMercenary.IsReadyForCrafting())
 				{
 					Network.Get().CraftMercenary(lettuceMercenary.ID);
-					Debug.Log("制作佣兵: " + lettuceMercenary.m_mercName);
+					Out.Log(string.Format("[制作佣兵] [MID:{0}]", lettuceMercenary.ID));
 				}
 			}
 		}
@@ -729,6 +758,7 @@ namespace Mercenary
 		// Token: 0x06000020 RID: 32 RVA: 0x000034F8 File Offset: 0x000016F8
 		private void AutoUpdateSkill()
 		{
+			Out.Log("[升级技能]");
 			if (!Main.autoUpdateSkillConf.Value)
 			{
 				return;
@@ -791,10 +821,6 @@ namespace Mercenary
 		// Token: 0x06000023 RID: 35 RVA: 0x00003638 File Offset: 0x00001838
 		private void CheckIdleTime()
 		{
-			if (Main.idleTime > 60f)
-			{
-				Out.Log(string.Format("[IDLE] idletime:{0}", idleTime));
-			}
 			Main.idleTime += Time.deltaTime;
 			if (Main.idleTime > 70f && Main.modeConf.Value != "Pvp")
 			{
@@ -845,6 +871,7 @@ namespace Mercenary
 			}
 			if (Main.phaseID == 0)
 			{
+				Out.Log("[对局中] 回合结束");
 				InputManager.Get().DoEndTurnButton();
 				return;
 			}
