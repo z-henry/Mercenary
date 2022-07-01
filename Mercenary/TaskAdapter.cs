@@ -11,7 +11,6 @@ namespace Mercenary
 		{
 			Out.Log(string.Format("[TID:{0}][MID:{1}] {2} {3}",
 				taskId, mercenaryId, title, desc));
-			List<Task> taskLastAdd = new List<Task>();
 			if (title.Contains("势均力敌") || title.Contains("无坚不摧"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
@@ -293,7 +292,7 @@ namespace Mercenary
 				LettuceMercenary mercenary = HsGameUtils.GetMercenary(mercenaryId);
 				if (desc.Contains("30级时") && !mercenary.IsMaxLevel())
 				{
-					taskLastAdd.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+					tasks.Add(TaskAdapter.GetTask(taskId ,10 , "2-5", new MercenaryEntity[]
 					{
 						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));
@@ -372,12 +371,6 @@ namespace Mercenary
 			{
 				TaskAdapter.GetMercenary(mercenaryId, record2.AbilityName, GetEquipEnHanceSkill(record2.AbilityName))
 			}));
-
-			//将30级完成一个悬赏加到最后面
-			foreach (Task task in taskLastAdd)
-			{
-				tasks.Add(task);
-			}
 		}
 
 		// Token: 0x06000054 RID: 84 RVA: 0x00005BB0 File Offset: 0x00003DB0
