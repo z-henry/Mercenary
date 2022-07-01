@@ -177,7 +177,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "DisplayNewlyGrantedAnomalyCards")]
 		public static bool _PreDisplayNewlyGrantedAnomalyCards(global::LettuceMap lettuceMap, int completedNodeId)
 		{
-			Debug.Log("_PreDisplayNewlyGrantedAnomalyCards");
+			Out.Log("_PreDisplayNewlyGrantedAnomalyCards");
 			return !Main.isRunning;
 		}
 
@@ -186,7 +186,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(global::LettuceMap), "CreateMapFromProto")]
 		public static void _PostCreateMapFromProto(PegasusLettuce.LettuceMap lettuceMap)
 		{
-			Debug.Log("_PostCreateMapFromProto");
+			Out.Log("_PostCreateMapFromProto");
 			if (!Main.isRunning || lettuceMap == null)
 			{
 				return;
@@ -212,16 +212,16 @@ namespace Mercenary
 			}
 			if (Main.IsTreasure(lettuceMap))
 			{
-				Debug.Log("选择第一个宝藏");
+				Out.Log("选择第一个宝藏");
 				foreach (int num in lettuceMap.PendingTreasureSelection.TreasureOptions)
 				{
-					Debug.Log("宝藏： " + num.ToString());
+					Out.Log("宝藏： " + num.ToString());
 				}
 				Network.Get().MakeMercenariesMapTreasureSelection(0);
 			}
 			if (Main.IsVisitor(lettuceMap))
 			{
-				Debug.Log("选择第一个来访者");
+				Out.Log("选择第一个来访者");
 				Network.Get().MakeMercenariesMapVisitorSelection(0);
 			}
 		}
@@ -274,7 +274,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "TryAutoNextSelectCoin")]
 		public static void _PostTryAutoNextSelectCoin()
 		{
-			Debug.Log("TryAutoNextSelectCoin");
+			Out.Log("TryAutoNextSelectCoin");
 			if (!Main.isRunning)
 			{
 				return;
@@ -292,7 +292,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(MercenariesSeasonRewardsDialog), "ShowWhenReady")]
 		public static bool _PreShowWhenReady(MercenariesSeasonRewardsDialog __instance)
 		{
-			Debug.Log("显示天梯奖励");
+			Out.Log("显示天梯奖励");
 			if (!Main.isRunning)
 			{
 				return true;
@@ -307,7 +307,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(RewardPopups), "ShowMercenariesRewards")]
 		public static bool _PreShowMercenariesRewards(ref bool autoOpenChest, ref NetCache.ProfileNoticeMercenariesRewards rewardNotice, Action doneCallback = null)
 		{
-			Debug.Log("显示奖励");
+			Out.Log("显示奖励");
 			if (!Main.isRunning)
 			{
 				return true;
@@ -330,7 +330,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(RewardBoxesDisplay), "RewardPackageOnComplete")]
 		public static void _PostRewardPackageOnComplete(RewardBoxesDisplay.RewardBoxData boxData)
 		{
-			Debug.Log("点击奖励");
+			Out.Log("点击奖励");
 			if (!Main.isRunning)
 			{
 				return;
@@ -344,7 +344,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(RewardBoxesDisplay), "OnDoneButtonShown")]
 		public static void _PostOnDoneButtonShown(Spell spell, object userData)
 		{
-			Debug.Log("点击完成按钮");
+			Out.Log("点击完成按钮");
 			if (!Main.isRunning)
 			{
 				return;
@@ -852,7 +852,7 @@ namespace Mercenary
 		// Token: 0x06000024 RID: 36 RVA: 0x000036EC File Offset: 0x000018EC
 		private static void ResetIdle()
 		{
-			Debug.Log("[IDLE] reset");
+			Out.Log("[IDLE] reset");
 			Main.idleTime = 0f;
 		}
 
