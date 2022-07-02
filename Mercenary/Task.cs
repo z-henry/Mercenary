@@ -23,6 +23,9 @@ namespace Mercenary
 			return MapUtils.GetMapId(this.Map);
 		}
 
+		//流水号，保证同优先级的任务是按照添加顺序排列的（长时间不重启可能会溢出）
+		public int water;
+
 		// Token: 0x0400002D RID: 45
 		public int Id;
 
@@ -37,5 +40,6 @@ namespace Mercenary
 
 		// Token: 0x04000031 RID: 49
 		public long StartAt;
+
 	}
 }

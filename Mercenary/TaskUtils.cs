@@ -38,7 +38,8 @@ namespace Mercenary
 		// Token: 0x0600005C RID: 92 RVA: 0x00005DA8 File Offset: 0x00003FA8
 		public static int GetTaskMap()
 		{
-			foreach (Task task in TaskUtils.tasks)
+			List<Task> taskOrder = (from t in TaskUtils.tasks orderby t.Priority, t.water select t).ToList<Task>();
+			foreach (Task task in taskOrder)
 			{
 				if (task.GetMapId() != -1)
 				{
@@ -57,9 +58,8 @@ namespace Mercenary
 		// Token: 0x0600005E RID: 94 RVA: 0x00005E15 File Offset: 0x00004015
 		public static List<Task> GetTasks()
 		{
-			return (from t in TaskUtils.tasks
-					orderby t.Priority
-					select t).ToList<Task>();
+			List<Task> taskOrder = (from t in TaskUtils.tasks orderby t.Priority, t.water select t).ToList<Task>();
+			return taskOrder;
 		}
 
 		// Token: 0x0600005F RID: 95 RVA: 0x00005E48 File Offset: 0x00004048
