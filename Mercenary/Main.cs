@@ -35,13 +35,14 @@ namespace Mercenary
 		private void Awake()
 		{
 			this._harmony.PatchAll(typeof(Main));
-			Main.modeConf = base.Config.Bind<string>("配置", "插件运行模式", "刷图", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(new string[]
+			Main.modeConf = base.Config.Bind<string>("配置", "插件运行模式", "刷图", new ConfigDescription("插件运行模式", new AcceptableValueList<string>(new string[]
 			{
 				"刷图",
 				"刷神秘人",
 				"全自动接任务做任务",
 				"自动解锁地图",
-				"Pvp"
+				"Pvp",
+				"挂机收菜"
 			}), Array.Empty<object>()));
 			Main.teamNameConf = base.Config.Bind<string>("配置", "使用的队伍名称", "PVE", "使用的队伍名称");
 			Main.strategyConf = base.Config.Bind<string>("配置", "战斗策略", FireStrategy.StrategyName, new ConfigDescription("使用的策略,注意只有在非全自动化模式下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
@@ -55,6 +56,10 @@ namespace Mercenary
 				"Advanced"
 			}));
 			Main.cleanTaskConf = base.Config.Bind<string>(new ConfigDefinition("配置", "自动清理任务时间"), "不开启", new ConfigDescription("会定时清理长时间没完成的任务（全自动模式生效）", new AcceptableValueList<string>(new List<string>(TaskUtils.CleanConf.Keys).ToArray()), Array.Empty<object>()));
+			Main.awakeTimeConf = base.Config.Bind<string>("配置", "唤醒时间", "1999/1/1 0:0:0", "挂机收菜下的唤醒时间（无需更改）");
+			Main.awakeTimeIntervalConf = base.Config.Bind<int>("配置", "唤醒时间间隔", 22, "挂机收菜下的唤醒时间间隔");
+
+			
 		}
 
 		// Token: 0x06000007 RID: 7 RVA: 0x00002513 File Offset: 0x00000713
@@ -229,6 +234,13 @@ namespace Mercenary
 		// Token: 0x06000013 RID: 19 RVA: 0x000027A8 File Offset: 0x000009A8
 		private static void SelectNextNode()
 		{
+			if (modeConf.Value == "挂机收菜" && readyToHang == false)
+			{
+				Out.Log("挂机收菜 只刷一关");
+				Network.Get().RetireLettuceMap();
+				Main.Sleep(2);
+				return;
+			}
 			List<LettuceMapNode> nodes = NetCache.Get().GetNetObject<NetCache.NetCacheLettuceMap>().Map.Nodes;
 			ValueTuple<LettuceMapNode, int> nextNode = Main.GetNextNode(nodes.FindAll((LettuceMapNode n) => n.NodeState_ == LettuceMapNode.NodeState.UNLOCKED), nodes);
 			LettuceMapNode lettuceMapNode = nextNode.Item1;
@@ -683,6 +695,11 @@ namespace Mercenary
 				lettuceSceneTransitionPayload.m_SelectedBountySet = record.BountySetRecord;
 				lettuceSceneTransitionPayload.m_IsHeroic = record.Heroic;
 				Out.Log(string.Format("[状态] 目前处于队伍选择，选择[MAPID:{0}]", mapId));
+				if (Main.modeConf.Value == "挂机收菜")
+				{
+					readyToHang = true;
+					Out.Log(string.Format("[状态] 下局战斗将写入收菜时间"));
+				}
 				SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_MAP, SceneMgr.TransitionHandlerType.CURRENT_SCENE, null, lettuceSceneTransitionPayload);
 				return;
 			}
@@ -717,8 +734,8 @@ namespace Mercenary
 					{
 						hitbox.TriggerPress();
 						hitbox.TriggerRelease();
-						Out.Log("[对局中] 游戏结束，点击");
-						Main.sleepTime += 4f;
+						Out.Log("[对局结束] 游戏结束，点击");
+						Main.sleepTime += 10f;
 						Main.ResetIdle();
 					}
 				}
@@ -726,14 +743,8 @@ namespace Mercenary
 			}
 			#endregion
 
-			Out.Log("[状态] 对局进行中");
+
 			Main.sleepTime += 1f;
-			if (EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_NO_MORE_PLAYS)
-			{
-				Out.Log("[对局中] 点击结束按钮");
-				InputManager.Get().DoEndTurnButton();
-				return;
-			}
 			this.HandlePlay();
 		}
 
@@ -869,9 +880,17 @@ namespace Mercenary
 			{
 				return;
 			}
+			Out.Log("[状态] 对局进行中");
 			if (Main.phaseID == 0)
 			{
 				Out.Log("[对局中] 回合结束");
+				InputManager.Get().DoEndTurnButton();
+				return;
+			}
+
+			if (EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_NO_MORE_PLAYS)
+			{
+				Out.Log("[对局中] 点击结束按钮");
 				InputManager.Get().DoEndTurnButton();
 				return;
 			}
@@ -929,11 +948,18 @@ namespace Mercenary
 				if (Main.phaseID == 1 && EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_YOUR_TURN)
 				{
 					InputManager.Get().DoEndTurnButton();
-					base.Logger.LogInfo("click end button to select");
+					Out.Log("click end button to select");
 					return;
 				}
 				if (Main.phaseID == 2)
 				{
+					if (modeConf.Value == "挂机收菜" && readyToHang == true)
+					{
+						Out.Log(string.Format("[战斗中] 初次进入战斗，休息{0}min后再见~", awakeTimeIntervalConf.Value));
+						awakeTimeConf.Value = DateTime.Now.AddMinutes(awakeTimeIntervalConf.Value).ToString("G");
+						Application.Quit();
+					}
+
 					ZonePlay zonePlay2 = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING);
 					if (zonePlay2.GetCardCount() == 1 && zonePlay2.GetFirstCard().GetEntity().IsStealthed())
 					{
@@ -1082,7 +1108,7 @@ namespace Mercenary
 		// Token: 0x0600002B RID: 43 RVA: 0x00003F8C File Offset: 0x0000218C
 		private static bool NeedCompleted()
 		{
-			return !(Main.modeConf.Value != "自动解锁地图") || !(Main.modeConf.Value != "刷图") || TaskUtils.GetTaskMap() != -1;
+			return Main.modeConf.Value == "自动解锁地图" || Main.modeConf.Value == "刷图" || Main.modeConf.Value == "挂机收菜" || TaskUtils.GetTaskMap() != -1;
 		}
 
 		// Token: 0x0600002C RID: 44 RVA: 0x00003FC8 File Offset: 0x000021C8
@@ -1157,6 +1183,9 @@ namespace Mercenary
 		// Token: 0x04000013 RID: 19
 		private static ConfigEntry<string> cleanTaskConf;
 
+		private static ConfigEntry<string> awakeTimeConf;
+
+		private static ConfigEntry<int> awakeTimeIntervalConf;
 		// Token: 0x04000014 RID: 20
 		private static float sleepTime;
 
@@ -1168,5 +1197,8 @@ namespace Mercenary
 
 		// Token: 0x04000017 RID: 23
 		private static int phaseID;
+
+		// 挂机收菜模式 下次战斗准备挂机
+		private static bool readyToHang = false;
 	}
 }

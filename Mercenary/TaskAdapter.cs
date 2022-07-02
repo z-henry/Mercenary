@@ -9,19 +9,24 @@ namespace Mercenary
 		// Token: 0x06000053 RID: 83 RVA: 0x00005234 File Offset: 0x00003434
 		public static void SetTask(int taskId, int mercenaryId, string title, string desc, List<Task> tasks)
 		{
+			// 对于优先使用多个英雄配合的，优先级设为0，保证一起出场
+			// 未满30级的佣兵 优先级设为10，放后备箱里跟着升级
+			// 部分要求地图的基本优先级都是5（正常）挨个排着
+			// 英雄悬赏优先度为1，为了能早日排进H1-1的地图
 			Out.Log(string.Format("[TID:{0}][MID:{1}] {2} {3}",
 				taskId, mercenaryId, title, desc));
 			if (title.Contains("势均力敌") || title.Contains("无坚不摧"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-					TaskAdapter.GetMercenary(mercenaryId, "巨型大恶魔", 0)
+					TaskAdapter.GetMercenary(mercenaryId, "巨型大恶魔", 0),
+					TaskAdapter.GetMercenary(MercConst.玛诺洛斯, null, 0)
 				}));
 				return;
 			}
 			if (title.Contains("学术道德"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "急速冰冻", 0),
 					TaskAdapter.GetMercenary(mercenaryId, "冰枪术", 0)
@@ -38,7 +43,7 @@ namespace Mercenary
 			}
 			if (title.Contains("完美圣光"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "裂解之光", 0),
 					TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
@@ -47,7 +52,7 @@ namespace Mercenary
 			}
 			if (title.Contains("全部烧光"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "熔岩冲击", 0),
 					TaskAdapter.GetMercenary(MercConst.AN_DONG_NI, null, 0)
@@ -56,7 +61,7 @@ namespace Mercenary
 			}
 			if (title.Contains("圣光治愈一切"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "咒逐", 0),
 					TaskAdapter.GetMercenary(mercenaryId, "祈福", 0)
@@ -81,7 +86,7 @@ namespace Mercenary
 			}
 			if (title.Contains("光明使者"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "复仇之怒", 0),
 					TaskAdapter.GetMercenary(MercConst.KaiRuiEr, "光明圣印", 0),
@@ -91,7 +96,7 @@ namespace Mercenary
 			}
 			if (title.Contains("烧烤弱鸡"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "活体炸弹", 0),
 					TaskAdapter.GetMercenary(MercConst.QU_QI, "小鱼快冲", 0)
@@ -143,7 +148,7 @@ namespace Mercenary
 			}
 			if (title.Contains("船上的厨子"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.帕奇斯, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
@@ -152,7 +157,7 @@ namespace Mercenary
 			}
 			if (title.Contains("侵略如火") || title.Contains("翻腾火流"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.YU_LONG, "玉火打击", 0),
 					TaskAdapter.GetMercenary(mercenaryId, "热力迸发", 0)
@@ -161,7 +166,7 @@ namespace Mercenary
 			}
 			if (title.Contains("雪球滚滚"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "3-2", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "3-2", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "雪球", 0),
 					TaskAdapter.GetMercenary(MercConst.晨拥, "急速冰冻", 0)
@@ -170,7 +175,7 @@ namespace Mercenary
 			}
 			if (title.Contains("致命一击"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, 5, "H1-2", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "H1-2", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "首脑的悬赏", 0),
 					TaskAdapter.GetMercenary(MercConst.帕奇斯, null, 0),
@@ -217,7 +222,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用恶魔造成"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.LA_SUO_LI_AN, "巨型大恶魔", 0)
@@ -226,7 +231,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用野兽造成"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.SHAN_HU, null, 0)
@@ -235,7 +240,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用元素造成"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.LUO_KE_HUO_LA, null, 0)
@@ -244,7 +249,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("神圣伤害"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
@@ -253,7 +258,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("冰霜伤害"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.晨拥, null, 0)
@@ -262,7 +267,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("暗影伤害"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.TA_MU_XIN, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
@@ -271,7 +276,7 @@ namespace Mercenary
 			}
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("邪能伤害"))
 			{
-				tasks.Insert(0, TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.玛诺洛斯, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
@@ -292,7 +297,7 @@ namespace Mercenary
 				LettuceMercenary mercenary = HsGameUtils.GetMercenary(mercenaryId);
 				if (desc.Contains("30级时") && !mercenary.IsMaxLevel())
 				{
-					tasks.Add(TaskAdapter.GetTask(taskId ,10 , "2-5", new MercenaryEntity[]
+					tasks.Add(TaskAdapter.GetTask(taskId ,10 , new MercenaryEntity[]
 					{
 						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));
@@ -395,10 +400,22 @@ namespace Mercenary
 		{
 			return new Task
 			{
+				water = ++m_globalWater,
 				Priority = priority,
 				Map = map,
 				Mercenaries = new List<MercenaryEntity>(mercenaries),
 				Id = id
+			};
+		}
+
+		private static Task GetTask(int id, int priority, params MercenaryEntity[] mercenaries)
+		{
+			return new Task
+			{
+				water = ++m_globalWater,
+				Id = id,
+				Mercenaries = new List<MercenaryEntity>(mercenaries),
+				Priority = priority,
 			};
 		}
 
@@ -407,6 +424,7 @@ namespace Mercenary
 		{
 			return new Task
 			{
+				water = ++m_globalWater,
 				Id = id,
 				Mercenaries = new List<MercenaryEntity>(mercenaries),
 				Priority = 5
@@ -436,5 +454,6 @@ namespace Mercenary
 			{ "首脑的悬赏", EquipConst.公平分配 } // 迪菲亚|首脑的悬赏|公平分配
 		};
 
+		private static int m_globalWater = 0;
 	}
 }
