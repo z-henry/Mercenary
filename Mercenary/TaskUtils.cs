@@ -32,7 +32,7 @@ namespace Mercenary
 				}
 			}
 			TaskUtils.tasks = newTasks;
-			TaskUtils.skills = TaskUtils.GetTaskSkill(TaskUtils.tasks);
+			TaskUtils.dict_skillsTargetType = TaskUtils.GetTaskSkillAndTargetType(TaskUtils.tasks);
 		}
 
 		// Token: 0x0600005C RID: 92 RVA: 0x00005DA8 File Offset: 0x00003FA8
@@ -49,10 +49,22 @@ namespace Mercenary
 			return -1;
 		}
 
-		// Token: 0x0600005D RID: 93 RVA: 0x00005E08 File Offset: 0x00004008
 		public static bool HasSkill(string skill)
 		{
-			return TaskUtils.skills.Contains(skill);
+			return TaskUtils.dict_skillsTargetType.ContainsKey(skill);
+		}
+
+
+		public static HsMercenaryStrategy.TARGETTYPE FindSkillTargetType(string skill)
+		{
+			if (!TaskUtils.dict_skillsTargetType.ContainsKey(skill))
+			{
+				return HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED;
+			}
+			else
+			{
+				return dict_skillsTargetType[skill];
+			}
 		}
 
 		// Token: 0x0600005E RID: 94 RVA: 0x00005E15 File Offset: 0x00004015
@@ -77,14 +89,14 @@ namespace Mercenary
 		}
 
 		// Token: 0x06000060 RID: 96 RVA: 0x00005ED8 File Offset: 0x000040D8
-		private static List<string> GetTaskSkill(List<Task> allTasks)
+		private static Dictionary<string, HsMercenaryStrategy.TARGETTYPE> GetTaskSkillAndTargetType(List<Task> allTasks)
 		{
-			List<string> list = new List<string>();
+			Dictionary<string, HsMercenaryStrategy.TARGETTYPE> list = new Dictionary<string, HsMercenaryStrategy.TARGETTYPE>();
 			foreach (MercenaryEntity mercenaryEntity in TaskUtils._GetTaskMercenaries(allTasks))
 			{
 				if (!string.IsNullOrEmpty(mercenaryEntity.Skill))
 				{
-					list.Add(mercenaryEntity.Skill);
+					list.Add(mercenaryEntity.Skill, mercenaryEntity.TargetType);
 				}
 			}
 			return list;
@@ -119,6 +131,6 @@ namespace Mercenary
 		private static List<Task> tasks = new List<Task>();
 
 		// Token: 0x0400003C RID: 60
-		private static List<string> skills = new List<string>();
+		private static Dictionary<string, HsMercenaryStrategy.TARGETTYPE> dict_skillsTargetType = new Dictionary<string, HsMercenaryStrategy.TARGETTYPE>();
 	}
 }
