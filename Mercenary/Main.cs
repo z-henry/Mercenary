@@ -15,7 +15,7 @@ using UnityEngine;
 namespace Mercenary
 {
 	// Token: 0x02000004 RID: 4
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.0")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.1")]
 	public class Main : BaseUnityPlugin
 	{
 		// Token: 0x06000005 RID: 5 RVA: 0x00002274 File Offset: 0x00000474
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("插件版本[改] 3.0.0"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("插件版本[改] 3.0.1"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -347,7 +347,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			Main.sleepTime += 3f;
+			Main.Sleep(3);
 			boxData.m_RewardPackage.TriggerPress();
 		}
 
@@ -361,7 +361,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			Main.sleepTime += 2f;
+			Main.Sleep(2);
 			RewardBoxesDisplay.Get().m_DoneButton.TriggerPress();
 			RewardBoxesDisplay.Get().m_DoneButton.TriggerRelease();
 		}
@@ -670,7 +670,7 @@ namespace Mercenary
 					HsGameUtils.GotoSceneVillage();
 					return;
 				}
-				Main.sleepTime += 5f;
+				Main.Sleep(5);
 				List<global::LettuceTeam> teams2 = CollectionManager.Get().GetTeams();
 				if (teams2.Count == 0)
 				{
@@ -710,7 +710,7 @@ namespace Mercenary
 			{
 				Out.Log("[状态] 目前处于地图，空闲时间超过20s，返回村庄");
 				sceneMgr.SetNextMode(SceneMgr.Mode.LETTUCE_VILLAGE, SceneMgr.TransitionHandlerType.SCENEMGR, null, null);
-				Main.sleepTime += 5f;
+				Main.Sleep(5);
 				return;
 			}
 			#endregion
@@ -719,7 +719,7 @@ namespace Mercenary
 			if (gameState != null && ((gameType != GameType.GT_MERCENARIES_PVE && gameType != GameType.GT_MERCENARIES_PVP) || sceneMgr.GetMode() != SceneMgr.Mode.GAMEPLAY || !gameState.IsGameCreatedOrCreating()))
 			{
 				Out.Log("[状态] 排队中");
-				Main.sleepTime += 1f;
+				Main.Sleep(1);
 				return;
 			}
 			#endregion
@@ -735,7 +735,7 @@ namespace Mercenary
 						hitbox.TriggerPress();
 						hitbox.TriggerRelease();
 						Out.Log("[对局结束] 游戏结束，点击");
-						Main.sleepTime += 10f;
+						Main.Sleep(10);
 						Main.ResetIdle();
 					}
 				}
@@ -744,7 +744,7 @@ namespace Mercenary
 			#endregion
 
 
-			Main.sleepTime += 1f;
+			Main.Sleep(1);
 			this.HandlePlay();
 		}
 
@@ -894,47 +894,69 @@ namespace Mercenary
 				InputManager.Get().DoEndTurnButton();
 				return;
 			}
-			List<BattleTarget> battleTargets = ((Main.modeConf.Value == "全自动接任务做任务") ? StrategyHelper.GetStrategy("_Sys_Default") : StrategyHelper.GetStrategy(Main.strategyConf.Value)).GetBattleTargets(this.BuildDefaultTargetMercenaries(), this.BuildTargetEntity());
+
+			// 策略计算
+			List<BattleTarget> battleTargets = ((Main.modeConf.Value == "全自动接任务做任务") ? StrategyHelper.GetStrategy("_Sys_Default") : StrategyHelper.GetStrategy(Main.strategyConf.Value)).GetBattleTargets(this.BuildDefaultTargetMercenaries(), this.BuildTargetEntity(Player.Side.OPPOSING), this.BuildTargetEntity(Player.Side.FRIENDLY));
+			Dictionary<int, BattleTarget> dict = battleTargets.FindAll((BattleTarget i) => i.SkillId != -1).ToDictionary((BattleTarget i) => i.SkillId, (BattleTarget i) => i);
 
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
 			{
-// 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
-				List<Card> list = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !i.GetEntity().IsStealthed());
-				Dictionary<int, int> dict = battleTargets.FindAll((BattleTarget i) => i.SkillId != -1).ToDictionary((BattleTarget i) => i.SkillId, (BattleTarget i) => i.TargetId);
-				Network.Options.Option.SubOption networkSubOption = GameState.Get().GetSelectedNetworkSubOption();
-				Card card = null;
 				foreach (BattleTarget battleTarget in battleTargets)
+					Out.Log(string.Format("[对局中] 策略判断 [SID:{0}] [TID:{1}] [TTYPE:{2}]",
+							battleTarget.SkillId, battleTarget.TargetId, battleTarget.TargetType));
+
+				// 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
+				List<Card> cards_opposite = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !i.GetEntity().IsStealthed());
+				List<Card> cards_friend = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER));
+				string strlog = "";
+				foreach (Card card1 in cards_opposite)
+					strlog += string.Format("{0}({1},{2})\t",
+						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
+				Out.Log(string.Format("[对局中] 场面：敌方 {0}", strlog));
+				strlog = "";
+				foreach (Card card1 in cards_friend)
+					strlog += string.Format("{0}({1},{2})\t",
+						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
+				Out.Log(string.Format("[对局中] 场面：友方 {0}", strlog));
+
+
+				//这个是当前停留的技能id
+				Network.Options.Option.SubOption networkSubOption = GameState.Get().GetSelectedNetworkSubOption();
+				Out.Log(string.Format("[对局中] 技能目标 当前技能 [SID:{0}]",
+					networkSubOption.ID));
+
+				Card card = null;
+				// 先
+				if (dict.ContainsKey(networkSubOption.ID) && dict[networkSubOption.ID].TargetId != -1)
 				{
-					Out.Log(string.Concat(new string[]
+					Out.Log("[对局中] 技能目标 匹配策略"); 
+					if (dict[networkSubOption.ID].TargetType == TARGETTYPE.UNSPECIFIED)
 					{
-						networkSubOption.ID.ToString(),
-						" target : ",
-						battleTarget.SkillId.ToString(),
-						" ",
-						battleTarget.TargetId.ToString()
-					}));
+						card = cards_opposite.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID].TargetId);
+						if (card == null)
+							card = cards_friend.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID].TargetId);
+					}
+					else if (dict[networkSubOption.ID].TargetType == TARGETTYPE.FRIENDLY)
+					{
+						card = cards_friend.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID].TargetId);
+					}
+					
 				}
-				if (dict.ContainsKey(networkSubOption.ID) && dict[networkSubOption.ID] != -1)
+
+				if (card == null && cards_opposite.Count != 0)
 				{
-					Out.Log("找到匹配怪物");
-					card = list.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID]);
+					Out.Log("[对局中] 技能目标 敌方首位");
+					card = cards_opposite[0];
 				}
-				if (card == null && list.Count != 0)
+				if (card == null && cards_friend.Count != 0)
 				{
-					card = list[0];
-				}
-				List<Card> cards = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER));
-				if (card == null)
-				{
-					card = list.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID]);
-				}
-				if (card == null && cards.Count != 0)
-				{
-					card = cards[0];
+					Out.Log("[对局中] 技能目标 友方首位");
+					card = cards_friend[0];
 				}
 				if (card == null)
 				{
+					Out.Log("[对局中] 技能目标 无可用目标 过");
 					InputManager.Get().DoEndTurnButton();
 				}
 				Traverse.Create(InputManager.Get()).Method("DoNetworkOptionTarget", new object[]
@@ -948,7 +970,7 @@ namespace Mercenary
 				if (Main.phaseID == 1 && EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_YOUR_TURN)
 				{
 					InputManager.Get().DoEndTurnButton();
-					Out.Log("click end button to select");
+					Out.Log("[对局中] 上怪");
 					return;
 				}
 				if (Main.phaseID == 2)
@@ -985,24 +1007,20 @@ namespace Mercenary
 							goto IL_52B;
 						}
 					}
-					foreach (BattleTarget battleTarget2 in battleTargets)
-					{
-						Out.Log("target : " + battleTarget2.SkillId.ToString() + " " + battleTarget2.TargetId.ToString());
-					}
-					HashSet<int> skillSet = Enumerable.ToHashSet<int>(from i in battleTargets
-																	  select i.SkillId);
+					HashSet<int> skillSet = Enumerable.ToHashSet<int>(from i in battleTargets select i.SkillId);
 					List<Card> displayedLettuceAbilityCards = ZoneMgr.Get().GetLettuceZoneController().GetDisplayedLettuceAbilityCards();
 					Card card3 = displayedLettuceAbilityCards.Find((Card i) => skillSet.Contains(i.GetEntity().GetEntityId()) && GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
 					Entity entity2;
 					if (card3 != null)
 					{
 						entity2 = card3.GetEntity();
-						Out.Log("找到技能 " + card3.name);
+						Out.Log("[对局中] 技能选择 找到技能 " + card3.name);
 					}
 					else
 					{
-						entity2 = displayedLettuceAbilityCards.Find((Card i) => GameState.Get().HasResponse(i.GetEntity(), new bool?(false))).GetEntity();
-						Out.Log("未找到技能 使用 " + entity2.GetName());
+						card3 = displayedLettuceAbilityCards.Find((Card i) => GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
+						entity2 = card3.GetEntity();
+						Out.Log("[对局中] 技能选择 未找到技能 使用 " + card3.name);
 					}
 					Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
 					{
@@ -1024,10 +1042,10 @@ namespace Mercenary
 		}
 
 		// Token: 0x06000027 RID: 39 RVA: 0x00003CAC File Offset: 0x00001EAC
-		private List<Target> BuildTargetEntity()
+		private List<Target> BuildTargetEntity(Player.Side side)
 		{
 			List<Target> list = new List<Target>();
-			foreach (Card card2 in ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card card) => (card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !card.GetEntity().IsStealthed()))
+			foreach (Card card2 in ZoneMgr.Get().FindZoneOfType<ZonePlay>(side).GetCards().FindAll((Card card) => (card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !card.GetEntity().IsStealthed()))
 			{
 				Entity entity = card2.GetEntity();
 				Target item = new Target
@@ -1035,7 +1053,8 @@ namespace Mercenary
 					Name = entity.GetName(),
 					Id = entity.GetEntityId(),
 					Health = entity.GetCurrentHealth(),
-					Speed = card2.GetPreparedLettuceAbilitySpeedValue()
+					Speed = card2.GetPreparedLettuceAbilitySpeedValue(),
+					DefHealth = entity.GetDefHealth()
 				};
 				list.Add(item);
 			}
@@ -1112,6 +1131,7 @@ namespace Mercenary
 		}
 
 		// Token: 0x0600002C RID: 44 RVA: 0x00003FC8 File Offset: 0x000021C8
+		// 最短路径
 		private static int GetMinNode(LettuceMapNode node, int value, List<LettuceMapNode> nodes)
 		{
 			if (!Main.NeedCompleted())
@@ -1125,9 +1145,12 @@ namespace Mercenary
 					return -1;
 				}
 			}
-			else if (HsGameUtils.IsBoss(node.NodeTypeId))
+			else
 			{
-				return value;
+				if (HsGameUtils.IsBoss(node.NodeTypeId))
+				{
+					return value;
+				}
 			}
 			int num = (!HsGameUtils.IsMonster(node.NodeTypeId)) ? 0 : 1;
 			if (node.ChildNodeIds.Count == 1)

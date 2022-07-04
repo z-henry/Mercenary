@@ -84,6 +84,23 @@ namespace Mercenary
 				}));
 				return;
 			}
+			if (title.Contains("王者祝福"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "王者祝福", 0, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+				}));
+				return;
+			}
+			if (title.Contains("生命守护者"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "巨龙吐息", 0, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+				}));
+				return;
+			}
+
 			if (title.Contains("光明使者"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
@@ -432,15 +449,9 @@ namespace Mercenary
 		}
 
 		// Token: 0x06000057 RID: 87 RVA: 0x00005CC9 File Offset: 0x00003EC9
-		private static MercenaryEntity GetMercenary(int id, string skill = null, int eq = 0)
+		private static MercenaryEntity GetMercenary(int id, string skill = null, int eq = 0, int subskill = 0, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
 		{
-			return new MercenaryEntity(id, skill, eq);
-		}
-
-		// Token: 0x06000058 RID: 88 RVA: 0x00005CD3 File Offset: 0x00003ED3
-		private static MercenaryEntity GetMercenary(int id, int skill, int eq = 0)
-		{
-			return new MercenaryEntity(id, skill, eq);
+			return new MercenaryEntity(id, skill, eq, subskill, targettype);
 		}
 
 		private static int GetEquipEnHanceSkill(string skill)

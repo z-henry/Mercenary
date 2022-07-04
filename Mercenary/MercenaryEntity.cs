@@ -12,19 +12,13 @@ namespace Mercenary
 		}
 
 		// Token: 0x0600004B RID: 75 RVA: 0x000046B8 File Offset: 0x000028B8
-		public MercenaryEntity(int id, string skill, int eq = 0)
+		public MercenaryEntity(int id, string skill, int eq = 0, int subskillindex = 0, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
 		{
 			this.ID = id;
 			this.Skill = skill;
 			this.Equipment = eq;
-		}
-
-		// Token: 0x0600004C RID: 76 RVA: 0x000046D5 File Offset: 0x000028D5
-		public MercenaryEntity(int id, int skillIndex, int eq = 0)
-		{
-			this.ID = id;
-			this.SkillIndex = skillIndex;
-			this.Equipment = eq;
+			this.SubSkillIndex = subskillindex;
+			this.TargetType = targettype;
 		}
 
 		// Token: 0x04000032 RID: 50
@@ -36,7 +30,10 @@ namespace Mercenary
 		// Token: 0x04000034 RID: 52
 		public readonly int Equipment;
 
-		// Token: 0x04000035 RID: 53
-		public readonly int SkillIndex;
+		public readonly int SubSkillIndex=0;
+
+		public readonly HsMercenaryStrategy.TARGETTYPE TargetType = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED;
+
+
 	}
 }
