@@ -55,7 +55,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "熔岩冲击", 0),
-					TaskAdapter.GetMercenary(MercConst.AN_DONG_NI, null, 0)
+					TaskAdapter.GetMercenary(MercConst.安东尼达斯, null, 0)
 				}));
 				return;
 			}
@@ -100,14 +100,22 @@ namespace Mercenary
 				}));
 				return;
 			}
-
+			if (title.Contains("一举两得"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "烈焰猛击", 0),
+					TaskAdapter.GetMercenary(MercConst.玉珑, null, 0)					
+				}));
+				return;
+			}
 			if (title.Contains("光明使者"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "复仇之怒", 0),
-					TaskAdapter.GetMercenary(MercConst.KaiRuiEr, "光明圣印", 0),
-					TaskAdapter.GetMercenary(MercConst.KAO_NEI_LIU_SI, "牺牲祝福", 0)
+					TaskAdapter.GetMercenary(MercConst.凯瑞尔, "光明圣印", 0),
+					TaskAdapter.GetMercenary(MercConst.考内留斯, "牺牲祝福", 0)
 				}));
 				return;
 			}
@@ -116,7 +124,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "活体炸弹", 0),
-					TaskAdapter.GetMercenary(MercConst.QU_QI, "小鱼快冲", 0)
+					TaskAdapter.GetMercenary(MercConst.厨师曲奇, "小鱼快冲", 0)
 				}));
 				return;
 			}
@@ -167,7 +175,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-					TaskAdapter.GetMercenary(MercConst.帕奇斯, null, 0),
+					TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
@@ -176,7 +184,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-					TaskAdapter.GetMercenary(MercConst.YU_LONG, "玉火打击", 0),
+					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
 					TaskAdapter.GetMercenary(mercenaryId, "热力迸发", 0)
 				}));
 				return;
@@ -186,7 +194,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "3-2", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "雪球", 0),
-					TaskAdapter.GetMercenary(MercConst.晨拥, "急速冰冻", 0)
+					TaskAdapter.GetMercenary(MercConst.瓦尔登, "急速冰冻", 0)
 				}));
 				return;
 			}
@@ -195,7 +203,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "H1-2", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "首脑的悬赏", 0),
-					TaskAdapter.GetMercenary(MercConst.帕奇斯, null, 0),
+					TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, null, 0),
 					TaskAdapter.GetMercenary(MercConst.尤朵拉, null, 0)
 				}));
 				return;
@@ -242,7 +250,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
-					TaskAdapter.GetMercenary(MercConst.LA_SUO_LI_AN, "巨型大恶魔", 0)
+					TaskAdapter.GetMercenary(MercConst.拉索利安, "巨型大恶魔", 0)
 				}));
 				return;
 			}
@@ -251,7 +259,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
-					TaskAdapter.GetMercenary(MercConst.SHAN_HU, null, 0)
+					TaskAdapter.GetMercenary(MercConst.闪狐, null, 0)
 				}));
 				return;
 			}
@@ -260,7 +268,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
-					TaskAdapter.GetMercenary(MercConst.LUO_KE_HUO_LA, null, 0)
+					TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 0)
 				}));
 				return;
 			}
@@ -278,7 +286,7 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
-					TaskAdapter.GetMercenary(MercConst.晨拥, null, 0)
+					TaskAdapter.GetMercenary(MercConst.瓦尔登, null, 0)
 				}));
 				return;
 			}
@@ -286,7 +294,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-					TaskAdapter.GetMercenary(MercConst.TA_MU_XIN, null, 0),
+					TaskAdapter.GetMercenary(MercConst.塔姆辛, null, 0),
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
