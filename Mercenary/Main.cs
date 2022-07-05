@@ -191,7 +191,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(global::LettuceMap), "CreateMapFromProto")]
 		public static void _PostCreateMapFromProto(PegasusLettuce.LettuceMap lettuceMap)
 		{
-			Out.Log("_PostCreateMapFromProto");
+			Out.Log("[地图信息识别]");
 			if (!Main.isRunning || lettuceMap == null)
 			{
 				return;
@@ -203,6 +203,7 @@ namespace Mercenary
 				{
 					if (mercenariesVisitorState.ActiveTaskState.Status_ == MercenariesTaskState.Status.COMPLETE)
 					{
+						Out.Log(string.Format("[地图信息识别] [TID:{0}]完成", mercenariesVisitorState.ActiveTaskState.TaskId));
 						Network.Get().ClaimMercenaryTask(mercenariesVisitorState.ActiveTaskState.TaskId);
 					}
 				}
@@ -211,18 +212,19 @@ namespace Mercenary
 			{
 				if (GameUtils.IsFinalBossNodeType((int)lettuceMapNode.NodeTypeId) && lettuceMapNode.NodeState_ == LettuceMapNode.NodeState.COMPLETE)
 				{
+					Out.Log(string.Format("[地图信息识别] 回到悬赏面板"));
 					SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_BOUNTY_BOARD, SceneMgr.TransitionHandlerType.NEXT_SCENE, null, null);
 					return;
 				}
 			}
 			if (Main.IsTreasure(lettuceMap))
 			{
-				Out.Log("选择第一个宝藏");
+				Out.Log(string.Format("[地图信息识别] 选择第一个宝藏"));
 				Network.Get().MakeMercenariesMapTreasureSelection(0);
 			}
 			if (Main.IsVisitor(lettuceMap))
 			{
-				Out.Log("选择第一个来访者");
+				Out.Log(string.Format("[地图信息识别] 选择第一个来访者"));
 				Network.Get().MakeMercenariesMapVisitorSelection(0);
 			}
 		}
@@ -243,14 +245,14 @@ namespace Mercenary
 			int item = nextNode.Item2;
 			if (lettuceMapNode == null)
 			{
-				Out.Log("[节点选择] 没有找到对应的节点 重开");
+				Out.Log("[节点选择] 没有找到神秘节点 重开");
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;
 			}
 			if (!Main.NeedCompleted() && item > 2)
 			{
-				Out.Log("[节点选择] 通往神秘人的节点数大于2 重开");
+				Out.Log(string.Format("[节点选择] 通往神秘节点数{0}大于2 重开", item));
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;
@@ -262,10 +264,12 @@ namespace Mercenary
 
 				if (HsGameUtils.IsMysteryNode(lettuceMapNode.NodeTypeId))
 				{
+					Out.Log("[节点选择] 神秘节点 回到村庄刷新缓存");
 					HsGameUtils.GotoSceneVillage();
 					Main.Sleep(2);
 					return;
 				}
+				Out.Log("[节点选择] 非怪物节点 进到下个节点");
 				lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
 			}
 			GameMgr gameMgr = GameMgr.Get();
@@ -276,6 +280,7 @@ namespace Mercenary
 			long deckId = 0L;
 			string aiDeck = null;
 			int? lettuceMapNodeId = new int?((int)lettuceMapNode.NodeId);
+			Out.Log("[节点选择] 怪物节点 进入战斗");
 			gameMgr.FindGame(gameType, formatType, missionId, brawlLibraryItemId, deckId, aiDeck, null, false, null, lettuceMapNodeId, 0L, GameType.GT_UNKNOWN);
 		}
 
@@ -284,7 +289,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "TryAutoNextSelectCoin")]
 		public static void _PostTryAutoNextSelectCoin()
 		{
-			Out.Log("TryAutoNextSelectCoin");
+			Out.Log("[节点选择] TryAutoNextSelectCoin");
 			if (!Main.isRunning)
 			{
 				return;
@@ -318,6 +323,7 @@ namespace Mercenary
 		public static bool _PreShowMercenariesRewards(ref bool autoOpenChest, ref NetCache.ProfileNoticeMercenariesRewards rewardNotice, Action doneCallback = null)
 		{
 			Out.Log("显示奖励");
+			Main.Sleep(10);
 			if (!Main.isRunning)
 			{
 				return true;
@@ -345,7 +351,6 @@ namespace Mercenary
 			{
 				return;
 			}
-			Main.Sleep(3);
 			boxData.m_RewardPackage.TriggerPress();
 		}
 
@@ -359,7 +364,6 @@ namespace Mercenary
 			{
 				return;
 			}
-			Main.Sleep(2);
 			RewardBoxesDisplay.Get().m_DoneButton.TriggerPress();
 			RewardBoxesDisplay.Get().m_DoneButton.TriggerRelease();
 		}
