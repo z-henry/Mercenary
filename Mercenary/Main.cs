@@ -74,6 +74,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(RewardTrackManager), "UpdateStatus")]
 		public static bool _PreUpdateStatus(int rewardTrackId, int level, RewardTrackManager.RewardStatus status, bool forPaidTrack, List<RewardItemOutput> rewardItemOutput)
 		{
+			//隐藏通行证奖励
 			if (!Main.isRunning || status != RewardTrackManager.RewardStatus.GRANTED)
 			{
 				return true;
@@ -87,6 +88,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "OnVisitorSelectionResponseReceived")]
 		public static bool _PreOnVisitorSelectionResponseReceived()
 		{
+			//拦截来访者画面
 			if (!Main.isRunning)
 			{
 				return true;
@@ -103,6 +105,8 @@ namespace Mercenary
 		[HarmonyPatch(typeof(EndGameScreen), "ShowMercenariesExperienceRewards")]
 		public static bool _PreIntercept()
 		{
+			//拦截显示点击开始画面
+			//拦截佣兵升级界面
 			return !Main.isRunning;
 		}
 
@@ -111,6 +115,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(HearthstoneApplication), "OnApplicationFocus")]
 		public static bool _PreFocus(bool focus)
 		{
+			//禁止窗口失去焦点
 			return !Main.isRunning;
 		}
 
@@ -119,7 +124,8 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMissionEntity), "ShiftPlayZoneForGamePhase")]
 		public static void _PostShiftPlayZoneForGamePhase(int phase)
 		{
-// 			Out.Log("_PostShiftPlayZoneForGamePhase phase " + phase.ToString());
+			//游戏阶段
+			// 			Out.Log("_PostShiftPlayZoneForGamePhase phase " + phase.ToString());
 			Main.phaseID = phase;
 		}
 
@@ -130,6 +136,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(Network), "OnFatalBnetError")]
 		public static bool _PreError()
 		{
+			//拦截重连
 			Out.Log("_PreError");
 			if (!Main.isRunning)
 			{
@@ -144,6 +151,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(GraphicsResolution), "IsAspectRatioWithinLimit")]
 		public static bool _PreIsAspectRatioWithinLimit(ref bool __result, int width, int height, bool isWindowedMode)
 		{
+			//"拦截分辨率大小限制";
 			if (!Main.isRunning)
 			{
 				return true;
@@ -157,6 +165,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(AlertPopup), "Show")]
 		public static bool _PreAlertPopupShow()
 		{
+			//拦截错误提示
 			Out.Log("AlertPopup.Show");
 			return !Main.isRunning;
 		}
@@ -182,6 +191,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "DisplayNewlyGrantedAnomalyCards")]
 		public static bool _PreDisplayNewlyGrantedAnomalyCards(global::LettuceMap lettuceMap, int completedNodeId)
 		{
+			//"弹出揭示卡"
 			Out.Log("_PreDisplayNewlyGrantedAnomalyCards");
 			return !Main.isRunning;
 		}
@@ -260,17 +270,19 @@ namespace Mercenary
 			while (!HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
 			{
 				Network.Get().ChooseLettuceMapNode(lettuceMapNode.NodeId);
+				Out.Log(string.Format("[节点选择] 选中非怪物节点[NID:{0}]", lettuceMapNode.NodeId));
 				lettuceMapNode.NodeState_ = PegasusLettuce.LettuceMapNode.NodeState.COMPLETE;
 
 				if (HsGameUtils.IsMysteryNode(lettuceMapNode.NodeTypeId))
 				{
-					Out.Log("[节点选择] 神秘节点 回到村庄刷新缓存");
+					Out.Log(string.Format("[节点选择] 神秘节点[NID:{0}] 回到村庄刷新缓存", lettuceMapNode.NodeTypeId));
 					HsGameUtils.GotoSceneVillage();
 					Main.Sleep(2);
 					return;
 				}
-				Out.Log("[节点选择] 非怪物节点 进到下个节点");
+				Out.Log("");
 				lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
+				Out.Log(string.Format("[节点选择] 选择下个节点[NID:{0}]", lettuceMapNode.NodeTypeId));
 			}
 			GameMgr gameMgr = GameMgr.Get();
 			GameType gameType = GameType.GT_MERCENARIES_PVE;
@@ -280,7 +292,7 @@ namespace Mercenary
 			long deckId = 0L;
 			string aiDeck = null;
 			int? lettuceMapNodeId = new int?((int)lettuceMapNode.NodeId);
-			Out.Log("[节点选择] 怪物节点 进入战斗");
+			Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}] 进入战斗", lettuceMapNode.NodeTypeId));
 			gameMgr.FindGame(gameType, formatType, missionId, brawlLibraryItemId, deckId, aiDeck, null, false, null, lettuceMapNodeId, 0L, GameType.GT_UNKNOWN);
 		}
 
