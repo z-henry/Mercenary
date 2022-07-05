@@ -275,14 +275,13 @@ namespace Mercenary
 
 				if (HsGameUtils.IsMysteryNode(lettuceMapNode.NodeTypeId))
 				{
-					Out.Log(string.Format("[节点选择] 神秘节点[NID:{0}] 回到村庄刷新缓存", lettuceMapNode.NodeTypeId));
+					Out.Log(string.Format("[节点选择] 神秘节点[NID:{0}] 回到村庄刷新缓存", lettuceMapNode.NodeId));
 					HsGameUtils.GotoSceneVillage();
 					Main.Sleep(2);
 					return;
 				}
-				Out.Log("");
 				lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
-				Out.Log(string.Format("[节点选择] 选择下个节点[NID:{0}]", lettuceMapNode.NodeTypeId));
+				Out.Log(string.Format("[节点选择] 选择下个节点[NID:{0}]", lettuceMapNode.NodeId));
 			}
 			GameMgr gameMgr = GameMgr.Get();
 			GameType gameType = GameType.GT_MERCENARIES_PVE;
@@ -292,7 +291,7 @@ namespace Mercenary
 			long deckId = 0L;
 			string aiDeck = null;
 			int? lettuceMapNodeId = new int?((int)lettuceMapNode.NodeId);
-			Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}] 进入战斗", lettuceMapNode.NodeTypeId));
+			Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}] 进入战斗", lettuceMapNode.NodeId));
 			gameMgr.FindGame(gameType, formatType, missionId, brawlLibraryItemId, deckId, aiDeck, null, false, null, lettuceMapNodeId, 0L, GameType.GT_UNKNOWN);
 		}
 
@@ -301,11 +300,17 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "TryAutoNextSelectCoin")]
 		public static void _PostTryAutoNextSelectCoin()
 		{
-			Out.Log("[节点选择] TryAutoNextSelectCoin");
+			Out.Log("[节点选择]");
 			if (!Main.isRunning)
 			{
 				return;
 			}
+			if (GameMgr.Get().IsFindingGame())
+			{
+				Out.Log("[节点选择] 队列中");
+				return;
+			}
+
 			Main.ResetIdle();
 			if (Main.modeConf.Value == "全自动接任务做任务")
 			{

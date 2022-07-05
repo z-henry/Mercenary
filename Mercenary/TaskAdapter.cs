@@ -197,6 +197,14 @@ namespace Mercenary
 				}));
 				return;
 			}
+			if (title.Contains("喷吐火焰"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "清理巢穴", 0)
+				}));
+				return;
+			}
 			if (title.Contains("雪球滚滚"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "3-2", new MercenaryEntity[]
