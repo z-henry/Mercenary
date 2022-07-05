@@ -218,10 +218,6 @@ namespace Mercenary
 			if (Main.IsTreasure(lettuceMap))
 			{
 				Out.Log("选择第一个宝藏");
-				foreach (int num in lettuceMap.PendingTreasureSelection.TreasureOptions)
-				{
-					Out.Log("宝藏： " + num.ToString());
-				}
 				Network.Get().MakeMercenariesMapTreasureSelection(0);
 			}
 			if (Main.IsVisitor(lettuceMap))
@@ -247,14 +243,14 @@ namespace Mercenary
 			int item = nextNode.Item2;
 			if (lettuceMapNode == null)
 			{
-				Out.Log("没有找到对应的node重开");
+				Out.Log("[节点选择] 没有找到对应的节点 重开");
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;
 			}
 			if (!Main.NeedCompleted() && item > 2)
 			{
-				Out.Log("节点太多重开");
+				Out.Log("[节点选择] 通往神秘人的节点数大于2 重开");
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;
@@ -262,6 +258,8 @@ namespace Mercenary
 			while (!HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
 			{
 				Network.Get().ChooseLettuceMapNode(lettuceMapNode.NodeId);
+				lettuceMapNode.NodeState_ = PegasusLettuce.LettuceMapNode.NodeState.COMPLETE;
+
 				if (HsGameUtils.IsMysteryNode(lettuceMapNode.NodeTypeId))
 				{
 					HsGameUtils.GotoSceneVillage();

@@ -84,7 +84,7 @@ namespace Mercenary
 				}));
 				return;
 			}
-			if (title.Contains("王者祝福"))
+			if (title.Contains("王者祝福") || title.Contains("银色北伐军"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
@@ -100,12 +100,12 @@ namespace Mercenary
 				}));
 				return;
 			}
-			if (title.Contains("一举两得"))
+			if (title.Contains("一举两得") || title.Contains("蹈踏火焰"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "烈焰猛击", 0),
-					TaskAdapter.GetMercenary(MercConst.玉珑, null, 0)					
+					TaskAdapter.GetMercenary(MercConst.玉珑, null, 0)
 				}));
 				return;
 			}
