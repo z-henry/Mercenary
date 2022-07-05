@@ -100,6 +100,14 @@ namespace Mercenary
 				}));
 				return;
 			}
+			if (title.Contains("他们的力量属于我"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "红龙女王的计策", 0)
+				}));
+				return;
+			}
 			if (title.Contains("一举两得") || title.Contains("蹈踏火焰"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
