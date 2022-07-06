@@ -339,7 +339,7 @@ namespace Mercenary
 				}));
 				return;
 			}
-			if (title.Contains("喷吐火焰"))
+			if (title.Contains("喷吐火焰") || title.Contains("团本首领下场"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
@@ -465,6 +465,15 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉,"冰雹", EquipConst.刺骨寒风)
+				}));
+				return;
+			}
+			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("火焰伤害"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.安东尼达斯, null, 0)
 				}));
 				return;
 			}
