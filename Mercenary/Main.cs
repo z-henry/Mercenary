@@ -15,7 +15,7 @@ using UnityEngine;
 namespace Mercenary
 {
 	// Token: 0x02000004 RID: 4
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.1")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.2")]
 	public class Main : BaseUnityPlugin
 	{
 		// Token: 0x06000005 RID: 5 RVA: 0x00002274 File Offset: 0x00000474
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("插件版本[改] 3.0.1"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("插件版本[改] 3.0.2"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});

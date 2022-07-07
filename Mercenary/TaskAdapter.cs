@@ -270,7 +270,7 @@ namespace Mercenary
 			//迦顿 任务10 任务14
 			if (title.Contains("侵略如火") || title.Contains("翻腾火流"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "热力迸发", 0),
 					TaskAdapter.GetMercenary(MercConst.安东尼达斯, "火球术", 0),
@@ -342,7 +342,7 @@ namespace Mercenary
 			}
 			//老瞎眼 任务9
 			if (title.Contains("鱼类学"))
-            {
+			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "H1-1", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId,"邪鳍导航员",EquipConst.导航员的护符)
@@ -522,7 +522,7 @@ namespace Mercenary
 			}
 			//龙造成伤害
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用龙造成"))
-            {
+			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
@@ -606,7 +606,7 @@ namespace Mercenary
 				LettuceMercenary mercenary = HsGameUtils.GetMercenary(mercenaryId);
 				if (desc.Contains("30级时") && !mercenary.IsMaxLevel())
 				{
-					tasks.Add(TaskAdapter.GetTask(taskId ,10 , new MercenaryEntity[]
+					tasks.Add(TaskAdapter.GetTask(taskId, 10, new MercenaryEntity[]
 					{
 						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));
