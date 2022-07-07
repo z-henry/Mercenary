@@ -175,7 +175,7 @@ namespace Mercenary
 			new Map(190, "H8-1"),
 			new Map(181, "H8-2"),
 			new Map(182, "H8-3"),
-			new Map(212, "H8-4"),
+			new Map(213, "H8-4"),
 			new Map(205, "H8-5"),
 			new Map(211, "H8-6"),
 			new Map(199, "H8-7"),
