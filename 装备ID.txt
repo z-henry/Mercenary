@@ -1,4 +1,4 @@
-public const int 光明使者 = 0;
+		public const int 光明使者 = 0;
 		public const int 微光肩甲 = 1;
 		public const int 牺牲圣契 = 2;
 		public const int 亚煞极印记 = 0;

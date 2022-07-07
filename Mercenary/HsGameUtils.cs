@@ -38,14 +38,23 @@ namespace Mercenary
 		{
 			return Array.IndexOf<uint>(new uint[]
 			{
-				0U,
+				0U,//未知
 				14U,
-				18U,
+				18U,//传送门
 				19U,
 				23U,
 				44U
 			}, nodeType) > -1;
 		}
+
+		public static bool IsUnknownMysteryNode(uint nodeType)
+		{
+			return Array.IndexOf<uint>(new uint[]
+			{
+				0U//未知
+			}, nodeType) > -1;
+		}
+
 
 		// Token: 0x06000037 RID: 55 RVA: 0x000041F4 File Offset: 0x000023F4
 		public static bool IsJumpNode(uint nodeType)
@@ -64,10 +73,19 @@ namespace Mercenary
 		{
 			return Array.IndexOf<uint>(new uint[]
 			{
-				1U,
+				1U,//蓝
 				2U,
-				3U,
-				22U
+				3U,//boss
+				22U//红
+			}, nodeType) > -1;
+		}
+
+		public static bool IsSep(uint nodeType)
+		{
+			return Array.IndexOf<uint>(new uint[]
+			{
+				45U,//医者
+				30U,//斗士
 			}, nodeType) > -1;
 		}
 
