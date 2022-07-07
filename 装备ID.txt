@@ -1,4 +1,3 @@
-		//这是我的修改，但是没有修改
 		public const int 光明使者 = 0;
 		public const int 微光肩甲 = 1;
 		public const int 牺牲圣契 = 2;
