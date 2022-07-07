@@ -11,6 +11,7 @@ using PegasusLettuce;
 using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
+using System.Threading;
 
 namespace Mercenary
 {
@@ -250,6 +251,13 @@ namespace Mercenary
 				return;
 			}
 			List<LettuceMapNode> nodes = NetCache.Get().GetNetObject<NetCache.NetCacheLettuceMap>().Map.Nodes;
+			foreach (LettuceMapNode node in nodes)
+			{
+				string childrendid = "";
+				foreach (uint childid in node.ChildNodeIds)
+					childrendid += (childid.ToString() + ", ");
+				Out.Log(string.Format("[地图结构] [NID:{0}][NTYPE:{1}][NSTATE:{2}][CID:{3}]", node.NodeId, node.NodeTypeId, node.NodeState_, childrendid));
+			}
 			ValueTuple<LettuceMapNode, int> nextNode = Main.GetNextNode(nodes.FindAll((LettuceMapNode n) => n.NodeState_ == LettuceMapNode.NodeState.UNLOCKED), nodes);
 			LettuceMapNode lettuceMapNode = nextNode.Item1;
 			int item = nextNode.Item2;
@@ -267,21 +275,45 @@ namespace Mercenary
 				Main.Sleep(2);
 				return;
 			}
+			int countJump = 0;
 			while (!HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
 			{
 				Network.Get().ChooseLettuceMapNode(lettuceMapNode.NodeId);
-				Out.Log(string.Format("[节点选择] 选中非怪物节点[NID:{0}]", lettuceMapNode.NodeId));
+				Thread.Sleep(4000);
+				++countJump;
+				Out.Log(string.Format("[节点选择] 选中非怪物节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
 				lettuceMapNode.NodeState_ = PegasusLettuce.LettuceMapNode.NodeState.COMPLETE;
 
-				if (HsGameUtils.IsMysteryNode(lettuceMapNode.NodeTypeId))
+				if (HsGameUtils.IsUnknownMysteryNode(lettuceMapNode.NodeTypeId))
 				{
-					Out.Log(string.Format("[节点选择] 神秘节点[NID:{0}] 回到村庄刷新缓存", lettuceMapNode.NodeId));
+					Out.Log(string.Format("[节点选择] 神秘节点[NID:{0}][NTYPE:{1}] 回到村庄刷新缓存", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
 					HsGameUtils.GotoSceneVillage();
-					Main.Sleep(2);
+					Main.Sleep(5);
 					return;
 				}
-				lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
-				Out.Log(string.Format("[节点选择] 选择下个节点[NID:{0}]", lettuceMapNode.NodeId));
+				if (countJump > 1)
+				{
+					Out.Log(string.Format("[节点选择] 经历连续两个非怪物节点 回到村庄刷新缓存"));
+					HsGameUtils.GotoSceneVillage();
+					Main.Sleep(5);
+					return;
+				}
+
+				if (HsGameUtils.IsJumpNode(lettuceMapNode.NodeTypeId))
+				{
+					lettuceMapNode = Main._GetNextNode(new List<uint>(new uint[] { nodes.Last().NodeId }), nodes);
+					if (lettuceMapNode == null)
+						Out.Log(string.Format("[节点选择] 通过传送门节点 重开"));
+					else
+						Out.Log(string.Format("[节点选择] 通过传送门节点 选择最后一个节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
+
+				}
+				else
+				{
+					lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
+					Out.Log(string.Format("[节点选择] 选择下个节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
+				}
+
 			}
 			GameMgr gameMgr = GameMgr.Get();
 			GameType gameType = GameType.GT_MERCENARIES_PVE;
@@ -291,7 +323,7 @@ namespace Mercenary
 			long deckId = 0L;
 			string aiDeck = null;
 			int? lettuceMapNodeId = new int?((int)lettuceMapNode.NodeId);
-			Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}] 进入战斗", lettuceMapNode.NodeId));
+			Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}][NTYPE:{1}] 进入战斗", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
 			gameMgr.FindGame(gameType, formatType, missionId, brawlLibraryItemId, deckId, aiDeck, null, false, null, lettuceMapNodeId, 0L, GameType.GT_UNKNOWN);
 		}
 
@@ -305,13 +337,16 @@ namespace Mercenary
 			{
 				return;
 			}
+			Out.Log((GameMgr.Get() == null).ToString());
+			Out.Log(GameMgr.Get().GetGameType().ToString());
+
 			if (GameMgr.Get().IsFindingGame())
 			{
 				Out.Log("[节点选择] 队列中");
 				return;
 			}
-
 			Main.ResetIdle();
+
 			if (Main.modeConf.Value == "全自动接任务做任务")
 			{
 				TaskUtils.UpdateTask();
@@ -603,8 +638,7 @@ namespace Mercenary
 			#region 查找比赛
 			if (gameMgr.IsFindingGame())
 			{
-				Out.Log("[状态] 查找比赛，休息3秒");
-				Main.Sleep(3);
+				Out.Log("[状态] 查找比赛");
 				return;
 			}
 			#endregion
@@ -989,7 +1023,8 @@ namespace Mercenary
 				if (Main.phaseID == 1 && EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_YOUR_TURN)
 				{
 					InputManager.Get().DoEndTurnButton();
-					Out.Log("[对局中] 上怪");
+					Out.Log("[对局中] 上怪，休息5秒");
+					Sleep(5);
 					return;
 				}
 				if (Main.phaseID == 2)

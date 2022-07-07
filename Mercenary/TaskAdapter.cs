@@ -779,7 +779,6 @@ namespace Mercenary
 			{ "雪球", EquipConst.冰雪之王的遮蔽 },
 			{ "先祖勾拳", EquipConst.迅捷图腾 },
 			{ "坚韧光环", EquipConst.雷霆饰带 },
-			{ "大地践踏", EquipConst.重生 },
 			{ "远征军打击", EquipConst.黎明之锤 },
 			{ "嘲讽", EquipConst.裁决秘典 },
 			{ "光明圣印", EquipConst.圣光秘典 },
