@@ -96,7 +96,8 @@ namespace Mercenary
 			{
 				if (!string.IsNullOrEmpty(mercenaryEntity.Skill))
 				{
-					list.Add(mercenaryEntity.Skill, mercenaryEntity.TargetType);
+					if (!list.ContainsKey(mercenaryEntity.Skill))
+						list.Add(mercenaryEntity.Skill, mercenaryEntity.TargetType);
 				}
 			}
 			return list;

@@ -241,16 +241,24 @@ namespace Mercenary
 		}
 
 		// Token: 0x06000013 RID: 19 RVA: 0x000027A8 File Offset: 0x000009A8
-		private static void SelectNextNode()
+		private static void SelectNextNode(LettuceMap map)
 		{
-			if (modeConf.Value == "挂机收菜" && readyToHang == false)
+			Out.Log("[节点选择]");
+			Main.ResetIdle();
+
+			if (Main.modeConf.Value == "全自动接任务做任务")
 			{
-				Out.Log("挂机收菜 只刷一关");
+				TaskUtils.UpdateTask();
+			}
+			if (modeConf.Value == "挂机收菜" && map.NodeData[0].NodeState_ == LettuceMapNode.NodeState.COMPLETE)
+			{
+				readyToHang = true;
+				Out.Log("挂机收菜 只刷一关 下局战斗将写入收菜时间");
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;
 			}
-			List<LettuceMapNode> nodes = NetCache.Get().GetNetObject<NetCache.NetCacheLettuceMap>().Map.Nodes;
+			List<LettuceMapNode> nodes = map.NodeData;
 			foreach (LettuceMapNode node in nodes)
 			{
 				string childrendid = "";
@@ -275,80 +283,55 @@ namespace Mercenary
 				Main.Sleep(2);
 				return;
 			}
-			int countJump = 0;
-			while (!HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
+			if (HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
 			{
-				Network.Get().ChooseLettuceMapNode(lettuceMapNode.NodeId);
-				++countJump;
-				Out.Log(string.Format("[节点选择] 选中非怪物节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
-// 				Thread.Sleep(2000);//此处可能导致ui无响应，暂时没有别的办法
-
-				if (HsGameUtils.IsUnknownMysteryNode(lettuceMapNode.NodeTypeId))
-				{
-					Out.Log(string.Format("[节点选择] 神秘节点[NID:{0}][NTYPE:{1}] 回到村庄刷新缓存", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
-					Main.Sleep(10);
-					HsGameUtils.GotoSceneVillage();
-					return;
-				}
-				if (countJump > 1)
-				{
-					Out.Log(string.Format("[节点选择] 经历连续两个非怪物节点 回到村庄刷新缓存"));
-					Main.Sleep(10);
-					HsGameUtils.GotoSceneVillage();
-					return;
-				}
-
-				if (HsGameUtils.IsJumpNode(lettuceMapNode.NodeTypeId))
-					lettuceMapNode = Main._GetNextNode(new List<uint>(new uint[] { nodes.Last().NodeId }), nodes);
-				else
-					lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
-
-				if (lettuceMapNode == null)
-				{
-					Out.Log(string.Format("[节点选择] 神秘节点已过或没有目标节点"));
-					Network.Get().RetireLettuceMap();
-					Main.Sleep(2);
-					return;
-				}
-				else
-					Out.Log(string.Format("[节点选择] 选择下个节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
-
+				GameMgr gameMgr = GameMgr.Get();
+				GameType gameType = GameType.GT_MERCENARIES_PVE;
+				FormatType formatType = FormatType.FT_WILD;
+				int missionId = 3790;
+				int brawlLibraryItemId = 0;
+				long deckId = 0L;
+				string aiDeck = null;
+				int? lettuceMapNodeId = new int?((int)lettuceMapNode.NodeId);
+				Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}][NTYPE:{1}] 进入战斗", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
+				gameMgr.FindGame(gameType, formatType, missionId, brawlLibraryItemId, deckId, aiDeck, null, false, null, lettuceMapNodeId, 0L, GameType.GT_UNKNOWN);
 			}
-			GameMgr gameMgr = GameMgr.Get();
-			GameType gameType = GameType.GT_MERCENARIES_PVE;
-			FormatType formatType = FormatType.FT_WILD;
-			int missionId = 3790;
-			int brawlLibraryItemId = 0;
-			long deckId = 0L;
-			string aiDeck = null;
-			int? lettuceMapNodeId = new int?((int)lettuceMapNode.NodeId);
-			Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}][NTYPE:{1}] 进入战斗", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
-			gameMgr.FindGame(gameType, formatType, missionId, brawlLibraryItemId, deckId, aiDeck, null, false, null, lettuceMapNodeId, 0L, GameType.GT_UNKNOWN);
+			else
+			{
+				Out.Log(string.Format("[节点选择] 普通怪物节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
+				Network.Get().ChooseLettuceMapNode(lettuceMapNode.NodeId);
+			}
 		}
 
 		// Token: 0x06000014 RID: 20 RVA: 0x000028BC File Offset: 0x00000ABC
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "TryAutoNextSelectCoin")]
-		public static void _PostTryAutoNextSelectCoin()
+		public static void _PostTryAutoNextSelectCoin(LettuceMapDisplay __instance)
 		{
-			Out.Log("[节点选择]");
+			
 			if (!Main.isRunning)
 			{
 				return;
 			}
-			if (GameMgr.Get().IsFindingGame())
+			Out.Log("TryAutoNextSelectCoin");
+			LettuceMap map = (global::LettuceMap)Traverse.Create(__instance).Field("m_lettuceMap").GetValue();
+			Main.SelectNextNode(map);
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(LettuceMapDisplay), "OnLettuceMapChooseNodeResponseReceived")]
+		public static void _PostOnLettuceMapChooseNodeResponseReceived()
+		{
+			Out.Log("OnLettuceMapChooseNodeResponseReceived");
+			LettuceMapChooseNodeResponse lettuceMapChooseNodeResponse = Network.Get().GetLettuceMapChooseNodeResponse();
+			if (lettuceMapChooseNodeResponse == null ||
+				!lettuceMapChooseNodeResponse.Success)
 			{
-				Out.Log("[节点选择] 队列中");
+				Out.Log(string.Format("[节点选择] 应答失败，返回村庄重试"));
+				Main.Sleep(10);
+				HsGameUtils.GotoSceneVillage();
 				return;
 			}
-
-			Main.ResetIdle();
-
-			if (Main.modeConf.Value == "全自动接任务做任务")
-			{
-				TaskUtils.UpdateTask();
-			}
-			Main.SelectNextNode();
 		}
 
 		// Token: 0x06000015 RID: 21 RVA: 0x000028F8 File Offset: 0x00000AF8
@@ -745,11 +728,6 @@ namespace Mercenary
 				lettuceSceneTransitionPayload.m_SelectedBountySet = record.BountySetRecord;
 				lettuceSceneTransitionPayload.m_IsHeroic = record.Heroic;
 				Out.Log(string.Format("[状态] 目前处于队伍选择，选择[MAPID:{0}]", mapId));
-				if (Main.modeConf.Value == "挂机收菜")
-				{
-					readyToHang = true;
-					Out.Log(string.Format("[状态] 下局战斗将写入收菜时间"));
-				}
 				SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_MAP, SceneMgr.TransitionHandlerType.CURRENT_SCENE, null, lettuceSceneTransitionPayload);
 				return;
 			}
@@ -1141,17 +1119,6 @@ namespace Mercenary
 				list.Add(mercenary);
 			}
 			return list;
-		}
-
-		// Token: 0x06000029 RID: 41 RVA: 0x00003E9C File Offset: 0x0000209C
-		private static LettuceMapNode _GetNextNode(List<uint> nodeIds, List<LettuceMapNode> allNodes)
-		{
-			List<LettuceMapNode> list = new List<LettuceMapNode>();
-			foreach (uint index in nodeIds)
-			{
-				list.Add(allNodes[(int)index]);
-			}
-			return Main.GetNextNode(list, allNodes).Item1;
 		}
 
 		// Token: 0x0600002A RID: 42 RVA: 0x00003F04 File Offset: 0x00002104
