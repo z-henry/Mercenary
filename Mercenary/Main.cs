@@ -16,7 +16,7 @@ using System.Threading;
 namespace Mercenary
 {
 	// Token: 0x02000004 RID: 4
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.2")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.3")]
 	public class Main : BaseUnityPlugin
 	{
 		// Token: 0x06000005 RID: 5 RVA: 0x00002274 File Offset: 0x00000474
@@ -26,7 +26,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("插件版本[改] 3.0.2"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("插件版本[改] 3.0.3"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -279,40 +279,39 @@ namespace Mercenary
 			while (!HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
 			{
 				Network.Get().ChooseLettuceMapNode(lettuceMapNode.NodeId);
-				Thread.Sleep(4000);
 				++countJump;
 				Out.Log(string.Format("[节点选择] 选中非怪物节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
-				lettuceMapNode.NodeState_ = PegasusLettuce.LettuceMapNode.NodeState.COMPLETE;
+// 				Thread.Sleep(2000);//此处可能导致ui无响应，暂时没有别的办法
 
 				if (HsGameUtils.IsUnknownMysteryNode(lettuceMapNode.NodeTypeId))
 				{
 					Out.Log(string.Format("[节点选择] 神秘节点[NID:{0}][NTYPE:{1}] 回到村庄刷新缓存", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
+					Main.Sleep(10);
 					HsGameUtils.GotoSceneVillage();
-					Main.Sleep(5);
 					return;
 				}
 				if (countJump > 1)
 				{
 					Out.Log(string.Format("[节点选择] 经历连续两个非怪物节点 回到村庄刷新缓存"));
+					Main.Sleep(10);
 					HsGameUtils.GotoSceneVillage();
-					Main.Sleep(5);
 					return;
 				}
 
 				if (HsGameUtils.IsJumpNode(lettuceMapNode.NodeTypeId))
-				{
 					lettuceMapNode = Main._GetNextNode(new List<uint>(new uint[] { nodes.Last().NodeId }), nodes);
-					if (lettuceMapNode == null)
-						Out.Log(string.Format("[节点选择] 通过传送门节点 重开"));
-					else
-						Out.Log(string.Format("[节点选择] 通过传送门节点 选择最后一个节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
+				else
+					lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
 
+				if (lettuceMapNode == null)
+				{
+					Out.Log(string.Format("[节点选择] 神秘节点已过或没有目标节点"));
+					Network.Get().RetireLettuceMap();
+					Main.Sleep(2);
+					return;
 				}
 				else
-				{
-					lettuceMapNode = Main._GetNextNode(lettuceMapNode.ChildNodeIds, nodes);
 					Out.Log(string.Format("[节点选择] 选择下个节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
-				}
 
 			}
 			GameMgr gameMgr = GameMgr.Get();
@@ -337,9 +336,6 @@ namespace Mercenary
 			{
 				return;
 			}
-			Out.Log((GameMgr.Get() == null).ToString());
-			Out.Log(GameMgr.Get().GetGameType().ToString());
-
 			if (GameMgr.Get().IsFindingGame())
 			{
 				Out.Log("[节点选择] 队列中");
