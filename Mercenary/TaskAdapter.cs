@@ -87,6 +87,17 @@ namespace Mercenary
 				}));
 				return;
 			}
+			//洛卡拉 任务9 任务12
+			if (title.Contains("新的任务") || title.Contains("毒性猛烈"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "部族战争", 0),
+					TaskAdapter.GetMercenary(MercConst.剑圣萨穆罗, null, 0)
+				}));
+				return;
+			}
+
 			//拉索利安 任务12
 			if (title.Contains("战场主宰"))
 			{
