@@ -4,10 +4,10 @@ using HsMercenaryStrategy;
 
 namespace Mercenary
 {
-	// Token: 0x02000002 RID: 2
+	
 	public class DefaultStrategy : IStrategy
 	{
-		// Token: 0x06000001 RID: 1 RVA: 0x00002050 File Offset: 0x00000250
+		
 		public List<BattleTarget> GetBattleTargets(List<HsMercenaryStrategy.Mercenary> mercenaries, List<Target> targets_opposite, List<Target> targets_friendly)
 		{
 // 			Out.Log("default" + targets_opposite.Count.ToString());
@@ -66,16 +66,16 @@ namespace Mercenary
 			return list;
 		}
 
-		// Token: 0x06000002 RID: 2 RVA: 0x0000222C File Offset: 0x0000042C
+		
 		public string Name()
 		{
 			return "_Sys_Default";
 		}
 
-		// Token: 0x04000001 RID: 1
+		
 		public const string DefaultName = "_Sys_Default";
 
-		// Token: 0x04000002 RID: 2
+		
 		private static readonly List<string> FirstAbilityName = new List<string>
 		{
 			"地狱火",

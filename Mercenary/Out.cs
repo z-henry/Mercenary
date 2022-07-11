@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Mercenary
 {
-	// Token: 0x02000006 RID: 6
+	
 	public static class Out
 	{
-		// Token: 0x06000031 RID: 49 RVA: 0x0000417B File Offset: 0x0000237B
+		
 		public static void Log(string log)
 		{
 			string errorLogFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
@@ -23,7 +23,7 @@ namespace Mercenary
 			swLogFile.Dispose();
 		}
 
-		// Token: 0x06000032 RID: 50 RVA: 0x0000417D File Offset: 0x0000237D
+		
 		public static void UI(string log)
 		{
 			UIStatus.Get().AddInfo(log);

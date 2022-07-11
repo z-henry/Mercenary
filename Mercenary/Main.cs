@@ -14,25 +14,24 @@ using UnityEngine;
 using System.Threading;
 
 namespace Mercenary
-{
-	// Token: 0x02000004 RID: 4
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.3")]
+{	
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.6")]
 	public class Main : BaseUnityPlugin
 	{
-		// Token: 0x06000005 RID: 5 RVA: 0x00002274 File Offset: 0x00000474
+		
 		private void OnGUI()
 		{
 			if (!Main.isRunning)
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("插件版本[改] 3.0.3"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.0.6"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
 		}
 
-		// Token: 0x06000006 RID: 6 RVA: 0x000022D0 File Offset: 0x000004D0
+		
 		private void Awake()
 		{
 			this._harmony.PatchAll(typeof(Main));
@@ -63,14 +62,14 @@ namespace Mercenary
 			
 		}
 
-		// Token: 0x06000007 RID: 7 RVA: 0x00002513 File Offset: 0x00000713
+		
 		private void Start()
 		{
 			Out.Log("启动");
 			Main.isRunning = Main.runningConf.Value;
 		}
 
-		// Token: 0x06000008 RID: 8 RVA: 0x00002534 File Offset: 0x00000734
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(RewardTrackManager), "UpdateStatus")]
 		public static bool _PreUpdateStatus(int rewardTrackId, int level, RewardTrackManager.RewardStatus status, bool forPaidTrack, List<RewardItemOutput> rewardItemOutput)
@@ -84,7 +83,7 @@ namespace Mercenary
 			return false;
 		}
 
-		// Token: 0x06000009 RID: 9 RVA: 0x00002552 File Offset: 0x00000752
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "OnVisitorSelectionResponseReceived")]
 		public static bool _PreOnVisitorSelectionResponseReceived()
@@ -98,7 +97,7 @@ namespace Mercenary
 			return false;
 		}
 
-		// Token: 0x0600000A RID: 10 RVA: 0x00002569 File Offset: 0x00000769
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(SplashScreen), "GetRatingsScreenRegion")]
 		[HarmonyPatch(typeof(QuestPopups), "ShowNextQuestNotification")]
@@ -111,7 +110,7 @@ namespace Mercenary
 			return !Main.isRunning;
 		}
 
-		// Token: 0x0600000B RID: 11 RVA: 0x00002569 File Offset: 0x00000769
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HearthstoneApplication), "OnApplicationFocus")]
 		public static bool _PreFocus(bool focus)
@@ -120,7 +119,7 @@ namespace Mercenary
 			return !Main.isRunning;
 		}
 
-		// Token: 0x0600000C RID: 12 RVA: 0x00002575 File Offset: 0x00000775
+		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMissionEntity), "ShiftPlayZoneForGamePhase")]
 		public static void _PostShiftPlayZoneForGamePhase(int phase)
@@ -130,7 +129,7 @@ namespace Mercenary
 			Main.phaseID = phase;
 		}
 
-		// Token: 0x0600000D RID: 13 RVA: 0x00002593 File Offset: 0x00000793
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(DialogManager), "ShowReconnectHelperDialog")]
 		[HarmonyPatch(typeof(ReconnectHelperDialog), "Show")]
@@ -147,7 +146,7 @@ namespace Mercenary
 			return false;
 		}
 
-		// Token: 0x0600000E RID: 14 RVA: 0x000025AE File Offset: 0x000007AE
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(GraphicsResolution), "IsAspectRatioWithinLimit")]
 		public static bool _PreIsAspectRatioWithinLimit(ref bool __result, int width, int height, bool isWindowedMode)
@@ -161,7 +160,7 @@ namespace Mercenary
 			return false;
 		}
 
-		// Token: 0x0600000F RID: 15 RVA: 0x000025BD File Offset: 0x000007BD
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(AlertPopup), "Show")]
 		public static bool _PreAlertPopupShow()
@@ -171,7 +170,7 @@ namespace Mercenary
 			return !Main.isRunning;
 		}
 
-		// Token: 0x06000010 RID: 16 RVA: 0x000025D1 File Offset: 0x000007D1
+		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "ShouldShowVisitorSelection")]
 		public static void PostShouldShowVisitorSelection(PegasusLettuce.LettuceMap map, ref bool __result)
@@ -187,7 +186,7 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x06000011 RID: 17 RVA: 0x00002607 File Offset: 0x00000807
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "DisplayNewlyGrantedAnomalyCards")]
 		public static bool _PreDisplayNewlyGrantedAnomalyCards(global::LettuceMap lettuceMap, int completedNodeId)
@@ -197,7 +196,7 @@ namespace Mercenary
 			return !Main.isRunning;
 		}
 
-		// Token: 0x06000012 RID: 18 RVA: 0x0000261C File Offset: 0x0000081C
+		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(global::LettuceMap), "CreateMapFromProto")]
 		public static void _PostCreateMapFromProto(PegasusLettuce.LettuceMap lettuceMap)
@@ -240,7 +239,7 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x06000013 RID: 19 RVA: 0x000027A8 File Offset: 0x000009A8
+		
 		private static void SelectNextNode(LettuceMap map)
 		{
 			Out.Log("[节点选择]");
@@ -303,7 +302,7 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x06000014 RID: 20 RVA: 0x000028BC File Offset: 0x00000ABC
+		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "TryAutoNextSelectCoin")]
 		public static void _PostTryAutoNextSelectCoin(LettuceMapDisplay __instance)
@@ -334,7 +333,7 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x06000015 RID: 21 RVA: 0x000028F8 File Offset: 0x00000AF8
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(MercenariesSeasonRewardsDialog), "ShowWhenReady")]
 		public static bool _PreShowWhenReady(MercenariesSeasonRewardsDialog __instance)
@@ -349,7 +348,7 @@ namespace Mercenary
 			return false;
 		}
 
-		// Token: 0x06000016 RID: 22 RVA: 0x00002944 File Offset: 0x00000B44
+		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(RewardPopups), "ShowMercenariesRewards")]
 		public static bool _PreShowMercenariesRewards(ref bool autoOpenChest, ref NetCache.ProfileNoticeMercenariesRewards rewardNotice, Action doneCallback = null)
@@ -373,7 +372,7 @@ namespace Mercenary
 			return false;
 		}
 
-		// Token: 0x06000017 RID: 23 RVA: 0x00002983 File Offset: 0x00000B83
+		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(RewardBoxesDisplay), "RewardPackageOnComplete")]
 		public static void _PostRewardPackageOnComplete(RewardBoxesDisplay.RewardBoxData boxData)
@@ -386,7 +385,7 @@ namespace Mercenary
 			boxData.m_RewardPackage.TriggerPress();
 		}
 
-		// Token: 0x06000018 RID: 24 RVA: 0x000029B4 File Offset: 0x00000BB4
+		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(RewardBoxesDisplay), "OnDoneButtonShown")]
 		public static void _PostOnDoneButtonShown(Spell spell, object userData)
@@ -400,19 +399,19 @@ namespace Mercenary
 			RewardBoxesDisplay.Get().m_DoneButton.TriggerRelease();
 		}
 
-		// Token: 0x06000019 RID: 25 RVA: 0x00002A01 File Offset: 0x00000C01
+		
 		private static bool IsTreasure(PegasusLettuce.LettuceMap map)
 		{
 			return map.HasPendingTreasureSelection && map.PendingTreasureSelection.TreasureOptions.Count > 0;
 		}
 
-		// Token: 0x0600001A RID: 26 RVA: 0x00002A20 File Offset: 0x00000C20
+		
 		private static bool IsVisitor(PegasusLettuce.LettuceMap map)
 		{
 			return map.HasPendingVisitorSelection && map.PendingVisitorSelection.VisitorOptions.Count > 0;
 		}
 
-		// Token: 0x0600001B RID: 27 RVA: 0x00002A40 File Offset: 0x00000C40
+		
 		private void AutoChangeTeam()
 		{
 			Out.Log("[队伍编辑]");
@@ -538,13 +537,13 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x0600001C RID: 28 RVA: 0x00002EC8 File Offset: 0x000010C8
+		
 		private static void Sleep(int time)
 		{
 			Main.sleepTime += (float)time;
 		}
 
-		// Token: 0x0600001D RID: 29 RVA: 0x00002ED7 File Offset: 0x000010D7
+		
 		private void GameInit()
 		{
 			if (InactivePlayerKicker.Get() != null)
@@ -555,7 +554,7 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x0600001E RID: 30 RVA: 0x00002EFC File Offset: 0x000010FC
+		
 		private void Update()
 		{
 			if (Input.GetKeyUp(KeyCode.F9))
@@ -776,7 +775,7 @@ namespace Mercenary
 			this.HandlePlay();
 		}
 
-		// Token: 0x0600001F RID: 31 RVA: 0x00003444 File Offset: 0x00001644
+		
 		private void AutoCraft()
 		{
 			if (!Main.autoCraftConf.Value)
@@ -794,7 +793,7 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x06000020 RID: 32 RVA: 0x000034F8 File Offset: 0x000016F8
+		
 		private void AutoUpdateSkill()
 		{
 			Out.Log("[升级技能]");
@@ -805,7 +804,7 @@ namespace Mercenary
 			HsGameUtils.UpdateAllSkill();
 		}
 
-		// Token: 0x06000021 RID: 33 RVA: 0x0000350C File Offset: 0x0000170C
+		
 		private int EnsureMapHasUnlock(int id)
 		{
 			LettuceBountyDbfRecord record = GameDbf.LettuceBounty.GetRecord(id);
@@ -816,7 +815,7 @@ namespace Mercenary
 			return id;
 		}
 
-		// Token: 0x06000022 RID: 34 RVA: 0x00003548 File Offset: 0x00001748
+		
 		private int GetMapId()
 		{
 			int result = 57;
@@ -857,7 +856,7 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x06000023 RID: 35 RVA: 0x00003638 File Offset: 0x00001838
+		
 		private void CheckIdleTime()
 		{
 			Main.idleTime += Time.deltaTime;
@@ -888,20 +887,20 @@ namespace Mercenary
 			}
 		}
 
-		// Token: 0x06000024 RID: 36 RVA: 0x000036EC File Offset: 0x000018EC
+		
 		private static void ResetIdle()
 		{
 			Out.Log("[IDLE] reset");
 			Main.idleTime = 0f;
 		}
 
-		// Token: 0x06000025 RID: 37 RVA: 0x00003702 File Offset: 0x00001902
+		
 		private void OnDestroy()
 		{
 			this._harmony.UnpatchSelf();
 		}
 
-		// Token: 0x06000026 RID: 38 RVA: 0x00003710 File Offset: 0x00001910
+		
 		private void HandlePlay()
 		{
 			if (Main.phaseID == 3)
@@ -1070,7 +1069,7 @@ namespace Mercenary
 			Main.ResetIdle();
 		}
 
-		// Token: 0x06000027 RID: 39 RVA: 0x00003CAC File Offset: 0x00001EAC
+		
 		private List<Target> BuildTargetEntity(Player.Side side)
 		{
 			List<Target> list = new List<Target>();
@@ -1090,7 +1089,7 @@ namespace Mercenary
 			return list;
 		}
 
-		// Token: 0x06000028 RID: 40 RVA: 0x00003D74 File Offset: 0x00001F74
+		
 		private List<HsMercenaryStrategy.Mercenary> BuildDefaultTargetMercenaries()
 		{
 			List<Card> cards = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards();
@@ -1121,7 +1120,7 @@ namespace Mercenary
 			return list;
 		}
 
-		// Token: 0x0600002A RID: 42 RVA: 0x00003F04 File Offset: 0x00002104
+		
 		private static ValueTuple<LettuceMapNode, int> GetNextNode(List<LettuceMapNode> nodes, List<LettuceMapNode> allNodes)
 		{
 			int num = int.MaxValue;
@@ -1142,13 +1141,13 @@ namespace Mercenary
 			return new ValueTuple<LettuceMapNode, int>(null, 0);
 		}
 
-		// Token: 0x0600002B RID: 43 RVA: 0x00003F8C File Offset: 0x0000218C
+		
 		private static bool NeedCompleted()
 		{
 			return Main.modeConf.Value == "自动解锁地图" || Main.modeConf.Value == "刷图" || Main.modeConf.Value == "挂机收菜" || TaskUtils.GetTaskMap() != -1;
 		}
 
-		// Token: 0x0600002C RID: 44 RVA: 0x00003FC8 File Offset: 0x000021C8
+		
 		// 最短路径
 		private static int GetMinNode(LettuceMapNode node, int value, List<LettuceMapNode> nodes)
 		{
@@ -1188,55 +1187,55 @@ namespace Mercenary
 			return Math.Min(minNode, minNode2);
 		}
 
-		// Token: 0x04000008 RID: 8
+		
 		private readonly Harmony _harmony = new Harmony("hs.patch");
 
-		// Token: 0x04000009 RID: 9
+		
 		private static bool isRunning = true;
 
-		// Token: 0x0400000A RID: 10
+		
 		private static ConfigEntry<string> mapConf;
 
-		// Token: 0x0400000B RID: 11
+		
 		private static ConfigEntry<string> teamNameConf;
 
-		// Token: 0x0400000C RID: 12
+		
 		private static ConfigEntry<bool> autoUpdateSkillConf;
 
-		// Token: 0x0400000D RID: 13
+		
 		private static ConfigEntry<bool> autoCraftConf;
 
-		// Token: 0x0400000E RID: 14
+		
 		private static ConfigEntry<int> coreTeamNumConf;
 
-		// Token: 0x0400000F RID: 15
+		
 		private static ConfigEntry<int> teamNumConf;
 
-		// Token: 0x04000010 RID: 16
+		
 		private static ConfigEntry<string> modeConf;
 
-		// Token: 0x04000011 RID: 17
+		
 		private static ConfigEntry<bool> runningConf;
 
-		// Token: 0x04000012 RID: 18
+		
 		private static ConfigEntry<string> strategyConf;
 
-		// Token: 0x04000013 RID: 19
+		
 		private static ConfigEntry<string> cleanTaskConf;
 
 		private static ConfigEntry<string> awakeTimeConf;
 
 		private static ConfigEntry<int> awakeTimeIntervalConf;
-		// Token: 0x04000014 RID: 20
+		
 		private static float sleepTime;
 
-		// Token: 0x04000015 RID: 21
+		
 		private static float idleTime;
 
-		// Token: 0x04000016 RID: 22
+		
 		private static bool initialize;
 
-		// Token: 0x04000017 RID: 23
+		
 		private static int phaseID;
 
 		// 挂机收菜模式 下次战斗准备挂机

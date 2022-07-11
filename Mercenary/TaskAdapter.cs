@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Mercenary
 {
-	// Token: 0x0200000D RID: 13
+	
 	public static class TaskAdapter
 	{
-		// Token: 0x06000053 RID: 83 RVA: 0x00005234 File Offset: 0x00003434
+		
 		public static void SetTask(int taskId, int mercenaryId, string title, string desc, List<Task> tasks)
 		{
 			// 对于优先使用多个英雄配合的，优先级设为0，保证一起出场
@@ -1116,7 +1116,7 @@ namespace Mercenary
 			}));
 		}
 		
-		// Token: 0x06000054 RID: 84 RVA: 0x00005BB0 File Offset: 0x00003DB0
+		
 		private static MercenaryEntity[] GetQuickMercenary(int mercenaryId)
 		{
 			List<MercenaryEntity> list = new List<MercenaryEntity>();
@@ -1133,7 +1133,7 @@ namespace Mercenary
 			return list.ToArray();
 		}
 
-		// Token: 0x06000055 RID: 85 RVA: 0x00005C80 File Offset: 0x00003E80
+		
 		private static Task GetTask(int id, int priority, string map, params MercenaryEntity[] mercenaries)
 		{
 			return new Task
@@ -1157,7 +1157,7 @@ namespace Mercenary
 			};
 		}
 
-		// Token: 0x06000056 RID: 86 RVA: 0x00005CA8 File Offset: 0x00003EA8
+		
 		private static Task GetTask(int id, params MercenaryEntity[] mercenaries)
 		{
 			return new Task
@@ -1169,7 +1169,7 @@ namespace Mercenary
 			};
 		}
 
-		// Token: 0x06000057 RID: 87 RVA: 0x00005CC9 File Offset: 0x00003EC9
+		
 		private static MercenaryEntity GetMercenary(int id, string skill = null, int eq = 0, int subskill = 0, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
 		{
 			return new MercenaryEntity(id, skill, eq, subskill, targettype);

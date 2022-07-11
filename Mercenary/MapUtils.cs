@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace Mercenary
 {
-	// Token: 0x0200000B RID: 11
+	
 	public static class MapUtils
 	{
-		// Token: 0x0600004E RID: 78 RVA: 0x00005140 File Offset: 0x00003340
+		
 		public static int GetMapId(string name)
 		{
 			Map map = MapUtils.GetMap(name);
@@ -18,13 +18,13 @@ namespace Mercenary
 			return -1;
 		}
 
-		// Token: 0x0600004F RID: 79 RVA: 0x00005160 File Offset: 0x00003360
+		
 		public static Map GetMap(string name)
 		{
 			return MapUtils.MapConfList.Find((Map m) => m.Name.Equals(name));
 		}
 
-		// Token: 0x06000050 RID: 80 RVA: 0x00005190 File Offset: 0x00003390
+		
 		public static int GetUnCompleteMap()
 		{
 			for (int i = MapUtils.lastTryIndex; i < MapUtils.MapConfList.Count; i++)
@@ -38,14 +38,14 @@ namespace Mercenary
 			return MapUtils.GetMapId("H1-1");
 		}
 
-		// Token: 0x06000051 RID: 81 RVA: 0x000051EE File Offset: 0x000033EE
+		
 		public static string[] GetMapNameList()
 		{
 			return (from m in MapUtils.MapConfList
 					select m.Name).ToArray<string>();
 		}
 
-		// Token: 0x04000036 RID: 54
+		
 		private static readonly List<Map> MapConfList = new List<Map>
 		{
 			new Map(57, "1-1"),
@@ -184,7 +184,7 @@ namespace Mercenary
 			new Map(200, "H8-10")
 		};
 
-		// Token: 0x04000037 RID: 55
+		
 		private static int lastTryIndex;
 	}
 }

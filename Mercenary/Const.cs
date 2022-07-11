@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Mercenary
 {
-	// Token: 0x02000005 RID: 5
+	
 	internal class MercConst
 	{
 		public const int 乌瑟尔_光明使者 = 94;
