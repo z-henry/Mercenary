@@ -590,9 +590,10 @@ namespace Mercenary
 			//雪怒 任务12:往日旧梦
 			if (title.Contains("往日旧梦"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 0, "H1-2", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
-					TaskAdapter.GetMercenary(mercenaryId, "伏虎闪电", 2),
+					TaskAdapter.GetMercenary(mercenaryId, "白虎飞扑", 2),
+					TaskAdapter.GetMercenary(mercenaryId, "伏虎闪雷", 2),
 					TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
 					TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
 				}));
