@@ -275,26 +275,26 @@ namespace Mercenary
 				return;
 			}
 			List<LettuceMapNode> nodes = map.NodeData;
-			foreach (LettuceMapNode node in nodes)
-			{
-				string childrendid = "";
-				foreach (uint childid in node.ChildNodeIds)
-					childrendid += (childid.ToString() + ", ");
-				Out.Log(string.Format("[地图结构] [NID:{0}][NTYPE:{1}][NSTATE:{2}][CID:{3}]", node.NodeId, node.NodeTypeId, node.NodeState_, childrendid));
-			}
+// 			foreach (LettuceMapNode node in nodes)
+// 			{
+// 				string childrendid = "";
+// 				foreach (uint childid in node.ChildNodeIds)
+// 					childrendid += (childid.ToString() + ", ");
+// 				Out.Log(string.Format("[地图结构] [NID:{0}][NTYPE:{1}][NSTATE:{2}][CID:{3}]", node.NodeId, node.NodeTypeId, node.NodeState_, childrendid));
+// 			}
 			ValueTuple<LettuceMapNode, int> nextNode = Main.GetNextNode(nodes.FindAll((LettuceMapNode n) => n.NodeState_ == LettuceMapNode.NodeState.UNLOCKED), nodes);
 			LettuceMapNode lettuceMapNode = nextNode.Item1;
 			int item = nextNode.Item2;
 			if (lettuceMapNode == null)
 			{
-				Out.Log("[节点选择] 没有找到神秘节点 重开");
+				Out.Log("[节点选择] 没有找到神秘节点或任务赐福节点 重开");
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;
 			}
 			if (!Main.NeedCompleted() && item > 2)
 			{
-				Out.Log(string.Format("[节点选择] 通往神秘节点数{0}大于2 重开", item));
+				Out.Log(string.Format("[节点选择] 通往神秘节点数或任务赐福节点步长:{0}大于2 重开", item));
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;

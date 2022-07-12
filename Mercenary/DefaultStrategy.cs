@@ -12,6 +12,7 @@ namespace Mercenary
 		{
 // 			Out.Log("default" + targets_opposite.Count.ToString());
 			List<BattleTarget> battleTargets = new List<BattleTarget>();
+
 			Target target_opposite = (targets_opposite.Count > 1) ? targets_opposite[1] : ((targets_opposite.Count == 1) ? targets_opposite[0] : null);
 			Target target_friend = StrategyUtils.FindMaxLossHealthTarget(targets_friendly);
 			if (target_friend == null)
@@ -23,9 +24,9 @@ namespace Mercenary
 
 				//先 任务有的技能都要添加进来
 				List<MercenaryEntity> taskMercenarys = TaskUtils.GetTaskMercenaries(mercenary.Name);
-				if (taskMercenarys.Count < 1)
-					Out.Log(string.Format("[策略未命中] [MNAME:{0}]", mercenary.Name));
-
+// 				if (taskMercenarys.Count < 1)
+// 					Out.Log(string.Format("[策略未命中] [MNAME:{0}]", mercenary.Name));
+// 
 				foreach (MercenaryEntity taskMercenary in taskMercenarys)
 				{
 					Skill skill = mercenary.Skills.Find((Skill i) => i.Name == taskMercenary.Skill);
@@ -61,18 +62,17 @@ namespace Mercenary
 			}
 
 			//设置目标
-			foreach (BattleTarget battleTarget in battleTargets)
+			using (List<BattleTarget>.Enumerator enumerator = battleTargets.GetEnumerator())
 			{
-				if (battleTarget.TargetType == HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+				while (enumerator.MoveNext())
 				{
-					battleTarget.TargetId = ((target_friend != null) ? target_friend.Id : -1);
-				}
-				else
-				{
-					battleTarget.TargetId = ((target_opposite != null) ? target_opposite.Id : -1);
+					BattleTarget battleTarget = enumerator.Current;
+					if (battleTarget.TargetType == HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+						battleTarget.TargetId = ((target_friend != null) ? target_friend.Id : -1);
+					else
+						battleTarget.TargetId = ((target_opposite != null) ? target_opposite.Id : -1);
 				}
 			}
-
 
 			return battleTargets;
 		}

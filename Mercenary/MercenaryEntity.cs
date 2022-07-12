@@ -20,7 +20,7 @@ namespace Mercenary
 			this.SubSkillIndex = subskillindex;
 			this.TargetType = targettype;
 			LettuceMercenary mercenary = CollectionManager.Get().GetMercenary((long)id, true, true);
-			LettuceMercenaryDbfRecord record = GameDbf.LettuceMercenary.GetRecord(id);
+// 			LettuceMercenaryDbfRecord record = GameDbf.LettuceMercenary.GetRecord(id);
 // 			EntityDef entityDef = DefLoader.Get().GetEntityDef(record.ID, true);
 
 			if (mercenary == null)

@@ -46,28 +46,11 @@ namespace Mercenary
 				44U
 			}, nodeType) > -1;
 		}
-
-		public static bool IsUnknownMysteryNode(uint nodeType)
-		{
-			return Array.IndexOf<uint>(new uint[]
-			{
-				0U//未知
-			}, nodeType) > -1;
-		}
-
-
-		
-		public static bool IsJumpNode(uint nodeType)
-		{
-			return nodeType == 18U;
-		}
-
-		
+						
 		public static bool IsBoss(uint nodeType)
 		{
 			return nodeType == 3U;
 		}
-
 		
 		public static bool IsMonster(uint nodeType)
 		{
@@ -80,18 +63,38 @@ namespace Mercenary
 			}, nodeType) > -1;
 		}
 
-		public static bool IsSep(uint nodeType)
+		public static bool IsCaster(uint nodeType)
 		{
 			return Array.IndexOf<uint>(new uint[]
 			{
-				45U,//医者
-				38U,//斗士
-				39U,//护卫
 				40U,//施法
 			}, nodeType) > -1;
 		}
 
-		
+		public static bool IsFighter(uint nodeType)
+		{
+			return Array.IndexOf<uint>(new uint[]
+			{
+				38U,//斗士
+			}, nodeType) > -1;
+		}
+
+		public static bool IsTank(uint nodeType)
+		{
+			return Array.IndexOf<uint>(new uint[]
+			{
+				39U,//护卫
+			}, nodeType) > -1;
+		}
+
+		public static bool IsDoctor(uint nodeType)
+		{
+			return Array.IndexOf<uint>(new uint[]
+			{
+				45U,//医者
+			}, nodeType) > -1;
+		}
+
 		public static global::LettuceMercenary GetMercenary(int id)
 		{
 			return CollectionManager.Get().GetMercenary((long)id, false, true);
