@@ -11,11 +11,11 @@ using PegasusLettuce;
 using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
-using System.Threading;
+using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.6")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.7")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.0.6"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.0.7"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -69,7 +69,24 @@ namespace Mercenary
 			Main.isRunning = Main.runningConf.Value;
 		}
 
-		
+// 		[HarmonyTranspiler]
+// 		[HarmonyPatch(typeof(Hearthstone.Login.DesktopLoginTokenFetcher), "GetTokenFromTokenFetcher")]
+// 		public static IEnumerable<CodeInstruction> DesktopLoginTokenFetcher_GetTokenFromTokenFetcher(IEnumerable<CodeInstruction> instructions, System.Reflection.Emit.ILGenerator generator)
+// 		{
+// 			Out.Log("token patch");
+// 
+// 			List<CodeInstruction> list = instructions.ToList();
+// 			list.RemoveAt(0);
+// 			list.InsertRange(0, new CodeInstruction[4]
+// 			{
+// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Ldstr, "Aurora.VerifyWebCredentials"),
+// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Call, new Func<string, Blizzard.T5.Configuration.VarKey>(Blizzard.T5.Configuration.Vars.Key).Method),
+// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Ldnull),
+// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Callvirt, typeof(Blizzard.T5.Configuration.VarKey).GetMethod("GetStr", BindingFlags.Instance | BindingFlags.Public))
+// 			});
+// 			return list;
+// 		}
+
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(RewardTrackManager), "UpdateStatus")]
 		public static bool _PreUpdateStatus(int rewardTrackId, int level, RewardTrackManager.RewardStatus status, bool forPaidTrack, List<RewardItemOutput> rewardItemOutput)
@@ -890,7 +907,7 @@ namespace Mercenary
 		
 		private static void ResetIdle()
 		{
-			Out.Log("[IDLE] reset");
+// 			Out.Log("[IDLE] reset");
 			Main.idleTime = 0f;
 		}
 
@@ -907,7 +924,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			Out.Log("[状态] 对局进行中");
+// 			Out.Log("[状态] 对局进行中");
 			if (Main.phaseID == 0)
 			{
 				Out.Log("[对局中] 回合结束");
@@ -929,29 +946,31 @@ namespace Mercenary
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
 			{
-				foreach (BattleTarget battleTarget in battleTargets)
-					Out.Log(string.Format("[对局中] 策略判断 [SID:{0}] [TID:{1}] [TTYPE:{2}]",
-							battleTarget.SkillId, battleTarget.TargetId, battleTarget.TargetType));
 
-				// 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
+// 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
 				List<Card> cards_opposite = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !i.GetEntity().IsStealthed());
 				List<Card> cards_friend = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER));
-				string strlog = "";
-				foreach (Card card1 in cards_opposite)
-					strlog += string.Format("{0}({1},{2})\t",
-						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
-				Out.Log(string.Format("[对局中] 场面：敌方 {0}", strlog));
-				strlog = "";
-				foreach (Card card1 in cards_friend)
-					strlog += string.Format("{0}({1},{2})\t",
-						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
-				Out.Log(string.Format("[对局中] 场面：友方 {0}", strlog));
+// 				string strlog = "";
+// 				foreach (Card card1 in cards_opposite)
+// 					strlog += string.Format("{0}({1},{2})\t",
+// 						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
+// 				Out.Log(string.Format("[对局中] 场面：敌方 {0}", strlog));
+// 				strlog = "";
+// 				foreach (Card card1 in cards_friend)
+// 					strlog += string.Format("{0}({1},{2})\t",
+// 						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
+// 				Out.Log(string.Format("[对局中] 场面：友方 {0}", strlog));
 
 
 				//这个是当前停留的技能id
 				Network.Options.Option.SubOption networkSubOption = GameState.Get().GetSelectedNetworkSubOption();
 				Out.Log(string.Format("[对局中] 技能目标 当前技能 [SID:{0}]",
 					networkSubOption.ID));
+
+				foreach (BattleTarget battleTarget in battleTargets)
+					Out.Log(string.Format("[对局中] 策略判断 [SID:{0}] [SNAME:{1}] [TID:{2}] [TTYPE:{3}]",
+							battleTarget.SkillId, battleTarget.SkillName, battleTarget.TargetId, battleTarget.TargetType));
+
 
 				Card card = null;
 				// 先
@@ -1035,24 +1054,27 @@ namespace Mercenary
 							goto IL_52B;
 						}
 					}
-					HashSet<int> skillSet = Enumerable.ToHashSet<int>(from i in battleTargets select i.SkillId);
+
+					Card card3 = null;
 					List<Card> displayedLettuceAbilityCards = ZoneMgr.Get().GetLettuceZoneController().GetDisplayedLettuceAbilityCards();
-					Card card3 = displayedLettuceAbilityCards.Find((Card i) => skillSet.Contains(i.GetEntity().GetEntityId()) && GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
-					Entity entity2;
+					foreach (BattleTarget batterTarget in battleTargets)
+					{
+						card3 = displayedLettuceAbilityCards.Find((Card i) => i.GetEntity().GetEntityId() == batterTarget.SkillId && GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
+						if (card3 != null)
+							break;
+					}
 					if (card3 != null)
 					{
-						entity2 = card3.GetEntity();
 						Out.Log("[对局中] 技能选择 找到技能 " + card3.name);
 					}
 					else
 					{
 						card3 = displayedLettuceAbilityCards.Find((Card i) => GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
-						entity2 = card3.GetEntity();
 						Out.Log("[对局中] 技能选择 未找到技能 使用 " + card3.name);
 					}
 					Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
 					{
-						entity2,
+						card3.GetEntity(),
 						true
 					}).GetValue();
 					Main.ResetIdle();
@@ -1114,6 +1136,8 @@ namespace Mercenary
 						});
 					}
 				}
+				mercenary.Id = card.GetEntity().GetEntityId();
+				mercenary.Name = card.GetEntity().GetName();
 				mercenary.Skills = list2;
 				list.Add(mercenary);
 			}

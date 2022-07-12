@@ -16,6 +16,74 @@ namespace Mercenary
 			Out.Log(string.Format("[TID:{0}][MID:{1}] {2} {3}",
 				taskId, mercenaryId, title, desc));
 
+			//闪狐 任务3:现在归我了
+			if (title.Contains("现在归我了"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "群体缠绕", 2)
+				}));
+				return;
+			}
+
+			//闪狐 任务14:唰！
+			if (title.Contains("唰！"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+					TaskAdapter.GetMercenary(mercenaryId, "法力闪现", 1),
+					TaskAdapter.GetMercenary(MercConst.贝恩_血蹄, "大地母亲之怒", 2)
+				}));
+				return;
+			}
+
+			//尤朵拉 任务9:火炮齐射！
+			//尤朵拉 任务16:炮灰
+			if (title.Contains("炮灰") || title.Contains("火炮齐射"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 5, "H1-1", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "准备火炮", 1)
+				}));
+				return;
+			}
+
+			//尤朵拉 任务3:远洋助手
+			//尤朵拉 任务14:飓风营救
+			if (title.Contains("远洋助手") || title.Contains("飓风营救"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "掩护射击", 1, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+				}));
+				return;
+			}
+
+			//潮汐主母阿茜萨 任务3:以艾萨拉之名
+			//潮汐主母阿茜萨 任务10:水流之力
+			if (title.Contains("以艾萨拉之名") || title.Contains("水流之力"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "俘获之潮", 2),
+					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+					TaskAdapter.GetMercenary(MercConst.赤精, "振奋之歌", 1)
+				}));
+				return;
+			}
+
+			//指挥官沃恩 任务9:燃棘必胜
+			if (title.Contains("燃棘必胜"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+					TaskAdapter.GetMercenary(mercenaryId, "火焰吐息", 0)
+				}));
+				return;
+			}
+
 			//古夫 任务14
 			if (title.Contains("带刺的自然"))
 			{
@@ -230,9 +298,10 @@ namespace Mercenary
 			//瓦尔登·晨拥 任务10
 			if (title.Contains("调节温度"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "冰枪术", 1),
+					TaskAdapter.GetMercenary(mercenaryId, "急速冰冻", 1),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
 					TaskAdapter.GetMercenary(MercConst.赤精, "振奋之歌", 1),
 				}));
@@ -571,8 +640,9 @@ namespace Mercenary
 			//重拳先生 任务14:铁脚无情
 			if (title.Contains("铁脚无情"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-6", new MercenaryEntity[]
 				{
+					TaskAdapter.GetMercenary(MercConst.洛卡拉, "进攻集结", 1, 0, 0),
 					TaskAdapter.GetMercenary(mercenaryId, "落水追击", 0),
 					TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, "眼魔船长", 1)
 				}));
@@ -592,7 +662,6 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
-					TaskAdapter.GetMercenary(mercenaryId, "白虎飞扑", 2),
 					TaskAdapter.GetMercenary(mercenaryId, "伏虎闪雷", 2),
 					TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
 					TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)

@@ -19,21 +19,23 @@ namespace Mercenary
 			this.Equipment = eq;
 			this.SubSkillIndex = subskillindex;
 			this.TargetType = targettype;
+			LettuceMercenary mercenary = CollectionManager.Get().GetMercenary((long)id, true, true);
+			LettuceMercenaryDbfRecord record = GameDbf.LettuceMercenary.GetRecord(id);
+// 			EntityDef entityDef = DefLoader.Get().GetEntityDef(record.ID, true);
+
+			if (mercenary == null)
+				this.Name = "";
+			else
+				this.Name = mercenary.m_mercName;
 		}
 
 		
 		public readonly int ID;
-
-		
 		public readonly string Skill;
-
-		
 		public readonly int Equipment;
-
 		public readonly int SubSkillIndex=0;
-
 		public readonly HsMercenaryStrategy.TARGETTYPE TargetType = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED;
 
-
+		public readonly string Name;
 	}
 }

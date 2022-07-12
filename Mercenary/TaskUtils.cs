@@ -32,7 +32,6 @@ namespace Mercenary
 				}
 			}
 			TaskUtils.tasks = newTasks;
-			TaskUtils.dict_skillsTargetType = TaskUtils.GetTaskSkillAndTargetType(TaskUtils.tasks);
 		}
 
 		
@@ -48,25 +47,6 @@ namespace Mercenary
 			}
 			return -1;
 		}
-
-		public static bool HasSkill(string skill)
-		{
-			return TaskUtils.dict_skillsTargetType.ContainsKey(skill);
-		}
-
-
-		public static HsMercenaryStrategy.TARGETTYPE FindSkillTargetType(string skill)
-		{
-			if (!TaskUtils.dict_skillsTargetType.ContainsKey(skill))
-			{
-				return HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED;
-			}
-			else
-			{
-				return dict_skillsTargetType[skill];
-			}
-		}
-
 		
 		public static List<Task> GetTasks()
 		{
@@ -74,36 +54,22 @@ namespace Mercenary
 			return taskOrder;
 		}
 
-		
-		private static List<MercenaryEntity> _GetTaskMercenaries(List<Task> allTasks)
+
+		public static List<MercenaryEntity> GetTaskMercenaries(string mercName)
 		{
 			List<MercenaryEntity> list = new List<MercenaryEntity>();
-			foreach (Task task in allTasks)
+			foreach (Task task in tasks)
 			{
 				foreach (MercenaryEntity item in task.Mercenaries)
 				{
+					if (item .Name != mercName)
+						continue;
 					list.Add(item);
 				}
 			}
 			return list;
 		}
 
-		
-		private static Dictionary<string, HsMercenaryStrategy.TARGETTYPE> GetTaskSkillAndTargetType(List<Task> allTasks)
-		{
-			Dictionary<string, HsMercenaryStrategy.TARGETTYPE> list = new Dictionary<string, HsMercenaryStrategy.TARGETTYPE>();
-			foreach (MercenaryEntity mercenaryEntity in TaskUtils._GetTaskMercenaries(allTasks))
-			{
-				if (!string.IsNullOrEmpty(mercenaryEntity.Skill))
-				{
-					if (!list.ContainsKey(mercenaryEntity.Skill))
-						list.Add(mercenaryEntity.Skill, mercenaryEntity.TargetType);
-				}
-			}
-			return list;
-		}
-
-		
 		public static readonly Dictionary<string, int> CleanConf = new Dictionary<string, int>
 		{
 			{
@@ -130,8 +96,5 @@ namespace Mercenary
 
 		
 		private static List<Task> tasks = new List<Task>();
-
-		
-		private static Dictionary<string, HsMercenaryStrategy.TARGETTYPE> dict_skillsTargetType = new Dictionary<string, HsMercenaryStrategy.TARGETTYPE>();
 	}
 }

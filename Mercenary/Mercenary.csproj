@@ -55,7 +55,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\hs-plugin\HsMercenaryStrategy.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="UnityEngine">

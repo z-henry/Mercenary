@@ -11,7 +11,7 @@ namespace Mercenary
 		public List<BattleTarget> GetBattleTargets(List<HsMercenaryStrategy.Mercenary> mercenaries, List<Target> targets_opposite, List<Target> targets_friendly)
 		{
 // 			Out.Log("default" + targets_opposite.Count.ToString());
-			List<BattleTarget> list = new List<BattleTarget>();
+			List<BattleTarget> battleTargets = new List<BattleTarget>();
 			Target target_opposite = (targets_opposite.Count > 1) ? targets_opposite[1] : ((targets_opposite.Count == 1) ? targets_opposite[0] : null);
 			Target target_friend = StrategyUtils.FindMaxLossHealthTarget(targets_friendly);
 			if (target_friend == null)
@@ -19,38 +19,50 @@ namespace Mercenary
 
 			foreach (HsMercenaryStrategy.Mercenary mercenary in mercenaries)
 			{
-				BattleTarget battleTarget = new BattleTarget();
+				List<BattleTarget> merc_battleTargets = new List<BattleTarget>();
 
-				//先 全自动做任务队列
-				foreach (Skill skill in mercenary.Skills)
+				//先 任务有的技能都要添加进来
+				List<MercenaryEntity> taskMercenarys = TaskUtils.GetTaskMercenaries(mercenary.Name);
+				if (taskMercenarys.Count < 1)
+					Out.Log(string.Format("[策略未命中] [MNAME:{0}]", mercenary.Name));
+
+				foreach (MercenaryEntity taskMercenary in taskMercenarys)
 				{
-					if (TaskUtils.HasSkill(skill.Name))
+					Skill skill = mercenary.Skills.Find((Skill i) => i.Name == taskMercenary.Skill);
+					if (skill != null)
 					{
-						battleTarget.SkillId = skill.Id;
-						battleTarget.TargetType = TaskUtils.FindSkillTargetType(skill.Name);
-						break;
+						merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name, taskMercenary.TargetType));
 					}
 				}
 
+
 				//再 设置的优先级队列FirstAbilityName
-				if (battleTarget.SkillId == -1)
+				if (merc_battleTargets.Count <= 0)
 				{
 					foreach (Skill skill in mercenary.Skills)
 					{
 						if (DefaultStrategy.FirstAbilityName.Contains(skill.Name))
 						{
-							battleTarget.SkillId = skill.Id;
-							break;
+							merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name));
 						}
 					}
 				}
 				//最后 用第一个得了
-				if (battleTarget.SkillId == -1)
+				if (merc_battleTargets.Count <= 0)
 				{
-					battleTarget.SkillId = ((mercenary.Skills.Count > 0) ? mercenary.Skills[0].Id : -1);
+					if (mercenary.Skills.Count > 0)
+						merc_battleTargets.Add(new BattleTarget(mercenary.Skills[0].Id, mercenary.Skills[0].Name));
+					else
+						merc_battleTargets.Add(new BattleTarget(-1,""));
+
 				}
 
-				//设置目标
+				battleTargets.AddRange(merc_battleTargets);
+			}
+
+			//设置目标
+			foreach (BattleTarget battleTarget in battleTargets)
+			{
 				if (battleTarget.TargetType == HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 				{
 					battleTarget.TargetId = ((target_friend != null) ? target_friend.Id : -1);
@@ -59,11 +71,10 @@ namespace Mercenary
 				{
 					battleTarget.TargetId = ((target_opposite != null) ? target_opposite.Id : -1);
 				}
-
-
-				list.Add(battleTarget);
 			}
-			return list;
+
+
+			return battleTargets;
 		}
 
 		
@@ -78,10 +89,17 @@ namespace Mercenary
 		
 		private static readonly List<string> FirstAbilityName = new List<string>
 		{
+			"大地的敌意",
 			"地狱火",
 			"死吧，虫子",
 			"振奋之歌",
-			"烈焰之刺"
+			"烈焰之刺",
+			"指引道路",
+			"坚韧光环",
+			"法力壁垒",
+			"奥术齐射",
+			"治疗链",
+			"白虎飞扑"
 		};
 	}
 }

@@ -73,10 +73,10 @@ namespace Mercenary
 		{
 			return Array.IndexOf<uint>(new uint[]
 			{
-				1U,//蓝
-				2U,
+				1U,//小怪
+				2U,//精英
 				3U,//boss
-				22U//红
+				22U//小怪
 			}, nodeType) > -1;
 		}
 
@@ -85,7 +85,9 @@ namespace Mercenary
 			return Array.IndexOf<uint>(new uint[]
 			{
 				45U,//医者
-				30U,//斗士
+				38U,//斗士
+				39U,//护卫
+				40U,//施法
 			}, nodeType) > -1;
 		}
 
