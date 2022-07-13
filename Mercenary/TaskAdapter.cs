@@ -821,7 +821,7 @@ namespace Mercenary
 			if (title.Contains("淬霜之刃"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "H1-2", new MercenaryEntity[]
-{
+				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
 					TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
@@ -1118,6 +1118,17 @@ namespace Mercenary
 				}
 				return;
 			}
+
+			//灵魂医者
+			if (desc.Contains("灵魂医者"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
+				}));
+				TaskUtils.HaveTaskDocter = true;
+				return;
+			}
 			//赐福
 			if (desc.Contains("利用赐福"))
 			{
@@ -1125,6 +1136,12 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
+				if (desc.Contains("施法者"))
+					TaskUtils.HaveTaskCaster = true;
+				else if (desc.Contains("斗士"))
+					TaskUtils.HaveTaskFighter = true;
+				else if (desc.Contains("护卫"))
+					TaskUtils.HaveTaskTank = true;
 				return;
 			}
 			int num = desc.IndexOf("$ability(", StringComparison.Ordinal);

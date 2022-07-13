@@ -10,9 +10,17 @@ namespace Mercenary
 		
 		public static void UpdateTask()
 		{
+			TaskUtils.ClearTaskSpecialNode();
 			TaskUtils.UpdateTaskInfo(HsGameUtils.GetTasks());
 		}
 
+		public static void ClearTaskSpecialNode()
+		{
+			HaveTaskDocter = false;
+			HaveTaskTank = false;
+			HaveTaskFighter = false;
+			HaveTaskCaster = false;
+		}
 		
 		public static long Current()
 		{
@@ -96,5 +104,10 @@ namespace Mercenary
 
 		
 		private static List<Task> tasks = new List<Task>();
+		//有对应赐福任务
+		public static bool HaveTaskTank  { get; set; }
+		public static bool HaveTaskFighter { get; set; }
+		public static bool HaveTaskCaster { get; set; }
+		public static bool HaveTaskDocter { get; set; }
 	}
 }

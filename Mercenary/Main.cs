@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.8")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.9")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.0.8"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.0.9"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -1175,23 +1175,29 @@ namespace Mercenary
 		// 最短路径
 		private static int GetMinNode(LettuceMapNode node, int value, List<LettuceMapNode> nodes)
 		{
+			//全自动做任务，如果有赐福，需要走对应的点
+			if (Main.modeConf.Value == "全自动接任务做任务")
+			{
+				if ((TaskUtils.HaveTaskDocter && HsGameUtils.IsDoctor(node.NodeTypeId)) ||
+					(TaskUtils.HaveTaskFighter && HsGameUtils.IsFighter(node.NodeTypeId)) ||
+					(TaskUtils.HaveTaskCaster && HsGameUtils.IsCaster(node.NodeTypeId)) ||
+					(TaskUtils.HaveTaskTank && HsGameUtils.IsTank(node.NodeTypeId)))
+					return value;
+			}
+
+			// 需要不需要完成地图，只打到神秘人
 			if (!Main.NeedCompleted())
 			{
+				
 				if (HsGameUtils.IsMysteryNode(node.NodeTypeId))
-				{
 					return value;
-				}
 				if (HsGameUtils.IsBoss(node.NodeTypeId))
-				{
 					return -1;
-				}
 			}
 			else
 			{
 				if (HsGameUtils.IsBoss(node.NodeTypeId))
-				{
 					return value;
-				}
 			}
 			int num = (!HsGameUtils.IsMonster(node.NodeTypeId)) ? 0 : 1;
 			if (node.ChildNodeIds.Count == 1)
@@ -1264,5 +1270,7 @@ namespace Mercenary
 
 		// 挂机收菜模式 下次战斗准备挂机
 		private static bool readyToHang = false;
+
+
 	}
 }
