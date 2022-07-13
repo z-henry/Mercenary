@@ -187,7 +187,16 @@ namespace Mercenary
 			return !Main.isRunning;
 		}
 
-		
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(Entity), "GetPremiumType")]
+		public static bool _PreGetPremiumType(ref TAG_PREMIUM __result)
+		{
+			//屏蔽特效
+			__result = TAG_PREMIUM.NORMAL;
+			return !Main.isRunning;
+		}
+
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "ShouldShowVisitorSelection")]
 		public static void PostShouldShowVisitorSelection(PegasusLettuce.LettuceMap map, ref bool __result)
