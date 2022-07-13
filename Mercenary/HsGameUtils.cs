@@ -63,36 +63,74 @@ namespace Mercenary
 			}, nodeType) > -1;
 		}
 
+		//1 NONE MercenaryFight NORMAL_BOSS BOSS
+		//2 NONE EliteFight ELITE_BOSS ELITE_BOSS
+		//3 NONE FinalBoss FINAL_BOSS FINAL_BOSS
+		//4 HEAL_TEAM Spirit Healer Full Team NONE HEALER
+		//10 NONE TutorialFinalBoss FINAL_BOSS FINAL_BOSS
+		//11 NONE Tutorial4 NONE BOSS
+		//14 NONE Hot Potato NONE MYSTERY
+		//18 SKIP_TO_FINAL_BOSS Portal NONE MYSTERY
+		//19 REASSIGN_MAP_ROLE Sabotage NONE MYSTERY
+		//20 VIEW_TASK_LIST Village Campfire NONE CAMPFIRE
+		//22 NONE EcologyFight SIMPLE_BOSS BOSS
+		//23 DISCOVER_VILLAGER Village Visitor NONE MYSTERY
+		//26 NONE Boon: Protectors NONE OPPORTUNITY_PROTECTOR
+		//30 NONE Boon: Fighters NONE OPPORTUNITY_FIGHTER
+		//34 NONE Boon: Casters NONE OPPORTUNITY_CASTER
+		//38 NONE Boon: Protectors NONE OPPORTUNITY_PROTECTOR
+		//39 NONE Boon: Fighters NONE OPPORTUNITY_FIGHTER
+		//40 NONE Boon: Casters NONE OPPORTUNITY_CASTER
+		//41 NONE Boon: Protectors NONE OPPORTUNITY_PROTECTOR
+		//42 NONE Boon: Fighters NONE OPPORTUNITY_FIGHTER
+		//43 NONE Boon: Casters NONE OPPORTUNITY_CASTER
+		//44 NONE Hot Potato Level 30 NONE MYSTERY
+		//45 HEAL_TEAM Healer - One Random NONE HEALER
+		//46 HEAL_TEAM Healer - Two Random NONE HEALER
+		//47 HEAL_TEAM Healer - Three Random NONE HEALER
+		//48 HEAL_TEAM Healer - Four Random NONE HEALER
+		//49 HEAL_TEAM Healer - Five Random NONE HEALER
+		//52 NONE Campaign 1 - Kazakus Bounty FINAL_BOSS ELITE_BOSS
+		//56 NONE Campaign 1 - Plaguemaw the Rotting FINAL_BOSS BOSS
+		//58 NONE Bonus Loot! NONE MYSTERY
+		//59 NONE Cursed Treasure NONE MYSTERY
+		//7 NONE Tutorial1 NONE BOSS
+		//8 NONE Tutorial2 NONE BOSS
+		//9 NONE Tutorial3 NONE BOSS
+
+		//施法
 		public static bool IsCaster(uint nodeType)
 		{
-			return Array.IndexOf<uint>(new uint[]
-			{
-				40U,//施法
-			}, nodeType) > -1;
+			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
+			if (result == null)
+				return false;
+			return result.NodeVisualId == "OPPORTUNITY_CASTER";
 		}
 
+		//斗士
 		public static bool IsFighter(uint nodeType)
 		{
-			return Array.IndexOf<uint>(new uint[]
-			{
-				38U,//斗士
-			}, nodeType) > -1;
+			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
+			if (result == null)
+				return false;
+			return result.NodeVisualId == "OPPORTUNITY_FIGHTER";
 		}
 
+		//护卫
 		public static bool IsTank(uint nodeType)
 		{
-			return Array.IndexOf<uint>(new uint[]
-			{
-				39U,//护卫
-			}, nodeType) > -1;
+			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
+			if (result == null)
+				return false;
+			return result.NodeVisualId == "OPPORTUNITY_PROTECTOR";
 		}
 
 		public static bool IsDoctor(uint nodeType)
 		{
-			return Array.IndexOf<uint>(new uint[]
-			{
-				45U,//医者
-			}, nodeType) > -1;
+			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
+			if (result == null)
+				return false;
+			return result.NodeVisualId == "HEALER";
 		}
 
 		public static global::LettuceMercenary GetMercenary(int id)

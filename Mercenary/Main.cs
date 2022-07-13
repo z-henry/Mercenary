@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.9")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.10")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.0.9"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.0.10"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -209,7 +209,7 @@ namespace Mercenary
 		public static bool _PreDisplayNewlyGrantedAnomalyCards(global::LettuceMap lettuceMap, int completedNodeId)
 		{
 			//"弹出揭示卡"
-			Out.Log("_PreDisplayNewlyGrantedAnomalyCards");
+// 			Out.Log("_PreDisplayNewlyGrantedAnomalyCards");
 			return !Main.isRunning;
 		}
 
@@ -259,7 +259,7 @@ namespace Mercenary
 		
 		private static void SelectNextNode(LettuceMap map)
 		{
-			Out.Log("[节点选择]");
+// 			Out.Log("[节点选择]");
 			Main.ResetIdle();
 
 			if (Main.modeConf.Value == "全自动接任务做任务")
@@ -329,7 +329,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			Out.Log("TryAutoNextSelectCoin");
+// 			Out.Log("TryAutoNextSelectCoin");
 			LettuceMap map = (global::LettuceMap)Traverse.Create(__instance).Field("m_lettuceMap").GetValue();
 			Main.SelectNextNode(map);
 		}
@@ -338,7 +338,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "OnLettuceMapChooseNodeResponseReceived")]
 		public static void _PostOnLettuceMapChooseNodeResponseReceived()
 		{
-			Out.Log("OnLettuceMapChooseNodeResponseReceived");
+// 			Out.Log("OnLettuceMapChooseNodeResponseReceived");
 			LettuceMapChooseNodeResponse lettuceMapChooseNodeResponse = Network.Get().GetLettuceMapChooseNodeResponse();
 			if (lettuceMapChooseNodeResponse == null ||
 				!lettuceMapChooseNodeResponse.Success)
@@ -608,6 +608,15 @@ namespace Mercenary
 							mercy.m_mercName, mercy.ID, ability.GetCardName(), ability.ID, upgrade));
 					}
 				}
+
+				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
+				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
+					Out.Log(result1.GetVar("ID").ToString() + " " +
+						result1.VisitLogic + " " +
+						result1.GetVar("NOTE_DESC") + " " +
+						result1.BossType + " " +
+						result1.NodeVisualId 
+						);
 			}
 
 			if (!Main.isRunning)

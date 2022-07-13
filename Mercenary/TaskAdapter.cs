@@ -102,6 +102,11 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "暗影之幕", 0),
 					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
 				}));
 				return;
@@ -114,6 +119,24 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "构筑魔像", 0),
 					TaskAdapter.GetMercenary(mercenaryId, "暗影涌动", 1)
+				}));
+				return;
+			}
+
+			//德雷克塔尔 任务14:邪能的力量
+			if (title.Contains("邪能的力量"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-6", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, "邪能腐蚀", 2),
+					TaskAdapter.GetMercenary(mercenaryId, "萨满教义", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
+					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
 				}));
 				return;
 			}
@@ -280,6 +303,11 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "飞斧投掷", 0),
 					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0)
 				}));
 				return;
@@ -344,6 +372,11 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "陷足泥泞", 1),
 					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0)
 				}));
 				return;
@@ -471,6 +504,11 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "红龙女王的计策", 1),
 					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0)
 				}));
 				return;
@@ -554,6 +592,11 @@ namespace Mercenary
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-6", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
 					TaskAdapter.GetMercenary(mercenaryId, "浮冰术", 2)
 				}));
@@ -662,6 +705,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
 				{
+					TaskAdapter.GetMercenary(mercenaryId, "白虎飞扑", 2),
 					TaskAdapter.GetMercenary(mercenaryId, "伏虎闪雷", 2),
 					TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
 					TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
@@ -812,6 +856,11 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "清理巢穴", 0),
 					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
 				}));
 				return;
@@ -835,6 +884,11 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, "雪球", 2),
 					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+					TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
 					TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
 				}));
 				return;
