@@ -55,6 +55,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\hs-plugin\HsMercenaryStrategy.dll</HintPath>
     </Reference>
+    <Reference Include="MixMod">
+      <HintPath>E:\Hearthstone\BepInEx\plugins\MixMod.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="UnityEngine">

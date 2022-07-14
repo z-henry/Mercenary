@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.10")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.11")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.0.10"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.0.11"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -58,8 +58,7 @@ namespace Mercenary
 			Main.cleanTaskConf = base.Config.Bind<string>(new ConfigDefinition("配置", "自动清理任务时间"), "不开启", new ConfigDescription("会定时清理长时间没完成的任务（全自动模式生效）", new AcceptableValueList<string>(new List<string>(TaskUtils.CleanConf.Keys).ToArray()), Array.Empty<object>()));
 			Main.awakeTimeConf = base.Config.Bind<string>("配置", "唤醒时间", "1999/1/1 0:0:0", "挂机收菜下的唤醒时间（无需更改）");
 			Main.awakeTimeIntervalConf = base.Config.Bind<int>("配置", "唤醒时间间隔", 22, "挂机收菜下的唤醒时间间隔");
-
-			
+			Main.autoTimeScaleConf = base.Config.Bind<bool>("配置", "自动齿轮加速", false, "战斗中自动启用齿轮加速");
 		}
 
 		
@@ -641,6 +640,10 @@ namespace Mercenary
 			SceneMgr.Mode mode = sceneMgr.GetMode();
 			GameState gameState = GameState.Get();
 
+			MixMod.MixModConfig mixModConfig = MixMod.MixModConfig.Get();
+			if (mixModConfig != null)
+				mixModConfig.TimeScaleEnabled = Main.autoTimeScaleConf.Value;
+
 			#region 查找比赛
 			if (gameMgr.IsFindingGame())
 			{
@@ -781,6 +784,10 @@ namespace Mercenary
 			#region 游戏结束
 			if (gameState == null || gameState.IsGameOver())
 			{
+				if (Main.autoTimeScaleConf.Value == true)
+				{
+					MixMod.MixModConfig.Get().TimeScaleEnabled = false;
+				}
 				if (EndGameScreen.Get())
 				{
 					PegUIElement hitbox = EndGameScreen.Get().m_hitbox;
@@ -934,7 +941,13 @@ namespace Mercenary
 			{
 				return;
 			}
-// 			Out.Log("[状态] 对局进行中");
+			// 			Out.Log("[状态] 对局进行中");
+			if (Main.autoTimeScaleConf.Value == true)
+			{
+				MixMod.MixModConfig.Get().TimeScaleEnabled = true;
+				MixMod.MixModConfig.Get().TimeScale = Main.TimeScaleValue;
+			}
+
 			if (Main.phaseID == 0)
 			{
 				Out.Log("[对局中] 回合结束");
@@ -1271,7 +1284,8 @@ namespace Mercenary
 		private static ConfigEntry<string> awakeTimeConf;
 
 		private static ConfigEntry<int> awakeTimeIntervalConf;
-		
+		private static ConfigEntry<bool> autoTimeScaleConf;
+
 		private static float sleepTime;
 
 		
@@ -1285,6 +1299,9 @@ namespace Mercenary
 
 		// 挂机收菜模式 下次战斗准备挂机
 		private static bool readyToHang = false;
+		// 齿轮倍数
+		private static float TimeScaleValue=2.0f;
+
 
 
 	}
