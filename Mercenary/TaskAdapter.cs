@@ -1568,7 +1568,7 @@ namespace Mercenary
 				return;
 			}
 			//杀龙
-			if (desc.Contains("击败") && desc.Contains("条龙"))
+			if ((desc.Contains("击败") || desc.Contains("消灭")) && desc.Contains("条龙"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 5, "4-1", new MercenaryEntity[]
 				{
@@ -1754,7 +1754,7 @@ namespace Mercenary
 				}
 				else
 				{
-					tasks.Add(TaskAdapter.GetTask(taskId, 5, "H1-1", new MercenaryEntity[]
+					tasks.Add(TaskAdapter.GetTask(taskId, 10, "H1-1", new MercenaryEntity[]
 					{
 						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));

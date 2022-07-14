@@ -593,39 +593,31 @@ namespace Mercenary
 			{
 				Out.Log("F3查询");
 
-// 				Network.Get().UpgradeMercenaryEquipment(18, 139);
-				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries(null, true);
+				// 查拥有的佣兵情况
+				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
 				foreach (LettuceMercenary mercy in result.m_mercenaries)
 				{
 					foreach (LettuceAbility ability in mercy.m_abilityList)
 					{
-						string upgrade = "不可升级";
-						if (mercy.IsCardReadyForUpgrade(ability.ID, CollectionUtils.MercenariesModeCardType.Ability))
-							upgrade = "可升级";
-						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][技能ID:{3}][{4}]",
-							mercy.m_mercName, mercy.ID, ability.GetCardName(), ability.ID, upgrade));
+						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}]",
+							mercy.m_mercName, mercy.ID, ability.GetCardName()));
 					}
 					foreach (LettuceAbility ability in mercy.m_equipmentList)
 					{
-						string upgrade = "不可升级";
-						if (mercy.IsCardReadyForUpgrade(ability.ID, CollectionUtils.MercenariesModeCardType.Equipment))
-						{
-							Network.Get().UpgradeMercenaryEquipment(mercy.ID, ability.ID);
-							upgrade = "可升级";
-						}
-						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}][装备ID:{3}][{4}]",
-							mercy.m_mercName, mercy.ID, ability.GetCardName(), ability.ID, upgrade));
+						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][装备:{2}]",
+							mercy.m_mercName, mercy.ID, ability.GetCardName()));
 					}
 				}
 
-				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
-				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
-					Out.Log(result1.GetVar("ID").ToString() + " " +
-						result1.VisitLogic + " " +
-						result1.GetVar("NOTE_DESC") + " " +
-						result1.BossType + " " +
-						result1.NodeVisualId 
-						);
+				// 查所有地图节点
+// 				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
+// 				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
+// 					Out.Log(result1.GetVar("ID").ToString() + " " +
+// 						result1.VisitLogic + " " +
+// 						result1.GetVar("NOTE_DESC") + " " +
+// 						result1.BossType + " " +
+// 						result1.NodeVisualId 
+// 						);
 			}
 
 			if (!Main.isRunning)
