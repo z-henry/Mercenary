@@ -1552,9 +1552,9 @@ namespace Mercenary
 				
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, "H2-5", new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(MercConst.光明之翼,"妖精之尘", 1),
-								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
-								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,0,HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+					TaskAdapter.GetMercenary(MercConst.光明之翼,"妖精之尘", 1),
+					TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+					TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,0,HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 				}));
 				return;
 			}
@@ -1563,7 +1563,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-6", new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1572,7 +1572,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 5, "4-1", new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1581,7 +1581,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 5, "H1-1", new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1590,7 +1590,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 5, "H1-2", new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1606,8 +1606,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.沃金, "暗影涌动", 1)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.沃金, "暗影涌动", 1)
 				}));
 				return;
 			}
@@ -1616,8 +1616,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, "眼魔船长", 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, "眼魔船长", 0)
 				}));
 				return;
 			}
@@ -1626,8 +1626,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.拉索利安, "巨型大恶魔", 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.拉索利安, "巨型大恶魔", 0)
 				}));
 				return;
 			}
@@ -1636,8 +1636,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.闪狐, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.闪狐, null, 0)
 				}));
 				return;
 			}
@@ -1646,8 +1646,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 0)
 				}));
 				return;
 			}
@@ -1656,8 +1656,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.奈法利安,"龙人突袭",1)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.奈法利安,"龙人突袭",1)
 
 				}));
 				return;
@@ -1667,8 +1667,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.安东尼达斯, "烈焰风暴", 1)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.安东尼达斯, "烈焰风暴", 1)
 
 				}));
 				return;
@@ -1678,8 +1678,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.泽瑞拉, null, 0)
 				}));
 				return;
 			}
@@ -1688,8 +1688,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉,"冰雹", 1)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉,"冰雹", 1)
 				}));
 				return;
 			}
@@ -1698,8 +1698,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.安东尼达斯, "火球术", 0),
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.安东尼达斯, "火球术", 0),
 				}));
 				return;
 			}
@@ -1708,8 +1708,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.沃金, "虚弱诅咒", 0),
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.沃金, "虚弱诅咒", 0),
 				}));
 				return;
 			}
@@ -1718,8 +1718,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.玛诺洛斯, null, 0),
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.玛诺洛斯, null, 0),
 				}));
 				return;
 			}
@@ -1728,8 +1728,8 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.布鲁坎, "闪电箭", 0),
+					TaskAdapter.GetMercenary(mercenaryId, null, 0),
+					TaskAdapter.GetMercenary(MercConst.布鲁坎, "闪电箭", 0),
 				}));
 				return;
 			}
@@ -1738,7 +1738,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, 1, "H1-1", new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1749,25 +1749,39 @@ namespace Mercenary
 				{
 					tasks.Add(TaskAdapter.GetTask(taskId, 10, new MercenaryEntity[]
 					{
-									TaskAdapter.GetMercenary(mercenaryId, null, 0)
+						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));
 				}
 				else
 				{
 					tasks.Add(TaskAdapter.GetTask(taskId, 5, "H1-1", new MercenaryEntity[]
 					{
-									TaskAdapter.GetMercenary(mercenaryId, null, 0)
+						TaskAdapter.GetMercenary(mercenaryId, null, 0)
 					}));
 				}
 				return;
 			}
 
-			//灵魂医者
-			if (desc.Contains("灵魂医者"))
+			//抵达神秘选项，赐福或灵魂医者处
+			if (desc.Contains("赐福或灵魂医者"))
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
+				}));
+				TaskUtils.HaveTaskDocter = true;
+				TaskUtils.HaveTaskCaster = true;
+				TaskUtils.HaveTaskFighter = true;
+				TaskUtils.HaveTaskTank = true;
+				return;
+			}
+
+			//灵魂医者
+			if (desc.Contains("利用灵魂医者"))
+			{
+				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				TaskUtils.HaveTaskDocter = true;
 				return;
@@ -1775,9 +1789,9 @@ namespace Mercenary
 			//赐福
 			if (desc.Contains("利用赐福"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 10, "H1-2", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, 1, "H1-2", new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				if (desc.Contains("施法者"))
 					TaskUtils.HaveTaskCaster = true;
@@ -1792,7 +1806,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1802,7 +1816,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1816,7 +1830,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1825,7 +1839,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}
@@ -1834,7 +1848,7 @@ namespace Mercenary
 			{
 				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
-								TaskAdapter.GetMercenary(mercenaryId, null, 0)
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
 				return;
 			}

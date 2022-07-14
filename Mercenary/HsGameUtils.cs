@@ -104,6 +104,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
+// 			if (result.NodeVisualId == "OPPORTUNITY_CASTER")
+// 				Out.Log("IsCaster");
 			return result.NodeVisualId == "OPPORTUNITY_CASTER";
 		}
 
@@ -113,6 +115,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
+// 			if (result.NodeVisualId == "OPPORTUNITY_FIGHTER")
+// 				Out.Log("IsFighter");
 			return result.NodeVisualId == "OPPORTUNITY_FIGHTER";
 		}
 
@@ -122,6 +126,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
+// 			if (result.NodeVisualId == "OPPORTUNITY_PROTECTOR")
+// 				Out.Log("IsTank");
 			return result.NodeVisualId == "OPPORTUNITY_PROTECTOR";
 		}
 
@@ -130,6 +136,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
+// 			if (result.NodeVisualId == "HEALER")
+// 				Out.Log("IsDoctor");
 			return result.NodeVisualId == "HEALER";
 		}
 
