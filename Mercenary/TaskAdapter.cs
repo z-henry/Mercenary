@@ -1390,7 +1390,13 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-5", new MercenaryEntity[]
 							{
+								TaskAdapter.GetMercenary(mercenaryId, "防护之戒", 2),
+								TaskAdapter.GetMercenary(mercenaryId, "古树的坚韧", 2),
+								TaskAdapter.GetMercenary(mercenaryId, "古树生长", 2),
+								TaskAdapter.GetMercenary(mercenaryId, "古树知识", 2),
+								TaskAdapter.GetMercenary(mercenaryId, "攻击", 2),
 								TaskAdapter.GetMercenary(mercenaryId, "群体缠绕", 2),
+								TaskAdapter.GetMercenary(mercenaryId, "树皮肌肤", 2),
 								TaskAdapter.GetMercenary(mercenaryId, "大地的敌意", 2)
 								
 							}));

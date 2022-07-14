@@ -1147,9 +1147,14 @@ namespace Mercenary
 					Entity entity2 = GameState.Get().GetEntity(id);
 					if (entity2 != null && !entity2.IsLettuceEquipment())
 					{
+						//有些技能没有等级，不删掉后面的数字
+						string tmpName = entity2.GetName();
+						if (tmpName.Length > 0 &&
+							Char.IsNumber(tmpName[tmpName.Length - 1]))
+							tmpName = entity2.GetName().Substring(0, entity2.GetName().Length - 1);
 						list2.Add(new Skill
 						{
-							Name = entity2.GetName().Substring(0, entity2.GetName().Length - 1),
+							Name = tmpName,
 							Id = entity2.GetEntityId()
 						});
 					}
