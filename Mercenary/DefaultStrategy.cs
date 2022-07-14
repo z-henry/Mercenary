@@ -89,7 +89,6 @@ namespace Mercenary
 		
 		private static readonly List<string> FirstAbilityName = new List<string>
 		{
-			"大地的敌意",
 			"地狱火",
 			"死吧，虫子",
 			"振奋之歌",
@@ -97,7 +96,6 @@ namespace Mercenary
 			"坚韧光环",
 			"法力壁垒",
 			"奥术齐射",
-			"治疗链",
 		};
 	}
 }
