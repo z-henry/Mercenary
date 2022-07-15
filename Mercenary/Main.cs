@@ -514,7 +514,8 @@ namespace Mercenary
 					foreach (int num2 in MercConst.First)
 					{
 						LettuceMercenary mercenary2 = HsGameUtils.GetMercenary(num2);
-						if (!lettuceTeam.IsMercInTeam(num2, true) && !mercenary2.IsReadyForCrafting() && !mercenary2.m_isFullyUpgraded && mercenary2.m_owned)
+						if (!lettuceTeam.IsMercInTeam(num2, true) && !mercenary2.IsReadyForCrafting() && !mercenary2.m_isFullyUpgraded && mercenary2.m_owned &&
+							HsGameUtils.CalcMercenaryCoinNeed(mercenary2) > 0)
 						{
 							lettuceTeam.AddMerc(mercenary2, -1, null);
 							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}]，因为满级优先级设置高",
@@ -530,7 +531,8 @@ namespace Mercenary
 				{
 					foreach (LettuceMercenary lettuceMercenary3 in mercenaries)
 					{
-						if (!lettuceTeam.IsMercInTeam(lettuceMercenary3.ID, true) && !lettuceMercenary3.IsReadyForCrafting() && !lettuceMercenary3.m_isFullyUpgraded && !MercConst.Ignore.Contains(lettuceMercenary3.ID))
+						if (!lettuceTeam.IsMercInTeam(lettuceMercenary3.ID, true) && !lettuceMercenary3.IsReadyForCrafting() && !lettuceMercenary3.m_isFullyUpgraded && 
+							!MercConst.Ignore.Contains(lettuceMercenary3.ID) &&	HsGameUtils.CalcMercenaryCoinNeed(lettuceMercenary3) > 0)
 						{
 							lettuceTeam.AddMerc(lettuceMercenary3, -1, null);
 							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}]，满级",
@@ -546,7 +548,8 @@ namespace Mercenary
 				{
 					foreach (LettuceMercenary lettuceMercenary4 in mercenaries)
 					{
-						if (!lettuceTeam.IsMercInTeam(lettuceMercenary4.ID, true) && !lettuceMercenary4.IsReadyForCrafting())
+						if (!lettuceTeam.IsMercInTeam(lettuceMercenary4.ID, true) && !lettuceMercenary4.IsReadyForCrafting() &&
+							HsGameUtils.CalcMercenaryCoinNeed(lettuceMercenary4) > 0)
 						{
 							lettuceTeam.AddMerc(lettuceMercenary4, -1, null);
 							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}]，满级优先级设置低",

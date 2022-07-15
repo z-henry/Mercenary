@@ -146,7 +146,41 @@ namespace Mercenary
 			return CollectionManager.Get().GetMercenary((long)id, false, true);
 		}
 
-		
+		public static long CalcMercenaryCoinNeed(LettuceMercenary merc)
+		{
+			long num = 0L;
+			if (!merc.m_owned)
+			{
+				num += (long)merc.GetCraftingCost();
+			}
+			foreach (LettuceAbility lettuceAbility in merc.m_abilityList)
+			{
+				for (int i = lettuceAbility.m_tier; i < lettuceAbility.m_tierList.Length; i++)
+				{
+					LettuceAbility.AbilityTier abilityTier = lettuceAbility.m_tierList[i];
+					if (abilityTier.m_validTier)
+					{
+						num += (long)abilityTier.m_coinCost;
+					}
+				}
+			}
+			foreach (LettuceAbility lettuceAbility in merc.m_equipmentList)
+			{
+				for (int i = lettuceAbility.m_tier; i < lettuceAbility.m_tierList.Length; i++)
+				{
+					LettuceAbility.AbilityTier abilityTier = lettuceAbility.m_tierList[i];
+					if (abilityTier.m_validTier)
+					{
+						num += (long)abilityTier.m_coinCost;
+					}
+				}
+			}
+			num -= merc.m_currencyAmount;
+			return num;
+		}
+
+
+
 		public static void SelectBoss(int mapId)
 		{
 			LettuceVillageDisplay.LettuceSceneTransitionPayload lettuceSceneTransitionPayload = new LettuceVillageDisplay.LettuceSceneTransitionPayload();
