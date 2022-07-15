@@ -1245,7 +1245,8 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "吞噬", 2),
+								TaskAdapter.GetMercenary(mercenaryId, "吞噬", 0),
+								TaskAdapter.GetMercenary(mercenaryId, "鳞甲嘲讽", 2),
 								TaskAdapter.GetMercenary(MercConst.老瞎眼, "老蓟皮", 2)
 							}));
 							return;

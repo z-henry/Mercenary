@@ -964,7 +964,14 @@ namespace Mercenary
 
 			// 策略计算
 			List<BattleTarget> battleTargets = ((Main.modeConf.Value == "全自动接任务做任务") ? StrategyHelper.GetStrategy("_Sys_Default") : StrategyHelper.GetStrategy(Main.strategyConf.Value)).GetBattleTargets(this.BuildDefaultTargetMercenaries(), this.BuildTargetEntity(Player.Side.OPPOSING), this.BuildTargetEntity(Player.Side.FRIENDLY));
-			Dictionary<int, BattleTarget> dict = battleTargets.FindAll((BattleTarget i) => i.SkillId != -1).ToDictionary((BattleTarget i) => i.SkillId, (BattleTarget i) => i);
+			Dictionary<int, BattleTarget> dict = new Dictionary<int, BattleTarget>();
+			foreach (BattleTarget battleTarget in battleTargets)
+			{
+				if (battleTarget.SkillId == -1)
+					continue;
+				if (dict.ContainsKey(battleTarget.SkillId))
+					dict.Add(battleTarget.SkillId, battleTarget);
+			}
 
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
