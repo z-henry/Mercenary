@@ -9,6 +9,10 @@ namespace Mercenary
 		
 		public static void SetTask(int taskId, int mercenaryId, string title, string desc, List<Task> tasks)
 		{
+			//无法完成的
+			//梵妮莎·范克里夫——任务2：匪门虎女
+
+
 			// 对于优先使用多个英雄配合的，优先级设为0，保证一起出场
 			// 未满30级的佣兵 优先级设为10，放后备箱里跟着升级
 			// 部分要求地图的基本优先级都是5（正常）挨个排着
@@ -60,6 +64,18 @@ namespace Mercenary
 
 				case MercConst.伊瑞尔:
 					{
+						//伊瑞尔 任务3:惩戒不信之徒
+						//伊瑞尔 任务10:净化邪恶
+						if (title.Contains("惩戒不信之徒") || title.Contains("净化邪恶"))
+						{
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "光缚之怒", 0),
+								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+								TaskAdapter.GetMercenary(MercConst.赤精, "振奋之歌", 1)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -273,6 +289,22 @@ namespace Mercenary
 
 				case MercConst.塔维什_雷矛:
 					{
+						//塔维什·雷矛 任务14:当心脚下
+						if (title.Contains("当心脚下"))
+						{
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-6", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "爆炸陷阱", 2),
+								TaskAdapter.GetMercenary(MercConst.瓦罗克_萨鲁法尔, "旋风斩", 1),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -553,17 +585,6 @@ namespace Mercenary
 
 				case MercConst.德雷克塔尔:
 					{
-						//德雷克塔尔 任务9 沃金 任务14
-						if (title.Contains("暗影秘法") || title.Contains("沃金的意志"))
-						{
-							tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-6", new MercenaryEntity[]
-							{
-								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "构筑魔像", 0),
-								TaskAdapter.GetMercenary(mercenaryId, "暗影涌动", 1)
-							}));
-							return;
-						}
-
 						//德雷克塔尔 任务14:邪能的力量
 						if (title.Contains("邪能的力量"))
 						{
@@ -604,6 +625,18 @@ namespace Mercenary
 
 				case MercConst.拉希奥:
 					{
+						//拉希奥 任务14:展开双翼
+						//拉希奥 任务3:黑王子之战
+						if (title.Contains("展开双翼") || title.Contains("黑王子之战"))
+						{
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "真正形态", 1),
+								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+								TaskAdapter.GetMercenary(MercConst.赤精, "振奋之歌", 1)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -805,6 +838,22 @@ namespace Mercenary
 
 				case MercConst.梵妮莎_范克里夫:
 					{
+						//梵妮莎·范克里夫 任务14:一刃双雕
+						if (title.Contains("一刃双雕"))
+						{
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "临时武器", 2),
+								TaskAdapter.GetMercenary(MercConst.乌瑟尔_光明使者, "保护祝福", 0),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
+							}));
+							return;
+						}
 						//梵妮莎·范克里夫 任务9:夺刀斩将
 						if (title.Contains("夺刀斩将"))
 						{
@@ -828,6 +877,17 @@ namespace Mercenary
 
 				case MercConst.沃金:
 					{
+						//沃金 任务9:暗影秘法
+						//沃金 任务14:沃金的意志
+						if (title.Contains("暗影秘法") || title.Contains("沃金的意志"))
+						{
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-6", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "构筑魔像", 0),
+								TaskAdapter.GetMercenary(mercenaryId, "暗影涌动", 1)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -909,8 +969,8 @@ namespace Mercenary
 
 				case MercConst.洛卡拉:
 					{
-						//洛卡拉 任务9 任务12
-						if (title.Contains("新的任务") || title.Contains("毒性猛烈"))
+						//洛卡拉 任务9
+						if (title.Contains("新的任务"))
 						{
 							tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 							{
@@ -949,6 +1009,18 @@ namespace Mercenary
 
 				case MercConst.滑矛领主:
 					{
+						//滑矛领主 任务3:丢进垃圾箱
+						//滑矛领主 任务10:那就是垃圾
+						if (title.Contains("丢进垃圾箱") || title.Contains("那就是垃圾"))
+						{
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, "H1-1", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "处理垃圾", 2),
+								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+								TaskAdapter.GetMercenary(MercConst.厨师曲奇, "小鱼快冲", 0)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -1272,17 +1344,6 @@ namespace Mercenary
 
 				case MercConst.范达尔_雷矛:
 					{
-						//塔维什·雷矛 任务14:当心脚下
-						if (title.Contains("当心脚下"))
-						{
-							tasks.Add(TaskAdapter.GetTask(taskId, 0, "2-6", new MercenaryEntity[]
-							{
-								TaskAdapter.GetMercenary(mercenaryId, "爆炸陷阱", 2),
-								TaskAdapter.GetMercenary(MercConst.瓦罗克_萨鲁法尔, "旋风斩", 1),
-								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0)
-							}));
-							return;
-						}
 						//范达尔·雷矛 任务17 
 						if (title.Contains("拼尽全力"))
 						{
@@ -1471,7 +1532,7 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(mercenaryId, "伏虎闪雷", 2),
 								TaskAdapter.GetMercenary(mercenaryId, "白虎飞扑", 2),
 								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
-								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
+								TaskAdapter.GetMercenary(MercConst.穆克拉, "原始之力", 0)
 							}));
 							return;
 						}
