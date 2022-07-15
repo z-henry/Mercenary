@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.12")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.13")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.0.12"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.0.13"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
