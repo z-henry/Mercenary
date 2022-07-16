@@ -562,6 +562,19 @@ namespace Mercenary
 							}));
 							return;
 						}
+
+						//希尔瓦娜斯·风行者 任务17:女妖之怒
+						if (title.Contains("女妖之怒"))
+						{
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "重拾灵魂", 0),
+								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "构筑魔像", 2),
+								TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, "眼魔船工", 1)
+							}));
+							return;
+						}
+
 					}
 					break;
 
