@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.13")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.14")]
 	public class Main : BaseUnityPlugin
 	{
 		
