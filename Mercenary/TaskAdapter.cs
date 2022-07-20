@@ -228,7 +228,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(taskId, 0, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "圣剑挺击", 0),
+								TaskAdapter.GetMercenary(mercenaryId, "活体荆棘", 0),
 								TaskAdapter.GetMercenary(MercConst.布鲁坎, "陷足泥泞", 1)
 							}));
 							return;
