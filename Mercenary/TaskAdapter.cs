@@ -1864,7 +1864,7 @@ namespace Mercenary
 			//赐福
 			if (desc.Contains("利用赐福"))
 			{
-				tasks.Add(TaskAdapter.GetTask(taskId, 1, "H1-2", new MercenaryEntity[]
+				tasks.Add(TaskAdapter.GetTask(taskId, new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0)
 				}));
