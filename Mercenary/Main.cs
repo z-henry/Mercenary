@@ -497,7 +497,7 @@ namespace Mercenary
 			List<LettuceMercenary> mercenaries = (
 				from x in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries
 				where x.m_owned == true && x.m_isFullyUpgraded == false && HsGameUtils.CalcMercenaryCoinNeed(x) > 0
-				orderby MercConst.First.IndexOf(x.ID) descending
+				orderby (MercConst.First.IndexOf(x.ID) == -1 ? int.MaxValue : MercConst.First.IndexOf(x.ID)) ascending
 				select x
 				).ToList<global::LettuceMercenary>();
 			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
