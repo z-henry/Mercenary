@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.0.14")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.1.0")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.0.13"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.1.0"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -60,6 +60,7 @@ namespace Mercenary
 			Main.awakeTimeIntervalConf = base.Config.Bind<int>("配置", "唤醒时间间隔", 22, "挂机收菜下的唤醒时间间隔");
 			Main.autoTimeScaleConf = base.Config.Bind<bool>("配置", "自动齿轮加速", false, "战斗中自动启用齿轮加速");
 			Main.pvpConcedeLine = base.Config.Bind<int>("配置", "PVP投降分数线", 99999, "PVP投降分数线");
+			Main.autoRerollQuest = base.Config.Bind<bool>("配置", "自动更换日周常任务", false, "自动更换日周常任务");
 		}
 
 		
@@ -714,6 +715,9 @@ namespace Mercenary
 			#region 悬赏面板
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_BOARD && gameState == null)
 			{
+				if(Main.autoRerollQuest.Value == true)
+					QuestManager.Instance.RollAQuest();
+
 				Out.Log(string.Format("[状态] 目前处于悬赏面板，切换到队伍选择，选择[MAPID:{0}]，休息6秒", GetMapId()));
 				HsGameUtils.SelectBoss(this.GetMapId());
 				Main.ResetIdle();
@@ -1324,7 +1328,7 @@ namespace Mercenary
 		private static ConfigEntry<int> awakeTimeIntervalConf;
 		private static ConfigEntry<bool> autoTimeScaleConf;
 		private static ConfigEntry<int> pvpConcedeLine;
-
+		private static ConfigEntry<bool> autoRerollQuest;
 		private static float sleepTime;
 
 		
