@@ -1004,7 +1004,7 @@ namespace Mercenary
 			{
 				if (battleTarget.SkillId == -1)
 					continue;
-				if (dict.ContainsKey(battleTarget.SkillId))
+				if (!dict.ContainsKey(battleTarget.SkillId))
 					dict.Add(battleTarget.SkillId, battleTarget);
 			}
 
@@ -1015,16 +1015,16 @@ namespace Mercenary
 // 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
 				List<Card> cards_opposite = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !i.GetEntity().IsStealthed());
 				List<Card> cards_friend = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER));
-// 				string strlog = "";
-// 				foreach (Card card1 in cards_opposite)
-// 					strlog += string.Format("{0}({1},{2})\t",
-// 						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
-// 				Out.Log(string.Format("[对局中] 场面：敌方 {0}", strlog));
-// 				strlog = "";
-// 				foreach (Card card1 in cards_friend)
-// 					strlog += string.Format("{0}({1},{2})\t",
-// 						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
-// 				Out.Log(string.Format("[对局中] 场面：友方 {0}", strlog));
+				string strlog = "";
+				foreach (Card card1 in cards_opposite)
+					strlog += string.Format("{0}({1},{2})\t",
+						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
+				Out.Log(string.Format("[对局中] 场面：敌方 {0}", strlog));
+				strlog = "";
+				foreach (Card card1 in cards_friend)
+					strlog += string.Format("{0}({1},{2})\t",
+						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
+				Out.Log(string.Format("[对局中] 场面：友方 {0}", strlog));
 
 
 				//这个是当前停留的技能id

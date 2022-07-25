@@ -1069,9 +1069,10 @@ namespace Mercenary
 						//玉珑 任务12:成长与新生
 						if (title.Contains("成长与新生"))
 						{
-							tasks.Add(TaskAdapter.GetTask(taskId, 5, "2-6", new MercenaryEntity[]
+							tasks.Add(TaskAdapter.GetTask(taskId, 0, "H1-1", new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "青玉劲风", 0)
+								TaskAdapter.GetMercenary(mercenaryId, "青玉劲风", 0),
+								TaskAdapter.GetMercenary(MercConst.剑圣萨穆罗, "二连击", 0)
 							}));
 							return;
 						}
