@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets;
 using HarmonyLib;
+using Hearthstone.DataModels;
 using PegasusLettuce;
 
 namespace Mercenary
@@ -225,10 +226,11 @@ namespace Mercenary
 			for (int i = netObject.VisitorStates.Count; i>0; --i)
 // 			foreach (MercenariesVisitorState mercenariesVisitorState in netObject.VisitorStates)
 			{
+				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelByTaskState(netObject.VisitorStates[i - 1].ActiveTaskState, null, false, false);
 				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(netObject.VisitorStates[i-1].ActiveTaskState.TaskId);
 				if ((MercenaryVisitor.VillageVisitorType)Traverse.Create(LettuceVillageDataUtil.GetVisitorRecordByID(taskRecordByID.MercenaryVisitorId)).Field("m_visitorType").GetValue() == MercenaryVisitor.VillageVisitorType.STANDARD)
 				{
-					HsGameUtils.SetTask(taskRecordByID, list);
+					HsGameUtils.SetTask(taskRecordByID, list, mercenaryVillageTaskItemDataModel.ProgressMessage);
 				}
 			}
 			return list;
@@ -262,10 +264,10 @@ namespace Mercenary
 		}
 
 		
-		private static void SetTask(VisitorTaskDbfRecord task, List<Task> tasks)
+		private static void SetTask(VisitorTaskDbfRecord task, List<Task> tasks, string progressMessage)
 		{
 			MercenaryVisitorDbfRecord visitorRecordByID = LettuceVillageDataUtil.GetVisitorRecordByID(task.MercenaryVisitorId);
-			TaskAdapter.SetTask(task.ID, visitorRecordByID.MercenaryId, task.TaskTitle.GetString(true), task.TaskDescription.GetString(true), tasks);
+			TaskAdapter.SetTask(task.ID, visitorRecordByID.MercenaryId, task.TaskTitle.GetString(true), task.TaskDescription.GetString(true), tasks, progressMessage);
 		}
 
 		

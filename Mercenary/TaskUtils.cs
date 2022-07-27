@@ -34,9 +34,9 @@ namespace Mercenary
 			{
 				while (enumerator.MoveNext())
 				{
-					Task task = enumerator.Current;
-					Task task2 = TaskUtils.tasks.Find((Task x) => x.Id == task.Id);
-					task.StartAt = ((task2 != null) ? task2.StartAt : TaskUtils.Current());
+					Task task_new = enumerator.Current;
+					Task task_old = TaskUtils.tasks.Find((Task x) => x.Id == task_new.Id && x.ProgressMessage == task_new.ProgressMessage);
+					task_new.StartAt = ((task_old != null) ? task_old.StartAt : TaskUtils.Current());
 				}
 			}
 			TaskUtils.tasks = newTasks;

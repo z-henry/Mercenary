@@ -41,5 +41,7 @@ namespace Mercenary
 		
 		public long StartAt;
 
+		public string ProgressMessage;
+
 	}
 }
