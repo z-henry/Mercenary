@@ -12,7 +12,7 @@ namespace Mercenary
 		}
 
 		
-		public MercenaryEntity(int id, string skill, int eq = 0, int subskillindex = 0, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
+		public MercenaryEntity(int id, string skill, int eq = 0, int subskillindex = -1, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
 		{
 			this.ID = id;
 			this.Skill = skill;

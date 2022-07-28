@@ -318,7 +318,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "多彩能量", 0, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "多彩能量", 0, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -463,7 +463,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 5, "2-5", new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "掩护射击", 1, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "掩护射击", 1, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -484,7 +484,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "凋零缠绕", 1, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "凋零缠绕", 1, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -533,7 +533,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "法力壁垒", 1, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "法力壁垒", 1, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -749,7 +749,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "王者祝福", 0, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "王者祝福", 0, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -1082,6 +1082,15 @@ namespace Mercenary
 
 				case MercConst.玛法里奥_怒风:
 					{
+						//玛法里奥·怒风 任务3:自然力量
+						if (title.Contains("自然力量"))
+						{
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "大德鲁伊的召唤", 1, 0),
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -1124,7 +1133,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "群星簇拥", 1, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "群星簇拥", 1, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -1278,7 +1287,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "战术大师", 0, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "战术大师", 0, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -1341,11 +1350,17 @@ namespace Mercenary
 						//艾德温·迪菲亚首脑 任务11 任务17
 						if (title.Contains("致命一击") || title.Contains("身先士卒"))
 						{
-							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H1-2", new MercenaryEntity[]
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "首脑的悬赏", 2),
-								TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, null, 0),
-								TaskAdapter.GetMercenary(MercConst.尤朵拉, null, 0)
+								TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, null, 0), 
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
+
 							}));
 							return;
 						}
@@ -1504,7 +1519,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "巨龙吐息", 0, 0, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+								TaskAdapter.GetMercenary(mercenaryId, "巨龙吐息", 0, -1, HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -1632,7 +1647,7 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(MercConst.光明之翼,"妖精之尘", 1),
 					TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
-					TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,0,HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+					TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,-1,HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 				}));
 				return;
 			}
@@ -1995,7 +2010,7 @@ namespace Mercenary
 		}
 
 		
-		private static MercenaryEntity GetMercenary(int id, string skill = null, int eq = 0, int subskill = 0, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
+		private static MercenaryEntity GetMercenary(int id, string skill = null, int eq = 0, int subskill = -1, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
 		{
 			return new MercenaryEntity(id, skill, eq, subskill, targettype);
 		}

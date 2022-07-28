@@ -222,6 +222,7 @@ namespace Mercenary
 			MercConst.赤精,
 			MercConst.魔像师卡扎库斯,
 			MercConst.厨师曲奇,
+			MercConst.提里奥_弗丁,
 
 			MercConst.洛卡拉,
 			MercConst.海盗帕奇斯,

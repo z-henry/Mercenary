@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.1.1")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.1.2")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -25,7 +25,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.1.1"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.1.2"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -1152,7 +1152,14 @@ namespace Mercenary
 				return;
 			}
 			List<Card> friendlyCards = ChoiceCardMgr.Get().GetFriendlyCards();
-			InputManager.Get().HandleClickOnSubOption(friendlyCards[friendlyCards.Count - 1].GetEntity(), false);
+			int skill_id = ChoiceCardMgr.Get().GetSubOptionParentCard().GetEntity().GetEntityId();
+			int subskill_index = friendlyCards.Count - 1;
+			if (dict.ContainsKey(skill_id) && dict[skill_id].SubSkillIndex != -1)
+			{
+				subskill_index = dict[skill_id].SubSkillIndex;
+			}
+			Out.Log("[对局中] 技能选择 使用抉择技能index： " + subskill_index.ToString());
+			InputManager.Get().HandleClickOnSubOption(friendlyCards[subskill_index].GetEntity(), false);
 			Main.ResetIdle();
 		}
 

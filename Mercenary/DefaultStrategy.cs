@@ -32,7 +32,7 @@ namespace Mercenary
 					Skill skill = mercenary.Skills.Find((Skill i) => i.Name == taskMercenary.Skill);
 					if (skill != null)
 					{
-						merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name, taskMercenary.TargetType));
+						merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name, taskMercenary.SubSkillIndex, taskMercenary.TargetType));
 					}
 				}
 
@@ -80,7 +80,7 @@ namespace Mercenary
 		
 		public string Name()
 		{
-			return "_Sys_Default";
+			return DefaultName;
 		}
 
 		
