@@ -38,14 +38,11 @@ namespace Mercenary
 
 
 				//再 设置的优先级队列FirstAbilityName
-				if (merc_battleTargets.Count <= 0)
+				foreach (Skill skill in mercenary.Skills)
 				{
-					foreach (Skill skill in mercenary.Skills)
+					if (DefaultStrategy.FirstAbilityName.Contains(skill.Name))
 					{
-						if (DefaultStrategy.FirstAbilityName.Contains(skill.Name))
-						{
-							merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name));
-						}
+						merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name));
 					}
 				}
 				//最后 用第一个得了
@@ -89,13 +86,6 @@ namespace Mercenary
 		
 		private static readonly List<string> FirstAbilityName = new List<string>
 		{
-			"地狱火",
-			"死吧，虫子",
-			"振奋之歌",
-			"烈焰之刺",
-			"坚韧光环",
-			"法力壁垒",
-			"奥术齐射",
 		};
 	}
 }

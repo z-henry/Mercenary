@@ -51,6 +51,8 @@ namespace Mercenary
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "无羁之怒", 0),
 								TaskAdapter.GetMercenary(mercenaryId, "亚煞极之力", 0),
+								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+								TaskAdapter.GetMercenary(MercConst.赤精, "振奋之歌", 1)
 							}));
 							return;
 						}
@@ -920,7 +922,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "1-10", new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, null, 1),
+								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, "烈焰之刺", 1),
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 1),
@@ -934,7 +936,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H1-9", new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, null, 1),
+								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, "烈焰之刺", 1),
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 1),
@@ -948,7 +950,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H2-6", new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, null, 1),
+								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, "烈焰之刺", 1),
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 1),
@@ -962,7 +964,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H5-2", new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, null, 1),
+								TaskAdapter.GetMercenary(MercConst.巴琳达_斯通赫尔斯, "烈焰之刺", 1),
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 1),
@@ -1376,14 +1378,24 @@ namespace Mercenary
 
 				case MercConst.范达尔_雷矛:
 					{
-						//范达尔·雷矛 任务17 
-						if (title.Contains("拼尽全力"))
+						//范达尔·雷矛 任务10:我们必胜
+						if (title.Contains("我们必胜"))
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H1-2", new MercenaryEntity[]
 							{
+								TaskAdapter.GetMercenary(mercenaryId,"天神下凡", 1),
 								TaskAdapter.GetMercenary(mercenaryId,"向前推进", 1),
 								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆,"光明圣印",1),
-								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯,"暗影之爪",2)
+							}));
+							return;
+						}
+						//范达尔·雷矛 任务17 
+						if (title.Contains("拼尽全力"))
+						{
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId,"向前推进", 1),
+								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆,"光明圣印",1),
 							}));
 							return;
 						}
@@ -1411,7 +1423,7 @@ namespace Mercenary
 
 				case MercConst.迦顿男爵:
 					{
-						//迦顿 任务12
+						//迦顿男爵 任务12:烧烤弱鸡
 						if (title.Contains("烧烤弱鸡"))
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
@@ -1422,10 +1434,11 @@ namespace Mercenary
 							}));
 							return;
 						}
-						//迦顿 任务10 任务14
+						//迦顿男爵 任务10:侵略如火
+						//迦顿男爵 任务14:翻腾火流
 						if (title.Contains("侵略如火") || title.Contains("翻腾火流"))
 						{
-							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "热力迸发", 0),
 								TaskAdapter.GetMercenary(MercConst.安东尼达斯, "火球术", 0),
