@@ -1414,11 +1414,11 @@ namespace Mercenary
 						//迦顿 任务12
 						if (title.Contains("烧烤弱鸡"))
 						{
-							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-6", new MercenaryEntity[]
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "活体炸弹", 1),
 								TaskAdapter.GetMercenary(MercConst.厨师曲奇, "小鱼快冲", 0),
-								TaskAdapter.GetMercenary(MercConst.安度因_乌瑞恩, "神圣新星", 0)
+								TaskAdapter.GetMercenary(MercConst.安东尼达斯, "烈焰风暴", 1)
 							}));
 							return;
 						}

@@ -12,6 +12,7 @@ using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
 using System.Reflection;
+using Hearthstone.DataModels;
 
 namespace Mercenary
 {	
@@ -360,7 +361,7 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(MercenariesSeasonRewardsDialog), "ShowWhenReady")]
 		public static bool _PreShowWhenReady(MercenariesSeasonRewardsDialog __instance)
@@ -610,30 +611,43 @@ namespace Mercenary
 				Out.Log("F3查询");
 
 				// 查拥有的佣兵情况
-				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
-				foreach (LettuceMercenary mercy in result.m_mercenaries)
-				{
-					foreach (LettuceAbility ability in mercy.m_abilityList)
-					{
-						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}]",
-							mercy.m_mercName, mercy.ID, ability.GetCardName()));
-					}
-					foreach (LettuceAbility ability in mercy.m_equipmentList)
-					{
-						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][装备:{2}]",
-							mercy.m_mercName, mercy.ID, ability.GetCardName()));
-					}
-				}
+				// 				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
+				// 				foreach (LettuceMercenary mercy in result.m_mercenaries)
+				// 				{
+				// 					foreach (LettuceAbility ability in mercy.m_abilityList)
+				// 					{
+				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}]",
+				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
+				// 					}
+				// 					foreach (LettuceAbility ability in mercy.m_equipmentList)
+				// 					{
+				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][装备:{2}]",
+				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
+				// 					}
+				// 				}
 
 				// 查所有地图节点
-// 				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
-// 				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
-// 					Out.Log(result1.GetVar("ID").ToString() + " " +
-// 						result1.VisitLogic + " " +
-// 						result1.GetVar("NOTE_DESC") + " " +
-// 						result1.BossType + " " +
-// 						result1.NodeVisualId 
-// 						);
+				// 				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
+				// 				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
+				// 					Out.Log(result1.GetVar("ID").ToString() + " " +
+				// 						result1.VisitLogic + " " +
+				// 						result1.GetVar("NOTE_DESC") + " " +
+				// 						result1.BossType + " " +
+				// 						result1.NodeVisualId 
+				// 						);
+
+				foreach (AchievementDataModel achieve in
+					from x in AchievementManager.Get().GetRecentlyCompletedAchievements()
+					where x.Status == AchievementManager.AchievementStatus.COMPLETED
+					orderby x.ID ascending
+					select x
+					)
+				{
+					AchievementManager.Get().AckAchievement(achieve.ID);
+// 					Network.Get().AckAchievement(achieve.ID);
+					Out.Log(string.Format("[{0}]", achieve.ID));
+					break;
+				}
 			}
 
 			if (!Main.isRunning)

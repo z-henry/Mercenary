@@ -80,7 +80,7 @@ namespace Mercenary
 						int idx = random.Next(questValidWeek.Count);
 						QuestDataModel questRe = questValidWeek[idx];
 						quest.RerollQuest(questRe.QuestId);
-						Out.Log(string.Format("随机更换无法完成的每周任务{0}：{1}",
+						Out.Log(string.Format("[任务调整] 随机更换无法完成的每周任务{0}：{1}",
 							questRe.QuestId, questRe.Description));
 					}
 				}
