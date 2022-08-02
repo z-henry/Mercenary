@@ -581,7 +581,7 @@ namespace Mercenary
 		}
 
 		
-		private static void Sleep(int time)
+		private static void Sleep(float time)
 		{
 			Main.sleepTime += (float)time;
 		}
@@ -854,7 +854,7 @@ namespace Mercenary
 
 
 
-			Main.Sleep(1);
+			Main.Sleep(0.3f);
 			this.HandlePlay();
 		}
 
@@ -1190,7 +1190,8 @@ namespace Mercenary
 					Id = entity.GetEntityId(),
 					Health = entity.GetCurrentHealth(),
 					Speed = card2.GetPreparedLettuceAbilitySpeedValue(),
-					DefHealth = entity.GetDefHealth()
+					DefHealth = entity.GetDefHealth(),
+					Role = (HsMercenaryStrategy.TAG_ROLE)(entity.GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))
 				};
 				list.Add(item);
 			}

@@ -31,9 +31,9 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "复仇之怒", 0),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 0),
-								TaskAdapter.GetMercenary(MercConst.考内留斯_罗姆, "牺牲祝福", 0)
+								TaskAdapter.GetMercenary(mercenaryId, "复仇之怒", 1),
+								TaskAdapter.GetMercenary(MercConst.先知维伦, "维伦的祝福", 0),
+								TaskAdapter.GetMercenary(MercConst.考内留斯_罗姆, "牺牲祝福", 2)
 							}));
 							return;
 						}
@@ -588,10 +588,11 @@ namespace Mercenary
 						//库尔特鲁斯·陨烬 任务10:独自训练
 						if (title.Contains("独自训练"))
 						{
-							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 1, "H1-2", new MercenaryEntity[]
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-6", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "屠魔者", 2),
 								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
+								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "嘲讽", 1),
 								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
 							}));
 							return;
@@ -1396,6 +1397,7 @@ namespace Mercenary
 							{
 								TaskAdapter.GetMercenary(mercenaryId,"向前推进", 1),
 								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆,"光明圣印",1),
+					TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯,"暗影之爪",2)
 							}));
 							return;
 						}
