@@ -277,7 +277,7 @@ namespace Mercenary
 			{
 				TaskUtils.UpdateTask();
 			}
-			if (modeConf.Value == "挂机收菜" && map.NodeData[0].NodeState_ == LettuceMapNode.NodeState.COMPLETE)
+			if (modeConf.Value == "挂机收菜" && map.NodeData[1].NodeState_ == LettuceMapNode.NodeState.COMPLETE)
 			{
 				readyToHang = true;
 				Out.Log("挂机收菜 只刷一关 下局战斗将写入收菜时间");
