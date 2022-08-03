@@ -1300,6 +1300,22 @@ namespace Mercenary
 
 				case MercConst.米尔豪斯_法力风暴:
 					{
+						//米尔豪斯_法力风暴 任务17
+						if (title.Contains("大箭就是好箭"))
+						{
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "奥术箭", 0),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
+								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+							}));
+							return;
+						}
 					}
 					break;
 
