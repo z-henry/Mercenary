@@ -277,13 +277,20 @@ namespace Mercenary
 			{
 				TaskUtils.UpdateTask();
 			}
-			if (modeConf.Value == "挂机收菜" && map.NodeData[1].NodeState_ == LettuceMapNode.NodeState.COMPLETE)
+			if (modeConf.Value == "挂机收菜")
 			{
-				readyToHang = true;
-				Out.Log("挂机收菜 只刷一关 下局战斗将写入收菜时间");
-				Network.Get().RetireLettuceMap();
-				Main.Sleep(2);
-				return;
+				if (map.NodeData[1].NodeState_ == LettuceMapNode.NodeState.COMPLETE)
+				{
+					readyToHang = false;
+					Out.Log("挂机收菜 只刷一关 下局战斗将写入收菜时间");
+					Network.Get().RetireLettuceMap();
+					Main.Sleep(2);
+					return;
+				}
+				else
+				{
+					readyToHang = true;
+				}
 			}
 			List<LettuceMapNode> nodes = map.NodeData;
 // 			foreach (LettuceMapNode node in nodes)
