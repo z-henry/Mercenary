@@ -708,6 +708,11 @@ namespace Mercenary
 					Main.ResetIdle();
 					return;
 				}
+
+				if (Main.autoRerollQuest.Value == true)
+					QuestManager.Instance.RollAQuest();
+
+
 				List<global::LettuceTeam> teams = CollectionManager.Get().GetTeams();
 				if (teams.Count == 0)
 				{
