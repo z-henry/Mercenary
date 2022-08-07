@@ -16,7 +16,7 @@ using Hearthstone.DataModels;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.1.2")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.1.3")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -26,7 +26,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.1.2"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.1.3"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
