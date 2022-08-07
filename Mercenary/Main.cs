@@ -234,6 +234,13 @@ namespace Mercenary
 			{
 				return;
 			}
+			if (Main.modeConf.Value == "Pvp")
+			{
+				Out.Log(string.Format("[地图信息识别] Pvp模式，回到村庄"));
+				HsGameUtils.GotoSceneVillage();
+				return;
+			}
+
 			NetCache.NetCacheMercenariesVillageVisitorInfo netObject = NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>();
 			if (netObject != null)
 			{
@@ -1019,7 +1026,21 @@ namespace Mercenary
 			}
 
 			// 策略计算
-			List<BattleTarget> battleTargets = ((Main.modeConf.Value == "全自动接任务做任务") ? StrategyHelper.GetStrategy("_Sys_Default") : StrategyHelper.GetStrategy(Main.strategyConf.Value)).GetBattleTargets(this.BuildDefaultTargetMercenaries(), this.BuildTargetEntity(Player.Side.OPPOSING), this.BuildTargetEntity(Player.Side.FRIENDLY));
+// 			string strlog = "";
+// 			foreach (Target target_iter in BuildTargetEntity(Player.Side.OPPOSING))
+// 				strlog += string.Format("{0}{1}\t", target_iter.Name, target_iter.Enable ? "√" : "×");
+// 			Out.Log(string.Format("[test] 场面：敌方 {0}", strlog));
+// 			strlog = "";
+// 			foreach (Target target_iter in BuildTargetEntity(Player.Side.FRIENDLY))
+// 				strlog += string.Format("{0}{1}\t", target_iter.Name, target_iter.Enable ? "√" : "×");
+// 			Out.Log(string.Format("[test] 场面：友方 {0}", strlog));
+
+			string strategy_name = Main.modeConf.Value == "全自动接任务做任务" ? "_Sys_Default" : Main.strategyConf.Value;
+			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
+				this.BuildDefaultTargetMercenaries(), 
+				this.BuildTargetEntity(Player.Side.OPPOSING), 
+				this.BuildTargetEntity(Player.Side.FRIENDLY)
+				);
 			Dictionary<int, BattleTarget> dict = new Dictionary<int, BattleTarget>();
 			foreach (BattleTarget battleTarget in battleTargets)
 			{
@@ -1029,24 +1050,13 @@ namespace Mercenary
 					dict.Add(battleTarget.SkillId, battleTarget);
 			}
 
+
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
 			{
-
 // 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
 				List<Card> cards_opposite = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !i.GetEntity().IsStealthed());
 				List<Card> cards_friend = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER));
-				string strlog = "";
-				foreach (Card card1 in cards_opposite)
-					strlog += string.Format("{0}({1},{2})\t",
-						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
-				Out.Log(string.Format("[对局中] 场面：敌方 {0}", strlog));
-				strlog = "";
-				foreach (Card card1 in cards_friend)
-					strlog += string.Format("{0}({1},{2})\t",
-						card1.GetEntity().GetEntityId(), card1.GetEntity().GetCurrentHealth(), card1.GetEntity().GetDefHealth());
-				Out.Log(string.Format("[对局中] 场面：友方 {0}", strlog));
-
 
 				//这个是当前停留的技能id
 				Network.Options.Option.SubOption networkSubOption = GameState.Get().GetSelectedNetworkSubOption();
@@ -1056,6 +1066,7 @@ namespace Mercenary
 				foreach (BattleTarget battleTarget in battleTargets)
 					Out.Log(string.Format("[对局中] 策略判断 [SID:{0}] [SNAME:{1}] [TID:{2}] [TTYPE:{3}]",
 							battleTarget.SkillId, battleTarget.SkillName, battleTarget.TargetId, battleTarget.TargetType));
+
 
 
 				Card card = null;
@@ -1188,17 +1199,20 @@ namespace Mercenary
 		private List<Target> BuildTargetEntity(Player.Side side)
 		{
 			List<Target> list = new List<Target>();
-			foreach (Card card2 in ZoneMgr.Get().FindZoneOfType<ZonePlay>(side).GetCards().FindAll((Card card) => (card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !card.GetEntity().IsStealthed()))
+			foreach (Card card in ZoneMgr.Get().FindZoneOfType<ZonePlay>(side).GetCards())
 			{
-				Entity entity = card2.GetEntity();
+				bool flag_avalue = card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER;
+				if (side != Player.Side.FRIENDLY)
+					flag_avalue = flag_avalue && !card.GetEntity().IsStealthed();
 				Target item = new Target
 				{
-					Name = entity.GetName(),
-					Id = entity.GetEntityId(),
-					Health = entity.GetCurrentHealth(),
-					Speed = card2.GetPreparedLettuceAbilitySpeedValue(),
-					DefHealth = entity.GetDefHealth(),
-					Role = (HsMercenaryStrategy.TAG_ROLE)(entity.GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))
+					Name = card.GetEntity().GetName(),
+					Id = card.GetEntity().GetEntityId(),
+					Health = card.GetEntity().GetCurrentHealth(),
+					Speed = card.GetPreparedLettuceAbilitySpeedValue(),
+					DefHealth = card.GetEntity().GetDefHealth(),
+					Role = (HsMercenaryStrategy.TAG_ROLE)(card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE)),
+					Enable = flag_avalue,
 				};
 				list.Add(item);
 			}
@@ -1217,7 +1231,7 @@ namespace Mercenary
 				{
 					Name = entity.GetName()
 				};
-				List<Skill> list2 = new List<Skill>();
+				List<Skill> skills = new List<Skill>();
 				foreach (int id in card.GetEntity().GetLettuceAbilityEntityIDs())
 				{
 					Entity entity2 = GameState.Get().GetEntity(id);
@@ -1228,7 +1242,7 @@ namespace Mercenary
 						if (tmpName.Length > 0 &&
 							Char.IsNumber(tmpName[tmpName.Length - 1]))
 							tmpName = entity2.GetName().Substring(0, entity2.GetName().Length - 1);
-						list2.Add(new Skill
+						skills.Add(new Skill
 						{
 							Name = tmpName,
 							Id = entity2.GetEntityId()
@@ -1237,7 +1251,7 @@ namespace Mercenary
 				}
 				mercenary.Id = card.GetEntity().GetEntityId();
 				mercenary.Name = card.GetEntity().GetName();
-				mercenary.Skills = list2;
+				mercenary.Skills = skills;
 				list.Add(mercenary);
 			}
 			return list;
