@@ -16,7 +16,7 @@ using Hearthstone.DataModels;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.1.3")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.2.0")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -26,7 +26,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.1.3"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent("3.2.0"), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -849,7 +849,7 @@ namespace Mercenary
 						hitbox.TriggerPress();
 						hitbox.TriggerRelease();
 						Out.Log("[对局结束] 游戏结束，点击");
-						Main.Sleep(10);
+						Main.Sleep(4);
 						Main.ResetIdle();
 					}
 				}
@@ -1042,9 +1042,9 @@ namespace Mercenary
 
 			string strategy_name = Main.modeConf.Value == "全自动接任务做任务" ? "_Sys_Default" : Main.strategyConf.Value;
 			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
-				this.BuildDefaultTargetMercenaries(), 
-				this.BuildTargetEntity(Player.Side.OPPOSING), 
-				this.BuildTargetEntity(Player.Side.FRIENDLY)
+				this.BuildMercenariesFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards()), 
+				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING), 
+				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY)
 				);
 			Dictionary<int, BattleTarget> dict = new Dictionary<int, BattleTarget>();
 			foreach (BattleTarget battleTarget in battleTargets)
@@ -1114,13 +1114,46 @@ namespace Mercenary
 			}
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION)
 			{
-				ZonePlay zonePlay = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
-				if (Main.phaseID == 1 && EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_YOUR_TURN)
+				if (Main.phaseID == 1 && 
+					EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_YOUR_TURN)
 				{
-					InputManager.Get().DoEndTurnButton();
-					Out.Log("[对局中] 上怪，休息5秒");
-					Sleep(5);
-					return;
+					ZonePlay zonePlay = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
+					ZoneHand zoneHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.FRIENDLY);
+					if (zoneHand != null)
+					{
+						(int hand_index, int play_index) = StrategyHelper.GetStrategy(strategy_name).GetEnterOrder(
+							BuildMercenariesFromCards(zoneHand.GetCards()),
+							BuildMercenariesFromCards(zonePlay.GetCards())
+							);
+
+						string strlog = "";
+						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zoneHand.GetCards()))
+							strlog += string.Format("{0}\t", target_iter.Name);
+						Out.Log(string.Format("[test] 场面：shoupai {0}", strlog));
+						strlog = "";
+						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zonePlay.GetCards()))
+							strlog += string.Format("{0}\t", target_iter.Name);
+						Out.Log(string.Format("[test] 场面：changmian {0}", strlog));
+
+						GameState gameState = GameState.Get();
+						if (gameState != null)
+						{
+							Out.Log(string.Format("[佣兵登场] 选择[佣兵{0}:{1}]，位置[{2}]",
+								hand_index, zoneHand.GetCardAtIndex(hand_index).GetEntity().GetName(), play_index));
+							gameState.SetSelectedOption(hand_index+ 1);
+							gameState.SetSelectedSubOption(-1);
+							gameState.SetSelectedOptionTarget(0);
+							gameState.SetSelectedOptionPosition(play_index + 1);
+							gameState.SendOption();
+							Sleep(0.75f);
+						}
+						return;
+					}
+
+// 					InputManager.Get().DoEndTurnButton();
+// 					Out.Log("[对局中] 上怪，休息5秒");
+// 					Sleep(5);
+// 					return;
 				}
 				if (Main.phaseID == 2)
 				{
@@ -1140,7 +1173,7 @@ namespace Mercenary
 					}
 					if (ZoneMgr.Get().GetLettuceAbilitiesSourceEntity() == null)
 					{
-						using (List<Card>.Enumerator enumerator2 = zonePlay.GetCards().GetEnumerator())
+						using (List<Card>.Enumerator enumerator2 = zonePlay2.GetCards().GetEnumerator())
 						{
 							while (enumerator2.MoveNext())
 							{
@@ -1201,10 +1234,10 @@ namespace Mercenary
 		}
 
 		
-		private List<Target> BuildTargetEntity(Player.Side side)
+		private List<Target> BuildTargetFromCards(List<Card> cards, Player.Side side)
 		{
 			List<Target> list = new List<Target>();
-			foreach (Card card in ZoneMgr.Get().FindZoneOfType<ZonePlay>(side).GetCards())
+			foreach (Card card in cards)
 			{
 				bool flag_avalue = card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER;
 				if (side != Player.Side.FRIENDLY)
@@ -1224,10 +1257,8 @@ namespace Mercenary
 			return list;
 		}
 
-		
-		private List<HsMercenaryStrategy.Mercenary> BuildDefaultTargetMercenaries()
+		private List<HsMercenaryStrategy.Mercenary> BuildMercenariesFromCards(List<Card> cards)
 		{
-			List<Card> cards = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards();
 			List<HsMercenaryStrategy.Mercenary> list = new List<HsMercenaryStrategy.Mercenary>();
 			foreach (Card card in cards)
 			{
@@ -1262,7 +1293,7 @@ namespace Mercenary
 			return list;
 		}
 
-		
+
 		private static ValueTuple<LettuceMapNode, int> GetNextNode(List<LettuceMapNode> nodes, List<LettuceMapNode> allNodes)
 		{
 			int num = int.MaxValue;

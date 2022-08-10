@@ -7,7 +7,12 @@ namespace Mercenary
 	
 	public class DefaultStrategy : IStrategy
 	{
-		
+		public (int hand_index, int play_index) GetEnterOrder(List<HsMercenaryStrategy.Mercenary> hand_mercenaries, List<HsMercenaryStrategy.Mercenary> play_mercenaries)
+		{
+			return (0, play_mercenaries.Count);
+		}
+
+
 		public List<BattleTarget> GetBattleTargets(List<HsMercenaryStrategy.Mercenary> mercenaries, List<Target> targets_opposite, List<Target> targets_friendly)
 		{
 // 			Out.Log("default" + targets_opposite.Count.ToString());
