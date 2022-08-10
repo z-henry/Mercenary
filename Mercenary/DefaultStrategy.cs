@@ -37,7 +37,13 @@ namespace Mercenary
 					Skill skill = mercenary.Skills.Find((Skill i) => i.Name == taskMercenary.Skill);
 					if (skill != null)
 					{
-						merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name, taskMercenary.SubSkillIndex, taskMercenary.TargetType));
+						merc_battleTargets.Add(new BattleTarget()
+						{
+							SkillId = skill.Id, 
+							SkillName = skill.Name, 
+							SubSkillIndex = taskMercenary.SubSkillIndex, 
+							TargetType = taskMercenary.TargetType
+						});
 					}
 				}
 
@@ -47,16 +53,29 @@ namespace Mercenary
 				{
 					if (DefaultStrategy.FirstAbilityName.Contains(skill.Name))
 					{
-						merc_battleTargets.Add(new BattleTarget(skill.Id, skill.Name));
+						merc_battleTargets.Add(new BattleTarget()
+						{
+							SkillId = skill.Id,
+							SkillName = skill.Name
+						});
+
 					}
 				}
 				//最后 用第一个得了
 				if (merc_battleTargets.Count <= 0)
 				{
 					if (mercenary.Skills.Count > 0)
-						merc_battleTargets.Add(new BattleTarget(mercenary.Skills[0].Id, mercenary.Skills[0].Name));
+						merc_battleTargets.Add(new BattleTarget()
+						{
+							SkillId = mercenary.Skills[0].Id,
+							SkillName = mercenary.Skills[0].Name
+						});
 					else
-						merc_battleTargets.Add(new BattleTarget(-1,""));
+						merc_battleTargets.Add(new BattleTarget()
+						{
+							SkillId = -1,
+							SkillName = ""
+						});
 
 				}
 

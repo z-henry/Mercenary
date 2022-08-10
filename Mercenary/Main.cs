@@ -16,7 +16,7 @@ using Hearthstone.DataModels;
 
 namespace Mercenary
 {	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.2.0")]
+	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.3.0")]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -396,7 +396,6 @@ namespace Mercenary
 		public static bool _PreShowMercenariesRewards(ref bool autoOpenChest, ref NetCache.ProfileNoticeMercenariesRewards rewardNotice, Action doneCallback = null)
 		{
 			Out.Log("显示奖励");
-			Main.Sleep(10);
 			if (!Main.isRunning)
 			{
 				return true;
@@ -611,7 +610,7 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		private void Update()
 		{
 			if (Input.GetKeyUp(KeyCode.F9))
@@ -658,7 +657,7 @@ namespace Mercenary
 					)
 				{
 					AchievementManager.Get().AckAchievement(achieve.ID);
-// 					Network.Get().AckAchievement(achieve.ID);
+					// 					Network.Get().AckAchievement(achieve.ID);
 					Out.Log(string.Format("[{0}]", achieve.ID));
 					break;
 				}
@@ -743,22 +742,22 @@ namespace Mercenary
 				Main.Sleep(5);
 				return;
 			}
-			#endregion 
+			#endregion
 
 			#region 悬赏面板
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_BOARD && gameState == null)
 			{
-				if(Main.autoRerollQuest.Value == true)
+				if (Main.autoRerollQuest.Value == true)
 					QuestManager.Instance.RollAQuest();
 
-				Out.Log(string.Format("[状态] 目前处于悬赏面板，切换到队伍选择，选择[MAPID:{0}]，休息6秒", GetMapId()));
+				Out.Log(string.Format("[状态] 目前处于悬赏面板，切换到队伍选择，选择[MAPID:{0}]，休息3秒", GetMapId()));
 				HsGameUtils.SelectBoss(this.GetMapId());
 				Main.ResetIdle();
-				Main.Sleep(6);
+				Main.Sleep(3);
 				return;
 			}
 			#endregion
-			
+
 			#region 队伍选择
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_TEAM_SELECT && gameState == null)
 			{
@@ -834,26 +833,29 @@ namespace Mercenary
 			}
 			#endregion
 
-			#region 游戏结束
-			if (gameState == null || gameState.IsGameOver())
+			#region 游戏结束                
+			if ((gameType == GameType.GT_MERCENARIES_PVE || gameType == GameType.GT_MERCENARIES_PVP) && sceneMgr.GetMode() == SceneMgr.Mode.GAMEPLAY && gameState.IsGameCreatedOrCreating())
 			{
-				if (Main.autoTimeScaleConf.Value == true)
+				if (gameState.IsGameOver())
 				{
-					MixMod.MixModConfig.Get().TimeScaleEnabled = false;
-				}
-				if (EndGameScreen.Get())
-				{
-					PegUIElement hitbox = EndGameScreen.Get().m_hitbox;
-					if (hitbox != null)
+					if (Main.autoTimeScaleConf.Value == true)
 					{
-						hitbox.TriggerPress();
-						hitbox.TriggerRelease();
-						Out.Log("[对局结束] 游戏结束，点击");
-						Main.Sleep(4);
-						Main.ResetIdle();
+						MixMod.MixModConfig.Get().TimeScaleEnabled = false;
+					}
+					if (EndGameScreen.Get())
+					{
+						PegUIElement hitbox = EndGameScreen.Get().m_hitbox;
+						if (hitbox != null)
+						{
+							hitbox.TriggerPress();
+							hitbox.TriggerRelease();
+							Out.Log("[对局结束] 游戏结束，点击");
+							Main.Sleep(4);
+							Main.ResetIdle();
+							return;
+						}
 					}
 				}
-				return;
 			}
 			#endregion
 
@@ -864,8 +866,10 @@ namespace Mercenary
 				{
 					if (NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesPlayerInfo>().PvpRating > pvpConcedeLine.Value)
 					{
+						Out.Log("[对局结束] 游戏结束，点击");
 						Main.Sleep(10); 
 						GameState.Get().Concede();
+						return;
 					}
 				}
 			}
@@ -1018,8 +1022,8 @@ namespace Mercenary
 
 			if (Main.phaseID == 0)
 			{
-				Out.Log("[对局中] 回合结束");
-				InputManager.Get().DoEndTurnButton();
+// 				Out.Log("[对局中] 回合结束");
+// 				InputManager.Get().DoEndTurnButton();
 				return;
 			}
 
@@ -1072,8 +1076,6 @@ namespace Mercenary
 					Out.Log(string.Format("[对局中] 策略判断 [SID:{0}] [SNAME:{1}] [TID:{2}] [TTYPE:{3}]",
 							battleTarget.SkillId, battleTarget.SkillName, battleTarget.TargetId, battleTarget.TargetType));
 
-
-
 				Card card = null;
 				// 先
 				if (dict.ContainsKey(networkSubOption.ID) && dict[networkSubOption.ID].TargetId != -1)
@@ -1114,9 +1116,18 @@ namespace Mercenary
 			}
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION)
 			{
+				// 上怪
 				if (Main.phaseID == 1 && 
 					EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_YOUR_TURN)
 				{
+					if (modeConf.Value == "挂机收菜" && readyToHang == true)
+					{
+						Out.Log(string.Format("[战斗中] 初次进入战斗，休息{0}min后再见~", awakeTimeIntervalConf.Value));
+						awakeTimeConf.Value = DateTime.Now.AddMinutes(awakeTimeIntervalConf.Value).ToString("G");
+						Application.Quit();
+						return;
+					}
+
 					ZonePlay zonePlay = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
 					ZoneHand zoneHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.FRIENDLY);
 					if (zoneHand != null)
@@ -1155,82 +1166,115 @@ namespace Mercenary
 // 					Sleep(5);
 // 					return;
 				}
+				// 佣兵技能选择
 				if (Main.phaseID == 2)
 				{
-					if (modeConf.Value == "挂机收菜" && readyToHang == true)
+					ZonePlay zonePlay_opposing = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING);
+					ZonePlay zonePlay_friendly = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
+					if (null == zonePlay_opposing.GetCards().Find((Card i) => false == i.GetEntity().IsStealthed()))
 					{
-						Out.Log(string.Format("[战斗中] 初次进入战斗，休息{0}min后再见~", awakeTimeIntervalConf.Value));
-						awakeTimeConf.Value = DateTime.Now.AddMinutes(awakeTimeIntervalConf.Value).ToString("G");
-						Application.Quit();
-					}
-
-					ZonePlay zonePlay2 = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING);
-					if (zonePlay2.GetCardCount() == 1 && zonePlay2.GetFirstCard().GetEntity().IsStealthed())
-					{
-						Out.Log("buzhidao gansha ");
+						Out.Log("[对局中] 他们都藏起来了？？！！");
 						InputManager.Get().DoEndTurnButton();
 						return;
 					}
-					if (ZoneMgr.Get().GetLettuceAbilitiesSourceEntity() == null)
+					Entity currentSelectMerc_Entity = ZoneMgr.Get().GetLettuceAbilitiesSourceEntity();
+					if (currentSelectMerc_Entity == null)
 					{
-						using (List<Card>.Enumerator enumerator2 = zonePlay2.GetCards().GetEnumerator())
+						foreach (Card card in zonePlay_friendly.GetCards())
 						{
-							while (enumerator2.MoveNext())
+							Entity entity = card.GetEntity();
+							if (!entity.HasSelectedLettuceAbility() || !entity.HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY))
 							{
-								Card card2 = enumerator2.Current;
-								Entity entity = card2.GetEntity();
-								if (!entity.HasSelectedLettuceAbility() || !entity.HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY))
-								{
-									ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(entity);
-									Main.ResetIdle();
-									return;
-								}
+								Out.Log(string.Format("[对局中] 佣兵选择 [{0}]的技能界面", entity.GetName()));
+								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(entity);
+								Main.ResetIdle();
+								return;
 							}
-							goto IL_52B;
 						}
-					}
-
-					Card card3 = null;
-					List<Card> displayedLettuceAbilityCards = ZoneMgr.Get().GetLettuceZoneController().GetDisplayedLettuceAbilityCards();
-					foreach (BattleTarget batterTarget in battleTargets)
-					{
-						card3 = displayedLettuceAbilityCards.Find((Card i) => i.GetEntity().GetEntityId() == batterTarget.SkillId && GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
-						if (card3 != null)
-							break;
-					}
-					if (card3 != null)
-					{
-						Out.Log("[对局中] 技能选择 找到技能 " + card3.name);
 					}
 					else
 					{
-						card3 = displayedLettuceAbilityCards.Find((Card i) => GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
-						Out.Log("[对局中] 技能选择 未找到技能 使用 " + card3.name);
+						BattleTarget currentMerc_BattleTarget = battleTargets.Find((BattleTarget i) => i.MercName == currentSelectMerc_Entity.GetName());
+						// 策略规定此佣兵可以操作
+						if (currentMerc_BattleTarget == null || currentMerc_BattleTarget.NeedActive == true)
+						{
+							Out.Log(string.Format("[对局中] 操作佣兵 开始技能选择[{0}]", currentSelectMerc_Entity.GetName()));
+							Card card = null;
+							List<Card> displayedLettuceAbilityCards = ZoneMgr.Get().GetLettuceZoneController().GetDisplayedLettuceAbilityCards();
+							foreach (BattleTarget batterTarget in battleTargets)
+							{
+								card = displayedLettuceAbilityCards.Find((Card i) => i.GetEntity().GetEntityId() == batterTarget.SkillId && GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
+								if (card != null)
+									break;
+							}
+							if (card != null)
+							{
+								Out.Log(string.Format("[对局中] 技能选择 匹配策略[{0}]", card.GetEntity().GetName()));
+							}
+							else
+							{
+								card = displayedLettuceAbilityCards.Find((Card i) => GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
+								Out.Log(string.Format("[对局中] 技能选择 顺序选择[{0}]", card.GetEntity().GetName()));
+							}
+							Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
+							{
+							card.GetEntity(),
+							true
+							}).GetValue();
+							Main.ResetIdle();
+							return;
+						}
+						// 策略规定此佣兵不可以操作
+						else
+						{
+							Out.Log(string.Format("[对局中] 操作佣兵 设置为不操作[{0}]", currentSelectMerc_Entity.GetName()));
+							Dictionary<string, bool> dict_mercactive = new Dictionary<string, bool>();
+							foreach (BattleTarget battleTarget in battleTargets)
+							{
+								if (battleTarget.MercName.Length <= 0)
+									continue;
+								if (!dict_mercactive.ContainsKey(battleTarget.MercName))
+									dict_mercactive.Add(battleTarget.MercName, battleTarget.NeedActive);
+							}
+							bool result = false;
+							Card nextSelectMerc_Card = zonePlay_friendly.GetCards().Find( 
+								(Card i) => 
+								(!i.GetEntity().HasSelectedLettuceAbility() || !i.GetEntity().HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY))&&
+								(false == dict_mercactive.TryGetValue(i.GetEntity().GetName(), out result) || result == true)
+								);
+							if (nextSelectMerc_Card != null)
+							{
+								Out.Log(string.Format("[对局中] 操作佣兵 手动选择下一个佣兵[{0}]", nextSelectMerc_Card.GetEntity().GetName()));
+								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(nextSelectMerc_Card.GetEntity());
+								Main.ResetIdle();
+								return;
+							}
+							else
+							{
+								Out.Log(string.Format("[对局中] 操作佣兵 无可操作佣兵 结束回合"));
+								InputManager.Get().DoEndTurnButton();
+								Main.ResetIdle();
+								return;
+							}
+						}
 					}
-					Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
-					{
-						card3.GetEntity(),
-						true
-					}).GetValue();
-					Main.ResetIdle();
-					return;
 				}
 			}
-		IL_52B:
-			if (GameState.Get().GetResponseMode() != GameState.ResponseMode.SUB_OPTION)
+			// 抉择
+			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.SUB_OPTION)
 			{
+				List<Card> friendlyCards = ChoiceCardMgr.Get().GetFriendlyCards();
+				int skill_id = ChoiceCardMgr.Get().GetSubOptionParentCard().GetEntity().GetEntityId();
+				int subskill_index = friendlyCards.Count - 1;
+				if (dict.ContainsKey(skill_id) && dict[skill_id].SubSkillIndex != -1)
+				{
+					subskill_index = dict[skill_id].SubSkillIndex;
+				}
+				Out.Log("[对局中] 技能选择 使用抉择技能index： " + subskill_index.ToString());
+				InputManager.Get().HandleClickOnSubOption(friendlyCards[subskill_index].GetEntity(), false);
+				Main.ResetIdle();
 				return;
 			}
-			List<Card> friendlyCards = ChoiceCardMgr.Get().GetFriendlyCards();
-			int skill_id = ChoiceCardMgr.Get().GetSubOptionParentCard().GetEntity().GetEntityId();
-			int subskill_index = friendlyCards.Count - 1;
-			if (dict.ContainsKey(skill_id) && dict[skill_id].SubSkillIndex != -1)
-			{
-				subskill_index = dict[skill_id].SubSkillIndex;
-			}
-			Out.Log("[对局中] 技能选择 使用抉择技能index： " + subskill_index.ToString());
-			InputManager.Get().HandleClickOnSubOption(friendlyCards[subskill_index].GetEntity(), false);
-			Main.ResetIdle();
 		}
 
 		
