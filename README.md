@@ -7,15 +7,17 @@
 ### 说明
 
 1. 需要配合HsMod(author:Pik-4)使用，HsMod配置如下
+
 |  key   | value  |
 |  ----  | ----  |
-| 自动开盒  | true |
-| 结算展示  | false |
-| 应用焦点  | false |
-| 报错退出  | true |
-| 弹出消息  | false |
-| 自动领奖  | true |
-| HsMod状态  | true |
+| 自动开盒  | `true` |
+| 结算展示  | `false` |
+| 应用焦点  | `false` |
+| 报错退出  | `true` |
+| 弹出消息  | `false` |
+| 自动领奖  | `true` |
+| HsMod状态  | `true` |
+
 2. **[推荐方式]** 插件会识别炉石程序传入的`hsunitid`参数，作为路径的一部分
 ```Hearthstone.exe hsunitid:your_hsunitid```
 配置文件`Hearthstone\BepInEx\config\your_hsunitid\io.github.jimowushuang.hs.cfg`
