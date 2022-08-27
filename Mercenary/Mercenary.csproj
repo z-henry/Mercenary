@@ -47,6 +47,9 @@
       <HintPath>E:\Hearthstone\Hearthstone_Data\Managed\blizzard.bgsclient.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Blizzard.T5.Core">
+      <HintPath>E:\Hearthstone\Hearthstone_Data\Managed\Blizzard.T5.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Blizzard.T5.Localization">
       <HintPath>E:\Hearthstone\Hearthstone_Data\Managed\Blizzard.T5.Localization.dll</HintPath>
       <Private>False</Private>
@@ -55,9 +58,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\hs-plugin\HsMercenaryStrategy.dll</HintPath>
     </Reference>
-    <Reference Include="MixMod">
-      <HintPath>E:\Hearthstone\BepInEx\plugins\MixMod.dll</HintPath>
+    <Reference Include="HsMod">
+      <HintPath>..\..\HearthstoneLib\HsMod.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="UnityEngine">
@@ -78,6 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PluginInfo.cs" />
     <Compile Include="Quest.cs" />
     <Compile Include="TaskUtils.cs" />
     <Compile Include="TaskAdapter.cs" />

@@ -11,12 +11,12 @@ using PegasusLettuce;
 using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
-using System.Reflection;
 using Hearthstone.DataModels;
+using System.Text.RegularExpressions;
 
 namespace Mercenary
-{	
-	[BepInPlugin("io.github.jimowushuang.hs", "佣兵挂机插件[改]", "3.3.0")]
+{
+	[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 	public class Main : BaseUnityPlugin
 	{
 		
@@ -26,7 +26,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent("3.2.0"), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent(PluginInfo.PLUGIN_VERSION), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -35,8 +35,29 @@ namespace Mercenary
 		
 		private void Awake()
 		{
-			this._harmony.PatchAll(typeof(Main));
-			Main.modeConf = base.Config.Bind<string>("配置", "插件运行模式", "刷图", new ConfigDescription("插件运行模式", new AcceptableValueList<string>(new string[]
+			
+			Regex regex = new Regex(@"^hsunitid:(.*)$");
+			foreach (string argument in Environment.GetCommandLineArgs())
+			{
+				Match match = regex.Match(argument);
+				if (match.Groups.Count == 2)
+				{
+					hsUnitID = match.Groups[1].Value;
+					break;
+				}
+			}
+			ConfigFile confgFile;
+			if (hsUnitID.Length <= 0)
+				confgFile = base.Config;
+			else
+				confgFile = new BepInEx.Configuration.ConfigFile(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepInEx/config", hsUnitID, PluginInfo.PLUGIN_GUID + ".cfg"), false,
+					new BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION));
+
+			Main.runningConf = confgFile.Bind<bool>("配置", "插件开关", false, new ConfigDescription("插件开关", null, new object[]
+			{
+				"Advanced"
+			}));
+			Main.modeConf = confgFile.Bind<string>("配置", "插件运行模式", "刷图", new ConfigDescription("插件运行模式", new AcceptableValueList<string>(new string[]
 			{
 				"刷图",
 				"刷神秘人",
@@ -45,49 +66,33 @@ namespace Mercenary
 				"Pvp",
 				"挂机收菜"
 			}), Array.Empty<object>()));
-			Main.teamNameConf = base.Config.Bind<string>("配置", "使用的队伍名称", "PVE", "使用的队伍名称");
-			Main.strategyConf = base.Config.Bind<string>("配置", "战斗策略", FireStrategy.StrategyName, new ConfigDescription("使用的策略,注意只有在非全自动化模式下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
-			Main.mapConf = base.Config.Bind<string>(new ConfigDefinition("配置", "要刷的地图"), "2-5", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(MapUtils.GetMapNameList()), Array.Empty<object>()));
-			Main.autoUpdateSkillConf = base.Config.Bind<bool>("配置", "是否自动升级技能", true, "是否自动升级技能");
-			Main.autoCraftConf = base.Config.Bind<bool>("配置", "是否自动制作佣兵", true, "是否自动制作佣兵");
-			Main.teamNumConf = base.Config.Bind<int>("配置", "总队伍人数", 6, new ConfigDescription("总队伍人数（PVE下生效）", new AcceptableValueRange<int>(1, 6), Array.Empty<object>()));
-			Main.coreTeamNumConf = base.Config.Bind<int>("配置", "队伍核心人数", 0, new ConfigDescription("前n个佣兵不会被自动换掉（PVE下生效）", new AcceptableValueRange<int>(0, 6), Array.Empty<object>()));
-			Main.runningConf = base.Config.Bind<bool>("配置", "插件开关", true, new ConfigDescription("插件开关", null, new object[]
+			Main.teamNameConf = confgFile.Bind<string>("配置", "使用的队伍名称", "PVE", "使用的队伍名称");
+			Main.strategyConf = confgFile.Bind<string>("配置", "战斗策略", FireStrategy.StrategyName, new ConfigDescription("使用的策略,注意只有在非全自动化模式下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
+			Main.mapConf = confgFile.Bind<string>(new ConfigDefinition("配置", "要刷的地图"), "2-5", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(MapUtils.GetMapNameList()), Array.Empty<object>()));
+			Main.autoUpdateSkillConf = confgFile.Bind<bool>("配置", "是否自动升级技能", false, "是否自动升级技能");
+			Main.autoCraftConf = confgFile.Bind<bool>("配置", "是否自动制作佣兵", false, "是否自动制作佣兵");
+			Main.teamNumConf = confgFile.Bind<int>("配置", "总队伍人数", 6, new ConfigDescription("总队伍人数（PVE下生效）", new AcceptableValueRange<int>(1, 6), Array.Empty<object>()));
+			Main.coreTeamNumConf = confgFile.Bind<int>("配置", "队伍核心人数", 0, new ConfigDescription("前n个佣兵不会被自动换掉（PVE下生效）", new AcceptableValueRange<int>(0, 6), Array.Empty<object>()));
+			Main.cleanTaskConf = confgFile.Bind<string>(new ConfigDefinition("配置", "自动清理任务时间"), "不开启", new ConfigDescription("会定时清理长时间没完成的任务（全自动模式生效）", new AcceptableValueList<string>(new List<string>(TaskUtils.CleanConf.Keys).ToArray()), Array.Empty<object>()));
+			Main.awakeTimeConf = confgFile.Bind<string>("配置", "唤醒时间", "1999/1/1 0:0:0", "挂机收菜下的唤醒时间（无需更改）");
+			Main.awakeTimeIntervalConf = confgFile.Bind<int>("配置", "唤醒时间间隔", 22, "挂机收菜下的唤醒时间间隔");
+			Main.autoTimeScaleConf = confgFile.Bind<bool>("配置", "自动齿轮加速", false, "战斗中自动启用齿轮加速");
+			Main.pvpConcedeLine = confgFile.Bind<int>("配置", "PVP投降分数线", 99999, "PVP投降分数线");
+			Main.autoRerollQuest = confgFile.Bind<bool>("配置", "自动更换日周常任务", false, "自动更换日周常任务");
+
+			Main.isRunning = Main.runningConf.Value;
+			if (!isRunning)
 			{
-				"Advanced"
-			}));
-			Main.cleanTaskConf = base.Config.Bind<string>(new ConfigDefinition("配置", "自动清理任务时间"), "不开启", new ConfigDescription("会定时清理长时间没完成的任务（全自动模式生效）", new AcceptableValueList<string>(new List<string>(TaskUtils.CleanConf.Keys).ToArray()), Array.Empty<object>()));
-			Main.awakeTimeConf = base.Config.Bind<string>("配置", "唤醒时间", "1999/1/1 0:0:0", "挂机收菜下的唤醒时间（无需更改）");
-			Main.awakeTimeIntervalConf = base.Config.Bind<int>("配置", "唤醒时间间隔", 22, "挂机收菜下的唤醒时间间隔");
-			Main.autoTimeScaleConf = base.Config.Bind<bool>("配置", "自动齿轮加速", false, "战斗中自动启用齿轮加速");
-			Main.pvpConcedeLine = base.Config.Bind<int>("配置", "PVP投降分数线", 99999, "PVP投降分数线");
-			Main.autoRerollQuest = base.Config.Bind<bool>("配置", "自动更换日周常任务", false, "自动更换日周常任务");
+				return;
+			}
+			this._harmony.PatchAll(typeof(Main));
 		}
 
 		
 		private void Start()
 		{
 			Out.Log("启动");
-			Main.isRunning = Main.runningConf.Value;
 		}
-
-// 		[HarmonyTranspiler]
-// 		[HarmonyPatch(typeof(Hearthstone.Login.DesktopLoginTokenFetcher), "GetTokenFromTokenFetcher")]
-// 		public static IEnumerable<CodeInstruction> DesktopLoginTokenFetcher_GetTokenFromTokenFetcher(IEnumerable<CodeInstruction> instructions, System.Reflection.Emit.ILGenerator generator)
-// 		{
-// 			Out.Log("token patch");
-// 
-// 			List<CodeInstruction> list = instructions.ToList();
-// 			list.RemoveAt(0);
-// 			list.InsertRange(0, new CodeInstruction[4]
-// 			{
-// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Ldstr, "Aurora.VerifyWebCredentials"),
-// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Call, new Func<string, Blizzard.T5.Configuration.VarKey>(Blizzard.T5.Configuration.Vars.Key).Method),
-// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Ldnull),
-// 				new CodeInstruction(System.Reflection.Emit.OpCodes.Callvirt, typeof(Blizzard.T5.Configuration.VarKey).GetMethod("GetStr", BindingFlags.Instance | BindingFlags.Public))
-// 			});
-// 			return list;
-// 		}
 
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(RewardTrackManager), "UpdateStatus")]
@@ -117,28 +122,6 @@ namespace Mercenary
 		}
 
 		
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(SplashScreen), "GetRatingsScreenRegion")]
-		[HarmonyPatch(typeof(QuestPopups), "ShowNextQuestNotification")]
-		[HarmonyPatch(typeof(EnemyEmoteHandler), "IsSquelched")]
-		[HarmonyPatch(typeof(EndGameScreen), "ShowMercenariesExperienceRewards")]
-		public static bool _PreIntercept()
-		{
-			//拦截显示点击开始画面
-			//拦截佣兵升级界面
-			return !Main.isRunning;
-		}
-
-		
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HearthstoneApplication), "OnApplicationFocus")]
-		public static bool _PreFocus(bool focus)
-		{
-			//禁止窗口失去焦点
-			return !Main.isRunning;
-		}
-
-		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMissionEntity), "ShiftPlayZoneForGamePhase")]
 		public static void _PostShiftPlayZoneForGamePhase(int phase)
@@ -146,56 +129,6 @@ namespace Mercenary
 			//游戏阶段
 			// 			Out.Log("_PostShiftPlayZoneForGamePhase phase " + phase.ToString());
 			Main.phaseID = phase;
-		}
-
-		
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(DialogManager), "ShowReconnectHelperDialog")]
-		[HarmonyPatch(typeof(ReconnectHelperDialog), "Show")]
-		[HarmonyPatch(typeof(Network), "OnFatalBnetError")]
-		public static bool _PreError()
-		{
-			//拦截重连
-			Out.Log("_PreError");
-			if (!Main.isRunning)
-			{
-				return true;
-			}
-			Application.Quit();
-			return false;
-		}
-
-		
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(GraphicsResolution), "IsAspectRatioWithinLimit")]
-		public static bool _PreIsAspectRatioWithinLimit(ref bool __result, int width, int height, bool isWindowedMode)
-		{
-			//"拦截分辨率大小限制";
-			if (!Main.isRunning)
-			{
-				return true;
-			}
-			__result = true;
-			return false;
-		}
-
-		
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(AlertPopup), "Show")]
-		public static bool _PreAlertPopupShow()
-		{
-			//拦截错误提示
-			Out.Log("AlertPopup.Show");
-			return !Main.isRunning;
-		}
-
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(Entity), "GetPremiumType")]
-		public static bool _PreGetPremiumType(ref TAG_PREMIUM __result)
-		{
-			//屏蔽特效
-			__result = TAG_PREMIUM.NORMAL;
-			return !Main.isRunning;
 		}
 
 
@@ -284,21 +217,6 @@ namespace Mercenary
 			{
 				TaskUtils.UpdateTask();
 			}
-			if (modeConf.Value == "挂机收菜")
-			{
-				if (map.NodeData[1].NodeState_ == LettuceMapNode.NodeState.COMPLETE)
-				{
-					readyToHang = false;
-					Out.Log("挂机收菜 只刷一关 下局战斗将写入收菜时间");
-					Network.Get().RetireLettuceMap();
-					Main.Sleep(2);
-					return;
-				}
-				else
-				{
-					readyToHang = true;
-				}
-			}
 			List<LettuceMapNode> nodes = map.NodeData;
 // 			foreach (LettuceMapNode node in nodes)
 // 			{
@@ -336,6 +254,12 @@ namespace Mercenary
 				int? lettuceMapNodeId = new int?((int)lettuceMapNode.NodeId);
 				Out.Log(string.Format("[节点选择] 怪物节点[NID:{0}][NTYPE:{1}] 进入战斗", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
 				gameMgr.FindGame(gameType, formatType, missionId, brawlLibraryItemId, deckId, aiDeck, null, false, null, lettuceMapNodeId, 0L, GameType.GT_UNKNOWN);
+				if (modeConf.Value == "挂机收菜")
+				{
+					readyToHang = true;
+					Out.Log("挂机收菜 下局战斗将写入收菜时间");
+				}
+
 			}
 			else
 			{
@@ -375,70 +299,6 @@ namespace Mercenary
 			}
 		}
 
-
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(MercenariesSeasonRewardsDialog), "ShowWhenReady")]
-		public static bool _PreShowWhenReady(MercenariesSeasonRewardsDialog __instance)
-		{
-			Out.Log("显示天梯奖励");
-			if (!Main.isRunning)
-			{
-				return true;
-			}
-			MercenariesSeasonRewardsDialog.Info info = (MercenariesSeasonRewardsDialog.Info)Traverse.Create(__instance).Field("m_info").GetValue();
-			Network.Get().AckNotice(info.m_noticeId);
-			return false;
-		}
-
-		
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(RewardPopups), "ShowMercenariesRewards")]
-		public static bool _PreShowMercenariesRewards(ref bool autoOpenChest, ref NetCache.ProfileNoticeMercenariesRewards rewardNotice, Action doneCallback = null)
-		{
-			Out.Log("显示奖励");
-			if (!Main.isRunning)
-			{
-				return true;
-			}
-			autoOpenChest = true;
-			if (rewardNotice.RewardType != ProfileNoticeMercenariesRewards.RewardType.REWARD_TYPE_PVE_CONSOLATION)
-			{
-				return true;
-			}
-			Network.Get().AckNotice(rewardNotice.NoticeID);
-			if (doneCallback != null)
-			{
-				doneCallback();
-			}
-			return false;
-		}
-
-		
-		[HarmonyPostfix]
-		[HarmonyPatch(typeof(RewardBoxesDisplay), "RewardPackageOnComplete")]
-		public static void _PostRewardPackageOnComplete(RewardBoxesDisplay.RewardBoxData boxData)
-		{
-			Out.Log("点击奖励");
-			if (!Main.isRunning)
-			{
-				return;
-			}
-			boxData.m_RewardPackage.TriggerPress();
-		}
-
-		
-		[HarmonyPostfix]
-		[HarmonyPatch(typeof(RewardBoxesDisplay), "OnDoneButtonShown")]
-		public static void _PostOnDoneButtonShown(Spell spell, object userData)
-		{
-			Out.Log("点击完成按钮");
-			if (!Main.isRunning)
-			{
-				return;
-			}
-			RewardBoxesDisplay.Get().m_DoneButton.TriggerPress();
-			RewardBoxesDisplay.Get().m_DoneButton.TriggerRelease();
-		}
 
 		
 		private static bool IsTreasure(PegasusLettuce.LettuceMap map)
@@ -613,55 +473,55 @@ namespace Mercenary
 
 		private void Update()
 		{
-			if (Input.GetKeyUp(KeyCode.F9))
-			{
-				Main.isRunning = !Main.isRunning;
-				UIStatus.Get().AddInfo(Main.isRunning ? "插件启动" : "插件关闭");
-				Main.runningConf.Value = Main.isRunning;
-			}
-			if (Input.GetKeyUp(KeyCode.F3))
-			{
-				Out.Log("F3查询");
-
-				// 查拥有的佣兵情况
-				// 				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
-				// 				foreach (LettuceMercenary mercy in result.m_mercenaries)
-				// 				{
-				// 					foreach (LettuceAbility ability in mercy.m_abilityList)
-				// 					{
-				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}]",
-				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
-				// 					}
-				// 					foreach (LettuceAbility ability in mercy.m_equipmentList)
-				// 					{
-				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][装备:{2}]",
-				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
-				// 					}
-				// 				}
-
-				// 查所有地图节点
-				// 				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
-				// 				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
-				// 					Out.Log(result1.GetVar("ID").ToString() + " " +
-				// 						result1.VisitLogic + " " +
-				// 						result1.GetVar("NOTE_DESC") + " " +
-				// 						result1.BossType + " " +
-				// 						result1.NodeVisualId 
-				// 						);
-
-				foreach (AchievementDataModel achieve in
-					from x in AchievementManager.Get().GetRecentlyCompletedAchievements()
-					where x.Status == AchievementManager.AchievementStatus.COMPLETED
-					orderby x.ID ascending
-					select x
-					)
-				{
-					AchievementManager.Get().AckAchievement(achieve.ID);
-					// 					Network.Get().AckAchievement(achieve.ID);
-					Out.Log(string.Format("[{0}]", achieve.ID));
-					break;
-				}
-			}
+// 			if (Input.GetKeyUp(KeyCode.F9))
+// 			{
+// 				Main.isRunning = !Main.isRunning;
+// 				UIStatus.Get().AddInfo(Main.isRunning ? "插件启动" : "插件关闭");
+// 				Main.runningConf.Value = Main.isRunning;
+// 			}
+// 			if (Input.GetKeyUp(KeyCode.F3))
+// 			{
+// 				Out.Log("F3查询");
+// 
+// 				// 查拥有的佣兵情况
+// 				// 				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
+// 				// 				foreach (LettuceMercenary mercy in result.m_mercenaries)
+// 				// 				{
+// 				// 					foreach (LettuceAbility ability in mercy.m_abilityList)
+// 				// 					{
+// 				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}]",
+// 				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
+// 				// 					}
+// 				// 					foreach (LettuceAbility ability in mercy.m_equipmentList)
+// 				// 					{
+// 				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][装备:{2}]",
+// 				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
+// 				// 					}
+// 				// 				}
+// 
+// 				// 查所有地图节点
+// 				// 				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
+// 				// 				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
+// 				// 					Out.Log(result1.GetVar("ID").ToString() + " " +
+// 				// 						result1.VisitLogic + " " +
+// 				// 						result1.GetVar("NOTE_DESC") + " " +
+// 				// 						result1.BossType + " " +
+// 				// 						result1.NodeVisualId 
+// 				// 						);
+// 
+// 				foreach (AchievementDataModel achieve in
+// 					from x in AchievementManager.Get().GetRecentlyCompletedAchievements()
+// 					where x.Status == AchievementManager.AchievementStatus.COMPLETED
+// 					orderby x.ID ascending
+// 					select x
+// 					)
+// 				{
+// 					AchievementManager.Get().AckAchievement(achieve.ID);
+// 					// 					Network.Get().AckAchievement(achieve.ID);
+// 					Out.Log(string.Format("[{0}]", achieve.ID));
+// 					break;
+// 				}
+// 			}
 
 			if (!Main.isRunning)
 			{
@@ -683,10 +543,7 @@ namespace Mercenary
 			SceneMgr sceneMgr = SceneMgr.Get();
 			SceneMgr.Mode mode = sceneMgr.GetMode();
 			GameState gameState = GameState.Get();
-
-			MixMod.MixModConfig mixModConfig = MixMod.MixModConfig.Get();
-			if (mixModConfig != null)
-				mixModConfig.TimeScaleEnabled = Main.autoTimeScaleConf.Value;
+			HsMod.ConfigValue.Get().TimeGearEnable = Main.autoTimeScaleConf.Value;
 
 			#region 查找比赛
 			if (gameMgr.IsFindingGame())
@@ -696,12 +553,30 @@ namespace Mercenary
 			}
 			#endregion
 
-			#region 村子或者角斗场
-			if (gameType == GameType.GT_UNKNOWN && (mode == SceneMgr.Mode.LETTUCE_VILLAGE || mode == SceneMgr.Mode.LETTUCE_PLAY) && gameState == null)
+			#region 角斗场
+			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_PLAY && gameState == null)
 			{
-				if (!(Main.modeConf.Value == "Pvp"))
+				if (Main.modeConf.Value != "Pvp")
 				{
-					Out.Log("[状态] 目前处于村庄/角斗场，切换到地图，休息5秒");
+					Out.Log("[状态] 目前处于角斗场，切换到地图，休息5秒");
+					HsGameUtils.GotoSceneMap();
+					Main.Sleep(5);
+					Main.ResetIdle();
+					return;
+				}
+				Out.Log("[状态] 目前处于角斗场，切换到村庄，休息5秒");
+				HsGameUtils.GotoSceneVillage();
+				Main.Sleep(5);
+				Main.ResetIdle();
+			}
+			#endregion
+
+			#region 村子
+			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_VILLAGE && gameState == null)
+			{
+				if (Main.modeConf.Value != "Pvp")
+				{
+					Out.Log("[状态] 目前处于村庄，切换到地图，休息5秒");
 					HsGameUtils.GotoSceneMap();
 					Main.Sleep(5);
 					Main.ResetIdle();
@@ -728,7 +603,7 @@ namespace Mercenary
 					Main.isRunning = false;
 					return;
 				}
-				Out.Log("[状态] 目前处于村庄/角斗场，切换到PVP模式");
+				Out.Log("[状态] 目前处于村庄，开始PVP战斗");
 				GameMgr.Get().FindGame(GameType.GT_MERCENARIES_PVP, FormatType.FT_WILD, 3743, 0, 0L, null, null, false, null, null, lettuceTeam.ID, GameType.GT_UNKNOWN);
 				return;
 			}
@@ -833,32 +708,116 @@ namespace Mercenary
 			}
 			#endregion
 
-			#region 游戏结束                
-			if ((gameType == GameType.GT_MERCENARIES_PVE || gameType == GameType.GT_MERCENARIES_PVP) && sceneMgr.GetMode() == SceneMgr.Mode.GAMEPLAY && gameState.IsGameCreatedOrCreating())
+			#region 游戏结束
+			if ((gameType == GameType.GT_MERCENARIES_PVE || gameType == GameType.GT_MERCENARIES_PVP) && 
+				sceneMgr.GetMode() == SceneMgr.Mode.GAMEPLAY && 
+				gameState.IsGameCreatedOrCreating())
 			{
 				if (gameState.IsGameOver())
 				{
 					if (Main.autoTimeScaleConf.Value == true)
 					{
-						MixMod.MixModConfig.Get().TimeScaleEnabled = false;
+						HsMod.ConfigValue.Get().TimeGearEnable = false;
 					}
-					if (EndGameScreen.Get())
+					EndGameScreen endGameScreen = EndGameScreen.Get();
+					if (endGameScreen)
 					{
-						PegUIElement hitbox = EndGameScreen.Get().m_hitbox;
+						PegUIElement hitbox = endGameScreen.m_hitbox;
+						Blizzard.T5.Core.Map<UIEventType, List<UIEvent.Handler>> eventListeners = (Blizzard.T5.Core.Map<UIEventType, List<UIEvent.Handler>>)Traverse.Create(hitbox).Field("m_eventListeners").GetValue();
+// 						foreach (var lists in eventListeners)
+// 						{
+// 							foreach(var item in lists.Value)
+// 								Out.Log(string.Format("[对局结束] eventListeners key:{0} value:{1}", lists.Key.ToString(), item.ToString()));
+// 						}
+						if (eventListeners.Count > 0)
+						{
+							Main.Sleep(4);
+							Main.readyToRecord = true;
+						}
+						else if (Main.readyToRecord == true)
+						{
+							Main.readyToRecord = false;
+							// 输赢
+							string gameResult = "";
+							switch (endGameScreen.GetType().Name)
+							{
+								case "VictoryScreen":
+									gameResult = "胜利";
+									break;
+								case "DefeatScreen":
+									gameResult = "失败";
+									break;
+								default:
+									break;
+							}
+
+							// 经验
+							RewardXpNotificationManager rewardXpNotificationManager = RewardXpNotificationManager.Get();
+							if (rewardXpNotificationManager != null)
+							{
+								List<RewardTrackXpChange> xpChanges = (List<RewardTrackXpChange>)Traverse.Create(rewardXpNotificationManager).Field("m_xpChanges").GetValue();
+								foreach (RewardTrackXpChange xpChange in xpChanges)
+								{
+									Out.Log(string.Format("[对局结束] 战令信息 {0} 等级:{1} 经验:{2} {3} {4}",
+										gameResult, xpChange.CurrLevel, xpChange.CurrXp, xpChange.RewardSourceType, xpChange.RewardSourceId));
+								}
+							}
+							if (gameType == GameType.GT_MERCENARIES_PVP)
+							{
+								try
+								{
+									// 阵容
+									string str_lineup_front = "", str_lineup_back = "";
+									int count = 0;
+									foreach (string str in pvpMercTeam)
+									{
+										if (++count > 3)
+											str_lineup_back += (str + ",");
+										else
+											str_lineup_front += (str + ",");
+									}
+									pvpMercTeam.Clear();
+
+									// 分数
+									string rateResult = "", rateResultDelta = "";
+									if (GameState.Get().GetGameEntity() is LettuceMissionEntity)
+									{
+										LettuceMissionEntity lettuceGameEntity = (LettuceMissionEntity)GameState.Get().GetGameEntity();
+										if (lettuceGameEntity != null && lettuceGameEntity.RatingChangeData != null)
+										{
+											rateResult = lettuceGameEntity.RatingChangeData.PvpRating.ToString();
+											rateResultDelta = lettuceGameEntity.RatingChangeData.Delta.ToString();
+										}
+									}
+
+									Out.LogGameRecord(string.Format("{0}\t{1}\t{2}\t{3}\t{4}",
+										rateResultDelta, rateResult, Main.teamNameConf.Value, str_lineup_front, str_lineup_back));
+
+								}
+								catch (Exception ex)
+								{
+									Out.Log("空间名：" + ex.Source + "；" + '\n' +
+										"方法名：" + ex.TargetSite + '\n' +
+										"故障点：" + ex.StackTrace.Substring(ex.StackTrace.LastIndexOf("\\") + 1, ex.StackTrace.Length - ex.StackTrace.LastIndexOf("\\") - 1) + '\n' +
+										"错误提示：" + ex.Message + '\n' +
+										"XXX：" + ex.ToString()
+										);
+								}
+							}
+						}
+
 						if (hitbox != null)
 						{
 							hitbox.TriggerPress();
 							hitbox.TriggerRelease();
 							Out.Log("[对局结束] 游戏结束，点击");
-							Main.Sleep(4);
+							Main.Sleep(1);
 							Main.ResetIdle();
 							return;
 						}
 					}
 				}
 			}
-			#endregion
-
 
 			if (gameType == GameType.GT_MERCENARIES_PVP && sceneMgr.GetMode() == SceneMgr.Mode.GAMEPLAY && gameState.IsGameCreatedOrCreating())
 			{
@@ -867,12 +826,14 @@ namespace Mercenary
 					if (NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesPlayerInfo>().PvpRating > pvpConcedeLine.Value)
 					{
 						Out.Log("[对局结束] 游戏结束，点击");
-						Main.Sleep(10); 
+						Main.Sleep(5); 
 						GameState.Get().Concede();
+						Main.ResetIdle();
 						return;
 					}
 				}
 			}
+			#endregion
 
 
 
@@ -1014,12 +975,6 @@ namespace Mercenary
 				return;
 			}
 			// 			Out.Log("[状态] 对局进行中");
-			if (Main.autoTimeScaleConf.Value == true)
-			{
-				MixMod.MixModConfig.Get().TimeScaleEnabled = true;
-				MixMod.MixModConfig.Get().TimeScale = Main.TimeScaleValue;
-			}
-
 			if (Main.phaseID == 0)
 			{
 // 				Out.Log("[对局中] 回合结束");
@@ -1046,8 +1001,8 @@ namespace Mercenary
 
 			string strategy_name = Main.modeConf.Value == "全自动接任务做任务" ? "_Sys_Default" : Main.strategyConf.Value;
 			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
-				this.BuildMercenariesFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards()), 
-				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING), 
+				this.BuildMercenariesFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards()),
+				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY)
 				);
 			Dictionary<int, BattleTarget> dict = new Dictionary<int, BattleTarget>();
@@ -1058,7 +1013,6 @@ namespace Mercenary
 				if (!dict.ContainsKey(battleTarget.SkillId))
 					dict.Add(battleTarget.SkillId, battleTarget);
 			}
-
 
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
@@ -1073,8 +1027,8 @@ namespace Mercenary
 					networkSubOption.ID));
 
 				foreach (BattleTarget battleTarget in battleTargets)
-					Out.Log(string.Format("[对局中] 策略判断 [SID:{0}] [SNAME:{1}] [TID:{2}] [TTYPE:{3}]",
-							battleTarget.SkillId, battleTarget.SkillName, battleTarget.TargetId, battleTarget.TargetType));
+					Out.Log(string.Format("[对局中] 技能目标 策略判断 [SID:{0}] [SNAME:{1}] [TID:{2}] [TNAME:{3}] [TTYPE:{4}]",
+							battleTarget.SkillId, battleTarget.SkillName, battleTarget.TargetId, battleTarget.TargetName, battleTarget.TargetType));
 
 				Card card = null;
 				// 先
@@ -1127,7 +1081,11 @@ namespace Mercenary
 						Application.Quit();
 						return;
 					}
-
+					if (Main.autoTimeScaleConf.Value == true)
+					{
+						HsMod.ConfigValue.Get().TimeGearEnable = true;
+						HsMod.ConfigValue.Get().TimeGearValue = Main.TimeScaleValue;
+					}
 					ZonePlay zonePlay = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
 					ZoneHand zoneHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.FRIENDLY);
 					if (zoneHand != null)
@@ -1137,14 +1095,14 @@ namespace Mercenary
 							BuildMercenariesFromCards(zonePlay.GetCards())
 							);
 
-						string strlog = "";
-						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zoneHand.GetCards()))
-							strlog += string.Format("{0}\t", target_iter.Name);
-						Out.Log(string.Format("[test] 场面：shoupai {0}", strlog));
-						strlog = "";
-						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zonePlay.GetCards()))
-							strlog += string.Format("{0}\t", target_iter.Name);
-						Out.Log(string.Format("[test] 场面：changmian {0}", strlog));
+// 						string strlog = "";
+// 						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zoneHand.GetCards()))
+// 							strlog += string.Format("{0}\t", target_iter.Name);
+// 						Out.Log(string.Format("[test] 场面：shoupai {0}", strlog));
+// 						strlog = "";
+// 						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zonePlay.GetCards()))
+// 							strlog += string.Format("{0}\t", target_iter.Name);
+// 						Out.Log(string.Format("[test] 场面：changmian {0}", strlog));
 
 						GameState gameState = GameState.Get();
 						if (gameState != null)
@@ -1171,6 +1129,21 @@ namespace Mercenary
 				{
 					ZonePlay zonePlay_opposing = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING);
 					ZonePlay zonePlay_friendly = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
+					// PVP模式记录对面佣兵的登场情况
+					if (GameMgr.Get().GetGameType() == GameType.GT_MERCENARIES_PVP)
+					{
+						foreach (Card card in zonePlay_opposing.GetCards())
+						{
+							if (card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.CASTER &&
+								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.TANK &&
+								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.FIGHTER)
+								continue;
+							string equipment = card.GetEntity().GetEquipmentEntity()?.GetName() ?? "";
+							if (equipment.Length > 0 && Char.IsNumber(equipment[equipment.Length - 1]))
+								equipment = equipment.Substring(0, equipment.Length - 1);
+							Main.pvpMercTeam.Add(card.GetEntity().GetName() + '-' + equipment);
+						}
+					}
 					if (null == zonePlay_opposing.GetCards().Find((Card i) => false == i.GetEntity().IsStealthed()))
 					{
 						Out.Log("[对局中] 他们都藏起来了？？！！");
@@ -1198,7 +1171,7 @@ namespace Mercenary
 						// 策略规定此佣兵可以操作
 						if (currentMerc_BattleTarget == null || currentMerc_BattleTarget.NeedActive == true)
 						{
-							Out.Log(string.Format("[对局中] 操作佣兵 开始技能选择[{0}]", currentSelectMerc_Entity.GetName()));
+							Out.Log(string.Format("[对局中] 技能选择 操作佣兵 [{0}]", currentSelectMerc_Entity.GetName()));
 							Card card = null;
 							List<Card> displayedLettuceAbilityCards = ZoneMgr.Get().GetLettuceZoneController().GetDisplayedLettuceAbilityCards();
 							foreach (BattleTarget batterTarget in battleTargets)
@@ -1452,23 +1425,15 @@ namespace Mercenary
 		private static ConfigEntry<bool> autoTimeScaleConf;
 		private static ConfigEntry<int> pvpConcedeLine;
 		private static ConfigEntry<bool> autoRerollQuest;
+
 		private static float sleepTime;
-
-		
 		private static float idleTime;
-
-		
 		private static bool initialize;
-
-		
 		private static int phaseID;
-
-		// 挂机收菜模式 下次战斗准备挂机
-		private static bool readyToHang = false;
-		// 齿轮倍数
-		private static float TimeScaleValue=2.0f;
-
-
-
+		private static bool readyToHang = false;// 挂机收菜模式 下次战斗准备挂机
+		private static int TimeScaleValue=2;// 齿轮倍数
+		private static HashSet<string> pvpMercTeam = new HashSet<string>();//佣兵阵容的集合
+		private static bool readyToRecord = true;// 确保一次结束画面记录一次
+		public static string hsUnitID = "";
 	}
 }
