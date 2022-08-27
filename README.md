@@ -18,14 +18,14 @@
 | 自动领奖  | `true` |
 | HsMod状态  | `true` |
 
-2. **[推荐方式]** 插件会识别炉石程序传入的`hsunitid`参数，作为路径的一部分
-```Hearthstone.exe hsunitid:your_hsunitid```
-配置文件`Hearthstone\BepInEx\config\your_hsunitid\io.github.jimowushuang.hs.cfg`
-日志文件`Hearthstone\BepInEx\Log\your_hsunitid\`
-3. 若启动炉石没有传递`hsunitid`参数（战网启动等），路径会发生变化
-配置文件`Hearthstone\BepInEx\config\io.github.jimowushuang.hs.cfg`
-日志文件`Hearthstone\BepInEx\Log\`
-
+2. **[推荐方式]** 插件会识别炉石程序传入的`hsunitid`参数，作为路径的一部分  
+```Hearthstone.exe hsunitid:your_hsunitid```  
+配置文件`Hearthstone\BepInEx\config\your_hsunitid\io.github.jimowushuang.hs.cfg`  
+日志文件`Hearthstone\BepInEx\Log\your_hsunitid\`  
+3. 若启动炉石没有传递`hsunitid`参数（战网启动等），路径会发生变化  
+配置文件`Hearthstone\BepInEx\config\io.github.jimowushuang.hs.cfg`  
+日志文件`Hearthstone\BepInEx\Log\`  
+ 
 ### 已知问题
-1. 与HsMod联动的战斗过程中开启齿轮功能，尚未测试
-2. 与HsMod联动的战斗记录功能还未进行多账户优化
+1. 与HsMod联动的战斗过程中开启齿轮功能，尚未测试  
+2. 与HsMod联动的战斗记录功能还未进行多账户优化  
