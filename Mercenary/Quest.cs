@@ -32,7 +32,7 @@ namespace Mercenary
 				{
 					//获取所有每日任务
 					QuestListDataModel questDay = quest.CreateActiveQuestsDataModel(
-						QuestPool.QuestPoolType.DAILY, true);
+						QuestPool.QuestPoolType.DAILY, QuestPool.RewardTrackType.GLOBAL, true);
 
 					//筛选0进度每日任务
 					List<QuestDataModel> questValidDay = new List<QuestDataModel>();
@@ -60,7 +60,7 @@ namespace Mercenary
 				{
 					//获取所有每周任务
 					QuestListDataModel quesWeek = quest.CreateActiveQuestsDataModel(
-						QuestPool.QuestPoolType.WEEKLY, true);
+						QuestPool.QuestPoolType.WEEKLY, QuestPool.RewardTrackType.GLOBAL, true);
 
 					//筛选0进度每周任务
 					List<QuestDataModel> questValidWeek = new List<QuestDataModel>();
