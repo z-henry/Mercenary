@@ -18,12 +18,13 @@ namespace Mercenary
 
 		public void RollAQuest()
 		{
-			if (DateTime.Now < m_RollTime)
-				return;
-
-			m_RollTime = m_RollTime.Date.AddDays(1).AddHours(interval);
-			Out.Log(string.Format("[任务调整] 下次检测时间为{0}",
-				m_RollTime.ToString("G")));
+			Out.Log("[任务调整]");
+			// 			if (DateTime.Now < m_RollTime)
+			// 				return;
+			// 
+			// 			m_RollTime = m_RollTime.Date.AddDays(1).AddHours(interval);
+			// 			Out.Log(string.Format("[任务调整] 下次检测时间为{0}",
+			// 				m_RollTime.ToString("G")));
 
 			Random random = new Random();
 			Hearthstone.Progression.QuestManager quest = Hearthstone.Progression.QuestManager.Get();

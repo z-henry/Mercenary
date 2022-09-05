@@ -66,9 +66,9 @@ namespace Mercenary
 				"Pvp",
 				"挂机收菜"
 			}), Array.Empty<object>()));
-			Main.teamNameConf = confgFile.Bind<string>("配置", "使用的队伍名称", "PVE", "使用的队伍名称");
+			Main.teamNameConf = confgFile.Bind<string>("配置", "使用的队伍名称", "初始队伍", "使用的队伍名称");
 			Main.strategyConf = confgFile.Bind<string>("配置", "战斗策略", FireStrategy.StrategyName, new ConfigDescription("使用的策略,注意只有在非全自动化模式下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
-			Main.mapConf = confgFile.Bind<string>(new ConfigDefinition("配置", "要刷的地图"), "2-5", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(MapUtils.GetMapNameList()), Array.Empty<object>()));
+			Main.mapConf = confgFile.Bind<string>(new ConfigDefinition("配置", "要刷的地图"), "1-1", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(MapUtils.GetMapNameList()), Array.Empty<object>()));
 			Main.autoUpdateSkillConf = confgFile.Bind<bool>("配置", "是否自动升级技能", false, "是否自动升级技能");
 			Main.autoCraftConf = confgFile.Bind<bool>("配置", "是否自动制作佣兵", false, "是否自动制作佣兵");
 			Main.teamNumConf = confgFile.Bind<int>("配置", "总队伍人数", 6, new ConfigDescription("总队伍人数（PVE下生效）", new AcceptableValueRange<int>(1, 6), Array.Empty<object>()));
@@ -474,12 +474,12 @@ namespace Mercenary
 
 		private void Update()
 		{
-// 			if (Input.GetKeyUp(KeyCode.F9))
-// 			{
-// 				Main.isRunning = !Main.isRunning;
-// 				UIStatus.Get().AddInfo(Main.isRunning ? "插件启动" : "插件关闭");
-// 				Main.runningConf.Value = Main.isRunning;
-// 			}
+			if (Input.GetKeyUp(KeyCode.F9))
+			{
+				Main.isRunning = !Main.isRunning;
+				UIStatus.Get().AddInfo(Main.isRunning ? "插件启动" : "插件关闭");
+				Main.runningConf.Value = Main.isRunning;
+			}
 // 			if (Input.GetKeyUp(KeyCode.F3))
 // 			{
 // 				Out.Log("F3查询");
