@@ -992,17 +992,16 @@ namespace Mercenary
 
 			// 策略计算
 // 			string strlog = "";
-// 			foreach (Target target_iter in BuildTargetEntity(Player.Side.OPPOSING))
-// 				strlog += string.Format("{0}{1}\t", target_iter.Name, target_iter.Enable ? "√" : "×");
+// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
+// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
 // 			Out.Log(string.Format("[test] 场面：敌方 {0}", strlog));
 // 			strlog = "";
-// 			foreach (Target target_iter in BuildTargetEntity(Player.Side.FRIENDLY))
-// 				strlog += string.Format("{0}{1}\t", target_iter.Name, target_iter.Enable ? "√" : "×");
+// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY))
+// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
 // 			Out.Log(string.Format("[test] 场面：友方 {0}", strlog));
 
 			string strategy_name = Main.modeConf.Value == "全自动接任务做任务" ? "_Sys_Default" : Main.strategyConf.Value;
 			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
-				this.BuildMercenariesFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards()),
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY)
 				);
@@ -1092,8 +1091,8 @@ namespace Mercenary
 					if (zoneHand != null)
 					{
 						(int hand_index, int play_index) = StrategyHelper.GetStrategy(strategy_name).GetEnterOrder(
-							BuildMercenariesFromCards(zoneHand.GetCards()),
-							BuildMercenariesFromCards(zonePlay.GetCards())
+							BuildTargetFromCards(zoneHand.GetCards(), Player.Side.FRIENDLY),
+							BuildTargetFromCards(zonePlay.GetCards(), Player.Side.FRIENDLY)
 							);
 
 // 						string strlog = "";
@@ -1260,31 +1259,6 @@ namespace Mercenary
 				bool flag_avalue = card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || card.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER;
 				if (side != Player.Side.FRIENDLY)
 					flag_avalue = flag_avalue && !card.GetEntity().IsStealthed();
-				Target item = new Target
-				{
-					Name = card.GetEntity().GetName(),
-					Id = card.GetEntity().GetEntityId(),
-					Health = card.GetEntity().GetCurrentHealth(),
-					Speed = card.GetPreparedLettuceAbilitySpeedValue(),
-					DefHealth = card.GetEntity().GetDefHealth(),
-					Role = (HsMercenaryStrategy.TAG_ROLE)(card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE)),
-					Enable = flag_avalue,
-				};
-				list.Add(item);
-			}
-			return list;
-		}
-
-		private List<HsMercenaryStrategy.Mercenary> BuildMercenariesFromCards(List<Card> cards)
-		{
-			List<HsMercenaryStrategy.Mercenary> list = new List<HsMercenaryStrategy.Mercenary>();
-			foreach (Card card in cards)
-			{
-				Entity entity = card.GetEntity();
-				HsMercenaryStrategy.Mercenary mercenary = new HsMercenaryStrategy.Mercenary
-				{
-					Name = entity.GetName()
-				};
 				List<Skill> skills = new List<Skill>();
 				foreach (int id in card.GetEntity().GetLettuceAbilityEntityIDs())
 				{
@@ -1303,14 +1277,21 @@ namespace Mercenary
 						});
 					}
 				}
-				mercenary.Id = card.GetEntity().GetEntityId();
-				mercenary.Name = card.GetEntity().GetName();
-				mercenary.Skills = skills;
-				list.Add(mercenary);
+				Target item = new Target
+				{
+					Name = card.GetEntity().GetName(),
+					Id = card.GetEntity().GetEntityId(),
+					Health = card.GetEntity().GetCurrentHealth(),
+					Speed = card.GetPreparedLettuceAbilitySpeedValue(),
+					DefHealth = card.GetEntity().GetDefHealth(),
+					Role = (HsMercenaryStrategy.TAG_ROLE)(card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE)),
+					Enable = flag_avalue,
+					Skills = skills,
+				};
+				list.Add(item);
 			}
 			return list;
 		}
-
 
 		private static ValueTuple<LettuceMapNode, int> GetNextNode(List<LettuceMapNode> nodes, List<LettuceMapNode> allNodes)
 		{

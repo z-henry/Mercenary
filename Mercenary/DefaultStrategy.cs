@@ -7,13 +7,13 @@ namespace Mercenary
 	
 	public class DefaultStrategy : IStrategy
 	{
-		public (int hand_index, int play_index) GetEnterOrder(List<HsMercenaryStrategy.Mercenary> hand_mercenaries, List<HsMercenaryStrategy.Mercenary> play_mercenaries)
+		public (int hand_index, int play_index) GetEnterOrder(List<Target> hand_mercenaries, List<Target> play_mercenaries)
 		{
 			return (0, play_mercenaries.Count);
 		}
 
 
-		public List<BattleTarget> GetBattleTargets(List<HsMercenaryStrategy.Mercenary> mercenaries, List<Target> targets_opposite, List<Target> targets_friendly)
+		public List<BattleTarget> GetBattleTargets(List<Target> targets_opposite, List<Target> targets_friendly)
 		{
 // 			Out.Log("default" + targets_opposite.Count.ToString());
 			List<BattleTarget> battleTargets = new List<BattleTarget>();
@@ -23,7 +23,7 @@ namespace Mercenary
 			if (target_friend == null)
 				target_friend = StrategyUtils.FindMinHealthTarget(targets_friendly);
 
-			foreach (HsMercenaryStrategy.Mercenary mercenary in mercenaries)
+			foreach (Target mercenary in targets_friendly)
 			{
 				List<BattleTarget> merc_battleTargets = new List<BattleTarget>();
 
