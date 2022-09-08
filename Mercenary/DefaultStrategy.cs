@@ -13,7 +13,7 @@ namespace Mercenary
 		}
 
 
-		public List<BattleTarget> GetBattleTargets(List<Target> targets_opposite, List<Target> targets_friendly)
+		public List<BattleTarget> GetBattleTargets(int turn, List<Target> targets_opposite, List<Target> targets_friendly, List<Target> targets_opposite_graveyrad)
 		{
 // 			Out.Log("default" + targets_opposite.Count.ToString());
 			List<BattleTarget> battleTargets = new List<BattleTarget>();

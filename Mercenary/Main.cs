@@ -992,6 +992,7 @@ namespace Mercenary
 
 			// 策略计算
 // 			string strlog = "";
+// 			Out.Log(string.Format("[test] turn {0}", GameState.Get().GetTurn()));
 // 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
 // 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
 // 			Out.Log(string.Format("[test] 场面：敌方 {0}", strlog));
@@ -999,11 +1000,16 @@ namespace Mercenary
 // 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY))
 // 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
 // 			Out.Log(string.Format("[test] 场面：友方 {0}", strlog));
-
+// 			strlog = "";
+// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
+// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
+// 			Out.Log(string.Format("[test] 坟场：敌方 {0}", strlog));
 			string strategy_name = Main.modeConf.Value == "全自动接任务做任务" ? "_Sys_Default" : Main.strategyConf.Value;
 			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
+				GameState.Get().GetTurn(),
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
-				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY)
+				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY),
+				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING)
 				);
 			Dictionary<int, BattleTarget> dict = new Dictionary<int, BattleTarget>();
 			foreach (BattleTarget battleTarget in battleTargets)
