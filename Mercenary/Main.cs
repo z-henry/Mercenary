@@ -4,14 +4,12 @@ using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Hearthstone;
 using Hearthstone.Progression;
 using HsMercenaryStrategy;
 using PegasusLettuce;
 using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
-using Hearthstone.DataModels;
 using System.Text.RegularExpressions;
 
 namespace Mercenary
@@ -497,49 +495,49 @@ namespace Mercenary
 				UIStatus.Get().AddInfo(Main.isRunning ? "插件启动" : "插件关闭");
 				Main.runningConf.Value = Main.isRunning;
 			}
-// 			if (Input.GetKeyUp(KeyCode.F3))
-// 			{
-// 				Out.Log("F3查询");
-// 
-// 				// 查拥有的佣兵情况
-// 				// 				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
-// 				// 				foreach (LettuceMercenary mercy in result.m_mercenaries)
-// 				// 				{
-// 				// 					foreach (LettuceAbility ability in mercy.m_abilityList)
-// 				// 					{
-// 				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}]",
-// 				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
-// 				// 					}
-// 				// 					foreach (LettuceAbility ability in mercy.m_equipmentList)
-// 				// 					{
-// 				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][装备:{2}]",
-// 				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
-// 				// 					}
-// 				// 				}
-// 
-// 				// 查所有地图节点
-// 				// 				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
-// 				// 				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
-// 				// 					Out.Log(result1.GetVar("ID").ToString() + " " +
-// 				// 						result1.VisitLogic + " " +
-// 				// 						result1.GetVar("NOTE_DESC") + " " +
-// 				// 						result1.BossType + " " +
-// 				// 						result1.NodeVisualId 
-// 				// 						);
-// 
-// 				foreach (AchievementDataModel achieve in
-// 					from x in AchievementManager.Get().GetRecentlyCompletedAchievements()
-// 					where x.Status == AchievementManager.AchievementStatus.COMPLETED
-// 					orderby x.ID ascending
-// 					select x
-// 					)
-// 				{
-// 					AchievementManager.Get().AckAchievement(achieve.ID);
-// 					// 					Network.Get().AckAchievement(achieve.ID);
-// 					Out.Log(string.Format("[{0}]", achieve.ID));
-// 					break;
-// 				}
-// 			}
+			// 			if (Input.GetKeyUp(KeyCode.F3))
+			// 			{
+			// 				Out.Log("F3查询");
+			// 
+			// 				// 查拥有的佣兵情况
+			// 				// 				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
+			// 				// 				foreach (LettuceMercenary mercy in result.m_mercenaries)
+			// 				// 				{
+			// 				// 					foreach (LettuceAbility ability in mercy.m_abilityList)
+			// 				// 					{
+			// 				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][技能:{2}]",
+			// 				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
+			// 				// 					}
+			// 				// 					foreach (LettuceAbility ability in mercy.m_equipmentList)
+			// 				// 					{
+			// 				// 						Out.Log(string.Format("[佣兵;{0}][佣兵ID:{1}][装备:{2}]",
+			// 				// 							mercy.m_mercName, mercy.ID, ability.GetCardName()));
+			// 				// 					}
+			// 				// 				}
+			// 
+			// 				// 查所有地图节点
+			// 				// 				List<LettuceMapNodeTypeDbfRecord> results = GameDbf.LettuceMapNodeType.GetRecords();
+			// 				// 				foreach (LettuceMapNodeTypeDbfRecord result1 in results)
+			// 				// 					Out.Log(result1.GetVar("ID").ToString() + " " +
+			// 				// 						result1.VisitLogic + " " +
+			// 				// 						result1.GetVar("NOTE_DESC") + " " +
+			// 				// 						result1.BossType + " " +
+			// 				// 						result1.NodeVisualId 
+			// 				// 						);
+			// 
+			// 				foreach (AchievementDataModel achieve in
+			// 					from x in AchievementManager.Get().GetRecentlyCompletedAchievements()
+			// 					where x.Status == AchievementManager.AchievementStatus.COMPLETED
+			// 					orderby x.ID ascending
+			// 					select x
+			// 					)
+			// 				{
+			// 					AchievementManager.Get().AckAchievement(achieve.ID);
+			// 					// 					Network.Get().AckAchievement(achieve.ID);
+			// 					Out.Log(string.Format("[{0}]", achieve.ID));
+			// 					break;
+			// 				}
+			// 			}
 
 			if (!Main.isRunning)
 			{
@@ -556,6 +554,13 @@ namespace Mercenary
 				this.GameInit();
 				return;
 			}
+			{
+				GameType? test_gameType = GameMgr.Get()?.GetGameType();
+				SceneMgr.Mode? test_mode = SceneMgr.Get()?.GetMode();
+				GameState test_gameState = GameState.Get();
+				UnityEngine.Debug.Log(string.Format("GameType[{0}]  Mode[{1}]  GameState[{2}]", test_gameType, test_mode, test_gameState));
+			}
+
 			GameMgr gameMgr = GameMgr.Get();
 			GameType gameType = gameMgr.GetGameType();
 			SceneMgr sceneMgr = SceneMgr.Get();
@@ -574,18 +579,11 @@ namespace Mercenary
 			#region 角斗场
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_PLAY && gameState == null)
 			{
-				if (Main.modeConf.Value != "Pvp")
-				{
-					Out.Log("[状态] 目前处于角斗场，切换到地图，休息5秒");
-					HsGameUtils.GotoSceneMap();
-					Main.Sleep(5);
-					Main.ResetIdle();
-					return;
-				}
 				Out.Log("[状态] 目前处于角斗场，切换到村庄，休息5秒");
 				HsGameUtils.GotoSceneVillage();
 				Main.Sleep(5);
 				Main.ResetIdle();
+				return;
 			}
 			#endregion
 
@@ -717,22 +715,24 @@ namespace Mercenary
 			}
 			#endregion
 
-			#region 排队中
-			if (gameState != null && ((gameType != GameType.GT_MERCENARIES_PVE && gameType != GameType.GT_MERCENARIES_PVP) || sceneMgr.GetMode() != SceneMgr.Mode.GAMEPLAY || !gameState.IsGameCreatedOrCreating()))
-			{
-				Out.Log("[状态] 排队中");
-				Main.Sleep(1);
-				return;
-			}
-			#endregion
+// 			#region 排队中
+// 			if (gameState != null && ((gameType != GameType.GT_MERCENARIES_PVE && gameType != GameType.GT_MERCENARIES_PVP) || sceneMgr.GetMode() != SceneMgr.Mode.GAMEPLAY || !gameState.IsGameCreatedOrCreating()))
+// 			{
+// 				Out.Log("[状态] 排队中");
+// 				Main.Sleep(1);
+// 				return;
+// 			}
+// 			#endregion
 
-			#region 游戏结束
-			if ((gameType == GameType.GT_MERCENARIES_PVE || gameType == GameType.GT_MERCENARIES_PVP) && 
-				sceneMgr.GetMode() == SceneMgr.Mode.GAMEPLAY && 
+			#region 对局已生成
+			if ((gameType == GameType.GT_MERCENARIES_PVE || gameType == GameType.GT_MERCENARIES_PVP || gameType == GameType.GT_RANKED) &&
+				sceneMgr.GetMode() == SceneMgr.Mode.GAMEPLAY &&
 				gameState.IsGameCreatedOrCreating())
 			{
+				// 游戏结束
 				if (gameState.IsGameOver())
 				{
+
 					if (Main.autoTimeScaleConf.Value == true)
 					{
 						HsMod.ConfigValue.Get().TimeGearEnable = false;
@@ -742,11 +742,6 @@ namespace Mercenary
 					{
 						PegUIElement hitbox = endGameScreen.m_hitbox;
 						Blizzard.T5.Core.Map<UIEventType, List<UIEvent.Handler>> eventListeners = (Blizzard.T5.Core.Map<UIEventType, List<UIEvent.Handler>>)Traverse.Create(hitbox).Field("m_eventListeners").GetValue();
-// 						foreach (var lists in eventListeners)
-// 						{
-// 							foreach(var item in lists.Value)
-// 								Out.Log(string.Format("[对局结束] eventListeners key:{0} value:{1}", lists.Key.ToString(), item.ToString()));
-// 						}
 						if (eventListeners.Count > 0)
 						{
 							Main.Sleep(4);
@@ -835,29 +830,54 @@ namespace Mercenary
 						}
 					}
 				}
-			}
-
-			if (gameType == GameType.GT_MERCENARIES_PVP && sceneMgr.GetMode() == SceneMgr.Mode.GAMEPLAY && gameState.IsGameCreatedOrCreating())
-			{
-				if (!gameState.IsGameOver())
+				// 游戏中
+				else
 				{
-					if (NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesPlayerInfo>().PvpRating > pvpConcedeLine.Value)
+					// pvp模式
+					// 1. 大于投降分数线投降
+					if (gameType == GameType.GT_MERCENARIES_PVP)
 					{
-						Out.Log("[对局结束] 游戏结束，点击");
-						Main.Sleep(5); 
+						if (NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesPlayerInfo>().PvpRating > pvpConcedeLine.Value)
+						{
+							Out.Log("[对局结束] PVP投降");
+							Main.Sleep(5);
+							GameState.Get().Concede();
+							Main.ResetIdle();
+							return;
+						}
+					}
+					// 传统模式
+					// 1. 直接投降
+					else if (gameType == GameType.GT_RANKED)
+					{
+						Out.Log("[对局结束] 传统模式投降");
+						Main.Sleep(5);
 						GameState.Get().Concede();
 						Main.ResetIdle();
 						return;
 					}
+
+					//正常处理对局
+					this.HandlePlay();
+					Main.Sleep(0.5f);
+					return;
 				}
 			}
 			#endregion
 
 
+			#region 其他模式处理
+			// 传统模式选择队伍界面
+			if (sceneMgr.GetMode() == SceneMgr.Mode.TOURNAMENT)
+			{
+				Out.Log("[状态] 目前处于传统对战队伍选择，切换到村庄，休息5秒");
+				HsGameUtils.GotoSceneVillage();
+				Main.Sleep(5);
+				return;
+			}
+			#endregion
 
-
-			Main.Sleep(0.3f);
-			this.HandlePlay();
+			Main.Sleep(1f);
 		}
 
 		

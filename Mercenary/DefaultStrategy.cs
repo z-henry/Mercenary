@@ -20,9 +20,20 @@ namespace Mercenary
 
 			List<BattleTarget> battleTargets = new List<BattleTarget>();
 
-			foreach (Target mercenary in targets_friendly)
+			foreach (Target mercenary in targets_friendly_all)
 			{
 				List<BattleTarget> merc_battleTargets = new List<BattleTarget>();
+
+				// 有一些东西最好别动了
+				if (mercenary.Name.IndexOf("黄金猿") == 0)
+				{
+					merc_battleTargets.Add(new BattleTarget()
+					{
+						MercName = mercenary.Name,
+						NeedActive = false,
+					});
+					continue;
+				}
 
 				//先 任务有的技能都要添加进来
 				List<MercenaryEntity> taskMercenarys = TaskUtils.GetTaskMercenaries(mercenary.Name);
@@ -89,7 +100,7 @@ namespace Mercenary
 				else
 				{
 					battleTarget.TargetId = target_opposite?.Id ?? -1;
-					battleTarget.TargetName = target_friend?.Name ?? "";
+					battleTarget.TargetName = target_opposite?.Name ?? "";
 				}
 			}
 

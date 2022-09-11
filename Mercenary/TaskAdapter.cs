@@ -146,6 +146,24 @@ namespace Mercenary
 
 				case MercConst.凯恩_血蹄:
 					{
+						//任务14 - 踩在蹄下
+						if (title.Contains("踩在蹄下"))
+						{
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "大地践踏", 1),
+								TaskAdapter.GetMercenary(mercenaryId, "坚韧光环", 1),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
+								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
+								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0),
+							}));
+							return;
+						}
+
 					}
 					break;
 
@@ -1718,6 +1736,16 @@ namespace Mercenary
 				}));
 				return;
 			}
+			//杀鱼人
+			if (desc.Contains("消灭") && desc.Contains("个鱼人"))
+			{
+				tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 5, "7-1", new MercenaryEntity[]
+				{
+					TaskAdapter.GetMercenary(mercenaryId, null, 0)
+				}));
+				return;
+			}
+
 			//加快技能速度
 			if (desc.Contains("加快友方技能的速度值总") || desc.Contains("使一个友方技能的速度值加快"))
 			{
