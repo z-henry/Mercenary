@@ -13,15 +13,12 @@ namespace Mercenary
 		}
 
 
-		public List<BattleTarget> GetBattleTargets(int turn, List<Target> targets_opposite, List<Target> targets_friendly, List<Target> targets_opposite_graveyrad)
+		public List<BattleTarget> GetBattleTargets(int turn, List<Target> targets_opposite_all, List<Target> targets_friendly_all, List<Target> targets_opposite_graveyrad)
 		{
-// 			Out.Log("default" + targets_opposite.Count.ToString());
-			List<BattleTarget> battleTargets = new List<BattleTarget>();
+			var targets_opposite = targets_opposite_all.FindAll((Target t) => t.Enable == true);
+			var targets_friendly = targets_friendly_all.FindAll((Target t) => t.Enable == true);
 
-			Target target_opposite = (targets_opposite.Count > 1) ? targets_opposite[1] : ((targets_opposite.Count == 1) ? targets_opposite[0] : null);
-			Target target_friend = StrategyUtils.FindMaxLossHealthTarget(targets_friendly);
-			if (target_friend == null)
-				target_friend = StrategyUtils.FindMinHealthTarget(targets_friendly);
+			List<BattleTarget> battleTargets = new List<BattleTarget>();
 
 			foreach (Target mercenary in targets_friendly)
 			{
@@ -29,9 +26,6 @@ namespace Mercenary
 
 				//先 任务有的技能都要添加进来
 				List<MercenaryEntity> taskMercenarys = TaskUtils.GetTaskMercenaries(mercenary.Name);
-// 				if (taskMercenarys.Count < 1)
-// 					Out.Log(string.Format("[策略未命中] [MNAME:{0}]", mercenary.Name));
-// 
 				foreach (MercenaryEntity taskMercenary in taskMercenarys)
 				{
 					Skill skill = mercenary.Skills.Find((Skill i) => i.Name == taskMercenary.Skill);
@@ -83,17 +77,22 @@ namespace Mercenary
 			}
 
 			//设置目标
-			using (List<BattleTarget>.Enumerator enumerator = battleTargets.GetEnumerator())
+			Target target_opposite = (targets_opposite.Count > 1) ? targets_opposite[1] : ((targets_opposite.Count == 1) ? targets_opposite[0] : null);
+			Target target_friend = StrategyUtils.FindMaxLossHealthTarget(targets_friendly) ?? StrategyUtils.FindMinHealthTarget(targets_friendly);
+			foreach (BattleTarget battleTarget in battleTargets)
 			{
-				while (enumerator.MoveNext())
+				if (battleTarget.TargetType == HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 				{
-					BattleTarget battleTarget = enumerator.Current;
-					if (battleTarget.TargetType == HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
-						battleTarget.TargetId = ((target_friend != null) ? target_friend.Id : -1);
-					else
-						battleTarget.TargetId = ((target_opposite != null) ? target_opposite.Id : -1);
+					battleTarget.TargetId = target_friend?.Id ?? -1;
+					battleTarget.TargetName = target_friend?.Name ?? "";
+				}
+				else
+				{
+					battleTarget.TargetId = target_opposite?.Id ?? -1;
+					battleTarget.TargetName = target_friend?.Name ?? "";
 				}
 			}
+
 
 			return battleTargets;
 		}

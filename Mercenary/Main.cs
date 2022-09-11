@@ -451,6 +451,23 @@ namespace Mercenary
 					}
 				}
 			}
+			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
+			{
+				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries)
+				{
+					if (!lettuceTeam.IsMercInTeam(mercenary.ID, true))
+					{
+						lettuceTeam.AddMerc(mercenary, -1, null);
+						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，全满补位",
+							mercenary.ID, mercenary.m_mercName));
+						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						{
+							break;
+						}
+					}
+				}
+			}
+
 			lettuceTeam.SendChanges();
 		}
 
@@ -1166,6 +1183,11 @@ namespace Mercenary
 							{
 								Out.Log(string.Format("[对局中] 佣兵选择 [{0}]的技能界面", entity.GetName()));
 								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(entity);
+// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
+// 								{
+// 									entity,
+// 									true
+// 								}).GetValue();
 								Main.ResetIdle();
 								return;
 							}
@@ -1225,6 +1247,11 @@ namespace Mercenary
 							{
 								Out.Log(string.Format("[对局中] 操作佣兵 手动选择下一个佣兵[{0}]", nextSelectMerc_Card.GetEntity().GetName()));
 								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(nextSelectMerc_Card.GetEntity());
+// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
+// 								{
+// 									nextSelectMerc_Card.GetEntity(),
+// 									true
+// 								}).GetValue();
 								Main.ResetIdle();
 								return;
 							}
