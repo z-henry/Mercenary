@@ -91,21 +91,6 @@ namespace Mercenary
 		{
 			Out.Log("启动");
 		}
-
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(RewardTrack), "UpdateStatus")]
-		public static bool _PreUpdateStatus(int rewardTrackId, int level, RewardTrack.RewardStatus status, bool forPaidTrack, List<RewardItemOutput> rewardItemOutput)
-		{
-			//隐藏通行证奖励
-			if (!Main.isRunning || status != RewardTrack.RewardStatus.GRANTED)
-			{
-				return true;
-			}
-			RewardTrackManager.Get().GetCurrentRewardTrack(Assets.Global.RewardTrackType.GLOBAL)?.AckReward(rewardTrackId, level, forPaidTrack);
-			RewardTrackManager.Get().GetCurrentRewardTrack(Assets.Global.RewardTrackType.BATTLEGROUNDS)?.AckReward(rewardTrackId, level, forPaidTrack);
-			return false;
-		}
-
 		
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "OnVisitorSelectionResponseReceived")]
