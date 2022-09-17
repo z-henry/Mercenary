@@ -7,7 +7,8 @@ namespace Mercenary
 	
 	public class DefaultStrategy : IStrategy
 	{
-		public (int hand_index, int play_index) GetEnterOrder(List<Target> hand_mercenaries, List<Target> play_mercenaries)
+		public (int hand_index, int play_index) GetEnterOrder(List<Target> hand_mercenaries, List<Target> play_mercenaries, Dictionary<HsMercenaryStrategy.TAG_ROLE, int> dictOppositeRoleCount,
+			List<Target> targets_opposite, List<Target> targets_opposite_graveyrad)
 		{
 			return (0, play_mercenaries.Count);
 		}

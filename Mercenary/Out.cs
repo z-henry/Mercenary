@@ -10,9 +10,7 @@ namespace Mercenary
 		
 		public static void Log(string log)
 		{
-			string errorLogFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepinEx/Log");
-			if (Main.hsUnitID.Length > 0)
-				errorLogFilePath = System.IO.Path.Combine(errorLogFilePath, Main.hsUnitID);
+			string errorLogFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepinEx/Log", Main.hsUnitID);
 			if (!Directory.Exists(errorLogFilePath))
 			{
 				Directory.CreateDirectory(errorLogFilePath);
@@ -26,14 +24,12 @@ namespace Mercenary
 		}
 		public static void LogGameRecord(string log)
 		{
-			string errorLogFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepinEx/Log");
-			if (Main.hsUnitID.Length > 0)
-				errorLogFilePath = System.IO.Path.Combine(errorLogFilePath, Main.hsUnitID);
+			string errorLogFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepinEx/Log", Main.hsUnitID);
 			if (!Directory.Exists(errorLogFilePath))
 			{
 				Directory.CreateDirectory(errorLogFilePath);
 			}
-			string logFile = System.IO.Path.Combine(errorLogFilePath, "gamerecord" + "@" + DateTime.Today.ToString("yyyy-MM-dd") + ".log");
+			string logFile = System.IO.Path.Combine(errorLogFilePath, HsMod.ConfigValue.Get().HsMatchLogPathValue + "@" + DateTime.Today.ToString("yyyy-MM-dd") + ".log");
 			bool writeBaseInfo = System.IO.File.Exists(logFile);
 			StreamWriter swLogFile = new StreamWriter(logFile, true, Encoding.Unicode);
 			swLogFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "\t" + log);

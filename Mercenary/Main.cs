@@ -11,13 +11,15 @@ using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using Blizzard.GameService.SDK.Client.Integration;
+using Blizzard.T5.Core;
 
 namespace Mercenary
 {
 	[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 	public class Main : BaseUnityPlugin
 	{
-		
+
 		private void OnGUI()
 		{
 			if (!Main.isRunning)
@@ -30,10 +32,10 @@ namespace Mercenary
 			});
 		}
 
-		
+
 		private void Awake()
 		{
-			
+
 			Regex regex = new Regex(@"^hsunitid:(.*)$");
 			foreach (string argument in Environment.GetCommandLineArgs())
 			{
@@ -86,12 +88,12 @@ namespace Mercenary
 			this._harmony.PatchAll(typeof(Main));
 		}
 
-		
+
 		private void Start()
 		{
 			Out.Log("启动");
 		}
-		
+
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "OnVisitorSelectionResponseReceived")]
 		public static bool _PreOnVisitorSelectionResponseReceived()
@@ -105,7 +107,7 @@ namespace Mercenary
 			return false;
 		}
 
-		
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMissionEntity), "ShiftPlayZoneForGamePhase")]
 		public static void _PostShiftPlayZoneForGamePhase(int phase)
@@ -131,17 +133,17 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "DisplayNewlyGrantedAnomalyCards")]
 		public static bool _PreDisplayNewlyGrantedAnomalyCards(global::LettuceMap lettuceMap, int completedNodeId)
 		{
 			//"弹出揭示卡"
-// 			Out.Log("_PreDisplayNewlyGrantedAnomalyCards");
+			// 			Out.Log("_PreDisplayNewlyGrantedAnomalyCards");
 			return !Main.isRunning;
 		}
 
-		
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(global::LettuceMap), "CreateMapFromProto")]
 		public static void _PostCreateMapFromProto(PegasusLettuce.LettuceMap lettuceMap)
@@ -191,10 +193,10 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		private static void SelectNextNode(LettuceMap map)
 		{
-// 			Out.Log("[节点选择]");
+			// 			Out.Log("[节点选择]");
 			Main.ResetIdle();
 
 			if (Main.modeConf.Value == "全自动接任务做任务")
@@ -202,13 +204,13 @@ namespace Mercenary
 				TaskUtils.UpdateTask();
 			}
 			List<LettuceMapNode> nodes = map.NodeData;
-// 			foreach (LettuceMapNode node in nodes)
-// 			{
-// 				string childrendid = "";
-// 				foreach (uint childid in node.ChildNodeIds)
-// 					childrendid += (childid.ToString() + ", ");
-// 				Out.Log(string.Format("[地图结构] [NID:{0}][NTYPE:{1}][NSTATE:{2}][CID:{3}]", node.NodeId, node.NodeTypeId, node.NodeState_, childrendid));
-// 			}
+			// 			foreach (LettuceMapNode node in nodes)
+			// 			{
+			// 				string childrendid = "";
+			// 				foreach (uint childid in node.ChildNodeIds)
+			// 					childrendid += (childid.ToString() + ", ");
+			// 				Out.Log(string.Format("[地图结构] [NID:{0}][NTYPE:{1}][NSTATE:{2}][CID:{3}]", node.NodeId, node.NodeTypeId, node.NodeState_, childrendid));
+			// 			}
 			ValueTuple<LettuceMapNode, int> nextNode = Main.GetNextNode(nodes.FindAll((LettuceMapNode n) => n.NodeState_ == LettuceMapNode.NodeState.UNLOCKED), nodes);
 			LettuceMapNode lettuceMapNode = nextNode.Item1;
 			int item = nextNode.Item2;
@@ -252,17 +254,17 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "TryAutoNextSelectCoin")]
 		public static void _PostTryAutoNextSelectCoin(LettuceMapDisplay __instance)
 		{
-			
+
 			if (!Main.isRunning)
 			{
 				return;
 			}
-// 			Out.Log("TryAutoNextSelectCoin");
+			// 			Out.Log("TryAutoNextSelectCoin");
 			LettuceMap map = (global::LettuceMap)Traverse.Create(__instance).Field("m_lettuceMap").GetValue();
 			Main.SelectNextNode(map);
 		}
@@ -271,7 +273,7 @@ namespace Mercenary
 		[HarmonyPatch(typeof(LettuceMapDisplay), "OnLettuceMapChooseNodeResponseReceived")]
 		public static void _PostOnLettuceMapChooseNodeResponseReceived()
 		{
-// 			Out.Log("OnLettuceMapChooseNodeResponseReceived");
+			// 			Out.Log("OnLettuceMapChooseNodeResponseReceived");
 			LettuceMapChooseNodeResponse lettuceMapChooseNodeResponse = Network.Get().GetLettuceMapChooseNodeResponse();
 			if (lettuceMapChooseNodeResponse == null ||
 				!lettuceMapChooseNodeResponse.Success)
@@ -283,14 +285,51 @@ namespace Mercenary
 			}
 		}
 
+		//显示完整战网ID
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(BnetPlayer), "GetBestName")]
+		public static bool PatchBnetPlayerGetBestName(BnetPlayer __instance, ref BnetAccount ___m_account, ref Map<BnetGameAccountId, BnetGameAccount> ___m_gameAccounts, ref BnetGameAccount ___m_hsGameAccount, ref string __result)
+		{
+			if (__instance != BnetPresenceMgr.Get().GetMyPlayer())
+			{
+				if (___m_account != null)
+				{
+					string fullName = ___m_account.GetFullName();
+					if (fullName != null)
+					{
+						__result = fullName;
+						return false;
+					}
+					if (___m_account.GetBattleTag() != null)
+					{
+						__result = ___m_account.GetBattleTag().GetName();
+						return false;
+					}
+				}
+				foreach (KeyValuePair<BnetGameAccountId, BnetGameAccount> gameAccount in ___m_gameAccounts)
+				{
+					if (gameAccount.Value.GetBattleTag() != (BnetBattleTag)null)
+					{
+						__result = gameAccount.Value.GetBattleTag().ToString();
+						Cache.CacheLastOpponentFullName = gameAccount.Value.GetBattleTag().ToString();
+						return false;
+					}
+				}
+				__result = null;
+				return false;
+			}
+			__result = ___m_hsGameAccount.GetBattleTag()?.GetName();
+			return false;
+		}
 
-		
+
+
 		private static bool IsTreasure(PegasusLettuce.LettuceMap map)
 		{
 			return map.HasPendingTreasureSelection && map.PendingTreasureSelection.TreasureOptions.Count > 0;
 		}
 
-		
+
 		private static bool IsVisitor(PegasusLettuce.LettuceMap map)
 		{
 			return map.HasPendingVisitorSelection && map.PendingVisitorSelection.VisitorOptions.Count > 0;
@@ -454,13 +493,13 @@ namespace Mercenary
 			lettuceTeam.SendChanges();
 		}
 
-		
+
 		private static void Sleep(float time)
 		{
 			Main.sleepTime += (float)time;
 		}
 
-		
+
 		private void GameInit()
 		{
 			if (InactivePlayerKicker.Get() != null)
@@ -538,12 +577,6 @@ namespace Mercenary
 			{
 				this.GameInit();
 				return;
-			}
-			{
-				GameType? test_gameType = GameMgr.Get()?.GetGameType();
-				SceneMgr.Mode? test_mode = SceneMgr.Get()?.GetMode();
-				GameState test_gameState = GameState.Get();
-				UnityEngine.Debug.Log(string.Format("GameType[{0}]  Mode[{1}]  GameState[{2}]", test_gameType, test_mode, test_gameState));
 			}
 
 			GameMgr gameMgr = GameMgr.Get();
@@ -700,14 +733,14 @@ namespace Mercenary
 			}
 			#endregion
 
-// 			#region 排队中
-// 			if (gameState != null && ((gameType != GameType.GT_MERCENARIES_PVE && gameType != GameType.GT_MERCENARIES_PVP) || sceneMgr.GetMode() != SceneMgr.Mode.GAMEPLAY || !gameState.IsGameCreatedOrCreating()))
-// 			{
-// 				Out.Log("[状态] 排队中");
-// 				Main.Sleep(1);
-// 				return;
-// 			}
-// 			#endregion
+			// 			#region 排队中
+			// 			if (gameState != null && ((gameType != GameType.GT_MERCENARIES_PVE && gameType != GameType.GT_MERCENARIES_PVP) || sceneMgr.GetMode() != SceneMgr.Mode.GAMEPLAY || !gameState.IsGameCreatedOrCreating()))
+			// 			{
+			// 				Out.Log("[状态] 排队中");
+			// 				Main.Sleep(1);
+			// 				return;
+			// 			}
+			// 			#endregion
 
 			#region 对局已生成
 			if ((gameType == GameType.GT_MERCENARIES_PVE || gameType == GameType.GT_MERCENARIES_PVP || gameType == GameType.GT_RANKED) &&
@@ -767,14 +800,14 @@ namespace Mercenary
 									// 阵容
 									string str_lineup_front = "", str_lineup_back = "";
 									int count = 0;
-									foreach (string str in pvpMercTeam)
+									foreach (string str in Cache.pvpMercTeam)
 									{
 										if (++count > 3)
 											str_lineup_back += (str + ",");
 										else
 											str_lineup_front += (str + ",");
 									}
-									pvpMercTeam.Clear();
+									Cache.pvpMercTeam.Clear();
 
 									// 分数
 									string rateResult = "", rateResultDelta = "";
@@ -788,8 +821,8 @@ namespace Mercenary
 										}
 									}
 
-									Out.LogGameRecord(string.Format("{0}\t{1}\t{2}\t{3}\t{4}",
-										rateResultDelta, rateResult, Main.teamNameConf.Value, str_lineup_front, str_lineup_back));
+									Out.LogGameRecord(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
+										rateResultDelta, rateResult, Main.teamNameConf.Value, Cache.CacheLastOpponentFullName, str_lineup_front, str_lineup_back));
 
 								}
 								catch (Exception ex)
@@ -865,7 +898,7 @@ namespace Mercenary
 			Main.Sleep(1f);
 		}
 
-		
+
 		private void AutoCraft()
 		{
 			if (!Main.autoCraftConf.Value)
@@ -883,7 +916,7 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		private void AutoUpdateSkill()
 		{
 			Out.Log("[升级技能]");
@@ -894,7 +927,7 @@ namespace Mercenary
 			HsGameUtils.UpdateAllSkill();
 		}
 
-		
+
 		private int EnsureMapHasUnlock(int id)
 		{
 			LettuceBountyDbfRecord record = GameDbf.LettuceBounty.GetRecord(id);
@@ -905,7 +938,7 @@ namespace Mercenary
 			return id;
 		}
 
-		
+
 		private int GetMapId()
 		{
 			int result = 57;
@@ -946,7 +979,7 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		private void CheckIdleTime()
 		{
 			Main.idleTime += Time.deltaTime;
@@ -977,20 +1010,20 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		private static void ResetIdle()
 		{
-// 			Out.Log("[IDLE] reset");
+			// 			Out.Log("[IDLE] reset");
 			Main.idleTime = 0f;
 		}
 
-		
+
 		private void OnDestroy()
 		{
 			this._harmony.UnpatchSelf();
 		}
 
-		
+
 		private void HandlePlay()
 		{
 			if (Main.phaseID == 3)
@@ -1000,8 +1033,8 @@ namespace Mercenary
 			// 			Out.Log("[状态] 对局进行中");
 			if (Main.phaseID == 0)
 			{
-// 				Out.Log("[对局中] 回合结束");
-// 				InputManager.Get().DoEndTurnButton();
+				// 				Out.Log("[对局中] 回合结束");
+				// 				InputManager.Get().DoEndTurnButton();
 				return;
 			}
 
@@ -1013,19 +1046,19 @@ namespace Mercenary
 			}
 
 			// 策略计算
-// 			string strlog = "";
-// 			Out.Log(string.Format("[test] turn {0}", GameState.Get().GetTurn()));
-// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
-// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
-// 			Out.Log(string.Format("[test] 场面：敌方 {0}", strlog));
-// 			strlog = "";
-// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY))
-// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
-// 			Out.Log(string.Format("[test] 场面：友方 {0}", strlog));
-// 			strlog = "";
-// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
-// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
-// 			Out.Log(string.Format("[test] 坟场：敌方 {0}", strlog));
+			// 			string strlog = "";
+			// 			Out.Log(string.Format("[test] turn {0}", GameState.Get().GetTurn()));
+			// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
+			// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
+			// 			Out.Log(string.Format("[test] 场面：敌方 {0}", strlog));
+			// 			strlog = "";
+			// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY))
+			// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
+			// 			Out.Log(string.Format("[test] 场面：友方 {0}", strlog));
+			// 			strlog = "";
+			// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
+			// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
+			// 			Out.Log(string.Format("[test] 坟场：敌方 {0}", strlog));
 			string strategy_name = Main.modeConf.Value == "全自动接任务做任务" ? "_Sys_Default" : Main.strategyConf.Value;
 			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
 				GameState.Get().GetTurn(),
@@ -1045,7 +1078,7 @@ namespace Mercenary
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
 			{
-// 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
+				// 				Out.Log("GameState.Get().GetTurn() + " + GameState.Get().GetTurn().ToString());
 				List<Card> cards_opposite = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER) && !i.GetEntity().IsStealthed());
 				List<Card> cards_friend = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards().FindAll((Card i) => (i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET || i.GetActor().GetActorStateType() == ActorStateType.CARD_VALID_TARGET_MOUSE_OVER));
 
@@ -1062,7 +1095,7 @@ namespace Mercenary
 				// 先
 				if (dict.ContainsKey(networkSubOption.ID) && dict[networkSubOption.ID].TargetId != -1)
 				{
-					Out.Log("[对局中] 技能目标 匹配策略"); 
+					Out.Log("[对局中] 技能目标 匹配策略");
 					if (dict[networkSubOption.ID].TargetType == TARGETTYPE.UNSPECIFIED)
 					{
 						card = cards_opposite.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID].TargetId);
@@ -1073,7 +1106,7 @@ namespace Mercenary
 					{
 						card = cards_friend.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID].TargetId);
 					}
-					
+
 				}
 
 				if (card == null && cards_opposite.Count != 0)
@@ -1099,7 +1132,7 @@ namespace Mercenary
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION)
 			{
 				// 上怪
-				if (Main.phaseID == 1 && 
+				if (Main.phaseID == 1 &&
 					EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_YOUR_TURN)
 				{
 					if (modeConf.Value == "挂机收菜" && readyToHang == true)
@@ -1116,28 +1149,41 @@ namespace Mercenary
 					}
 					ZonePlay zonePlay = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
 					ZoneHand zoneHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.FRIENDLY);
+
+					ZoneDeck zoneOppositeDeck = ZoneMgr.Get().FindZoneOfType<ZoneDeck>(Player.Side.OPPOSING);
+					ZoneHand zoneOppositeHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.OPPOSING);
+
 					if (zoneHand != null)
 					{
+						Dictionary<HsMercenaryStrategy.TAG_ROLE, int> dictOppositeRoleCount = new Dictionary<HsMercenaryStrategy.TAG_ROLE, int>()
+						{
+							{ HsMercenaryStrategy.TAG_ROLE.CASTER, 0 },
+							{ HsMercenaryStrategy.TAG_ROLE.FIGHTER, 0 },
+							{ HsMercenaryStrategy.TAG_ROLE.INVALID, 0 },
+							{ HsMercenaryStrategy.TAG_ROLE.NEUTRAL, 0 },
+							{ HsMercenaryStrategy.TAG_ROLE.TANK, 0 },
+						};
+						// 						string strlog = "";
+						foreach (Card card_iter in zoneOppositeDeck.GetCards())
+							dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
+						foreach (Card card_iter in zoneOppositeHand.GetCards())
+							dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
+						// 						Out.Log(string.Format("[test] 预测{0}", strlog));
+
 						(int hand_index, int play_index) = StrategyHelper.GetStrategy(strategy_name).GetEnterOrder(
 							BuildTargetFromCards(zoneHand.GetCards(), Player.Side.FRIENDLY),
-							BuildTargetFromCards(zonePlay.GetCards(), Player.Side.FRIENDLY)
+							BuildTargetFromCards(zonePlay.GetCards(), Player.Side.FRIENDLY),
+							dictOppositeRoleCount,
+							this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
+							this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING)
 							);
-
-// 						string strlog = "";
-// 						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zoneHand.GetCards()))
-// 							strlog += string.Format("{0}\t", target_iter.Name);
-// 						Out.Log(string.Format("[test] 场面：shoupai {0}", strlog));
-// 						strlog = "";
-// 						foreach (HsMercenaryStrategy.Mercenary target_iter in BuildMercenariesFromCards(zonePlay.GetCards()))
-// 							strlog += string.Format("{0}\t", target_iter.Name);
-// 						Out.Log(string.Format("[test] 场面：changmian {0}", strlog));
 
 						GameState gameState = GameState.Get();
 						if (gameState != null)
 						{
 							Out.Log(string.Format("[佣兵登场] 选择[佣兵{0}:{1}]，位置[{2}]",
 								hand_index, zoneHand.GetCardAtIndex(hand_index).GetEntity().GetName(), play_index));
-							gameState.SetSelectedOption(hand_index+ 1);
+							gameState.SetSelectedOption(hand_index + 1);
 							gameState.SetSelectedSubOption(-1);
 							gameState.SetSelectedOptionTarget(0);
 							gameState.SetSelectedOptionPosition(play_index + 1);
@@ -1147,10 +1193,10 @@ namespace Mercenary
 						return;
 					}
 
-// 					InputManager.Get().DoEndTurnButton();
-// 					Out.Log("[对局中] 上怪，休息5秒");
-// 					Sleep(5);
-// 					return;
+					// 					InputManager.Get().DoEndTurnButton();
+					// 					Out.Log("[对局中] 上怪，休息5秒");
+					// 					Sleep(5);
+					// 					return;
 				}
 				// 佣兵技能选择
 				if (Main.phaseID == 2)
@@ -1169,7 +1215,7 @@ namespace Mercenary
 							string equipment = card.GetEntity().GetEquipmentEntity()?.GetName() ?? "";
 							if (equipment.Length > 0 && Char.IsNumber(equipment[equipment.Length - 1]))
 								equipment = equipment.Substring(0, equipment.Length - 1);
-							Main.pvpMercTeam.Add(card.GetEntity().GetName() + '-' + equipment);
+							Cache.pvpMercTeam.Add(card.GetEntity().GetName() + '-' + equipment);
 						}
 					}
 					if (null == zonePlay_opposing.GetCards().Find((Card i) => false == i.GetEntity().IsStealthed()))
@@ -1188,11 +1234,11 @@ namespace Mercenary
 							{
 								Out.Log(string.Format("[对局中] 佣兵选择 [{0}]的技能界面", entity.GetName()));
 								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(entity);
-// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
-// 								{
-// 									entity,
-// 									true
-// 								}).GetValue();
+								// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
+								// 								{
+								// 									entity,
+								// 									true
+								// 								}).GetValue();
 								Main.ResetIdle();
 								return;
 							}
@@ -1243,20 +1289,20 @@ namespace Mercenary
 									dict_mercactive.Add(battleTarget.MercName, battleTarget.NeedActive);
 							}
 							bool result = false;
-							Card nextSelectMerc_Card = zonePlay_friendly.GetCards().Find( 
-								(Card i) => 
-								(!i.GetEntity().HasSelectedLettuceAbility() || !i.GetEntity().HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY))&&
+							Card nextSelectMerc_Card = zonePlay_friendly.GetCards().Find(
+								(Card i) =>
+								(!i.GetEntity().HasSelectedLettuceAbility() || !i.GetEntity().HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY)) &&
 								(false == dict_mercactive.TryGetValue(i.GetEntity().GetName(), out result) || result == true)
 								);
 							if (nextSelectMerc_Card != null)
 							{
 								Out.Log(string.Format("[对局中] 操作佣兵 手动选择下一个佣兵[{0}]", nextSelectMerc_Card.GetEntity().GetName()));
 								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(nextSelectMerc_Card.GetEntity());
-// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
-// 								{
-// 									nextSelectMerc_Card.GetEntity(),
-// 									true
-// 								}).GetValue();
+								// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
+								// 								{
+								// 									nextSelectMerc_Card.GetEntity(),
+								// 									true
+								// 								}).GetValue();
 								Main.ResetIdle();
 								return;
 							}
@@ -1288,7 +1334,7 @@ namespace Mercenary
 			}
 		}
 
-		
+
 		private List<Target> BuildTargetFromCards(List<Card> cards, Player.Side side)
 		{
 			List<Target> list = new List<Target>();
@@ -1322,6 +1368,7 @@ namespace Mercenary
 					Health = card.GetEntity().GetCurrentHealth(),
 					Speed = card.GetPreparedLettuceAbilitySpeedValue(),
 					DefHealth = card.GetEntity().GetDefHealth(),
+					Attack = card.GetEntity().GetATK(),
 					Role = (HsMercenaryStrategy.TAG_ROLE)(card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE)),
 					Enable = flag_avalue,
 					Skills = skills,
@@ -1351,13 +1398,13 @@ namespace Mercenary
 			return new ValueTuple<LettuceMapNode, int>(null, 0);
 		}
 
-		
+
 		private static bool NeedCompleted()
 		{
 			return Main.modeConf.Value == "自动解锁地图" || Main.modeConf.Value == "刷图" || Main.modeConf.Value == "挂机收菜" || TaskUtils.GetTaskMap() != -1;
 		}
 
-		
+
 		// 最短路径
 		private static int GetMinNode(LettuceMapNode node, int value, List<LettuceMapNode> nodes)
 		{
@@ -1374,7 +1421,7 @@ namespace Mercenary
 			// 需要不需要完成地图，只打到神秘人
 			if (!Main.NeedCompleted())
 			{
-				
+
 				if (HsGameUtils.IsMysteryNode(node.NodeTypeId))
 					return value;
 				if (HsGameUtils.IsBoss(node.NodeTypeId))
@@ -1403,44 +1450,20 @@ namespace Mercenary
 			return Math.Min(minNode, minNode2);
 		}
 
-		
+
 		private readonly Harmony _harmony = new Harmony("hs.patch");
-
-		
 		private static bool isRunning = true;
-
-		
 		private static ConfigEntry<string> mapConf;
-
-		
 		private static ConfigEntry<string> teamNameConf;
-
-		
 		private static ConfigEntry<bool> autoUpdateSkillConf;
-
-		
 		private static ConfigEntry<bool> autoCraftConf;
-
-		
 		private static ConfigEntry<int> coreTeamNumConf;
-
-		
 		private static ConfigEntry<int> teamNumConf;
-
-		
 		private static ConfigEntry<string> modeConf;
-
-		
 		private static ConfigEntry<bool> runningConf;
-
-		
 		private static ConfigEntry<string> strategyConf;
-
-		
 		private static ConfigEntry<string> cleanTaskConf;
-
 		private static ConfigEntry<string> awakeTimeConf;
-
 		private static ConfigEntry<int> awakeTimeIntervalConf;
 		private static ConfigEntry<bool> autoTimeScaleConf;
 		private static ConfigEntry<int> pvpConcedeLine;
@@ -1451,8 +1474,7 @@ namespace Mercenary
 		private static bool initialize;
 		private static int phaseID;
 		private static bool readyToHang = false;// 挂机收菜模式 下次战斗准备挂机
-		private static int TimeScaleValue=2;// 齿轮倍数
-		private static HashSet<string> pvpMercTeam = new HashSet<string>();//佣兵阵容的集合
+		private static int TimeScaleValue = 2;// 齿轮倍数
 		private static bool readyToRecord = true;// 确保一次结束画面记录一次
 		public static string hsUnitID = "";
 	}
