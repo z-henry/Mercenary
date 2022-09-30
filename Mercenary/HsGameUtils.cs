@@ -218,17 +218,17 @@ namespace Mercenary
 		}
 
 		
-		public static List<Task> GetTasks()
+		public static List<Task> GetMercTasks()
 		{
 			NetCache.NetCacheMercenariesVillageVisitorInfo netObject = NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>();
 			List<Task> list = new List<Task>();
 			// 因为新任务是添加在第一条，所以倒序做任务，先进先做
 			for (int i = netObject.VisitorStates.Count; i>0; --i)
-// 			foreach (MercenariesVisitorState mercenariesVisitorState in netObject.VisitorStates)
 			{
 				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelByTaskState(netObject.VisitorStates[i - 1].ActiveTaskState, null, false, false);
 				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(netObject.VisitorStates[i-1].ActiveTaskState.TaskId);
-				if ((MercenaryVisitor.VillageVisitorType)Traverse.Create(LettuceVillageDataUtil.GetVisitorRecordByID(taskRecordByID.MercenaryVisitorId)).Field("m_visitorType").GetValue() == MercenaryVisitor.VillageVisitorType.STANDARD)
+// 				if ((MercenaryVisitor.VillageVisitorType)Traverse.Create(LettuceVillageDataUtil.GetVisitorRecordByID(taskRecordByID.MercenaryVisitorId)).Field("m_visitorType").GetValue() == MercenaryVisitor.VillageVisitorType.STANDARD)
+ 				if (mercenaryVillageTaskItemDataModel.TaskType == MercenaryVisitor.VillageVisitorType.STANDARD)
 				{
 					HsGameUtils.SetTask(taskRecordByID, list, mercenaryVillageTaskItemDataModel.ProgressMessage);
 				}
@@ -236,7 +236,23 @@ namespace Mercenary
 			return list;
 		}
 
-		
+		public static List<Task> GetMainLineTask()
+		{
+			List<Task> list = new List<Task>();
+			foreach (MercenariesVisitorState mercenariesVisitorState in NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>().VisitorStates)
+			{
+				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelByTaskState(mercenariesVisitorState.ActiveTaskState, null, false, false);
+				if (mercenaryVillageTaskItemDataModel.TaskType == MercenaryVisitor.VillageVisitorType.SPECIAL)
+				{
+					TaskAdapter.SetMainLineTask(list, mercenaryVillageTaskItemDataModel.Description);
+					break;
+				}
+			}
+			return list;
+		}
+
+
+
 		public static void UpdateEq(int mercenaryId, int equipmentIndex)
 		{
 			global::LettuceMercenary mercenary = CollectionManager.Get().GetMercenary((long)mercenaryId, false, true);
@@ -267,7 +283,7 @@ namespace Mercenary
 		private static void SetTask(VisitorTaskDbfRecord task, List<Task> tasks, string progressMessage)
 		{
 			MercenaryVisitorDbfRecord visitorRecordByID = LettuceVillageDataUtil.GetVisitorRecordByID(task.MercenaryVisitorId);
-			TaskAdapter.SetTask(task.ID, visitorRecordByID.MercenaryId, task.TaskTitle.GetString(true), task.TaskDescription.GetString(true), tasks, progressMessage);
+			TaskAdapter.SetTask(task.ID, visitorRecordByID.MercenaryId, task.TaskTitle.GetString(Locale.zhCN), task.TaskDescription.GetString(Locale.zhCN), tasks, progressMessage);
 		}
 
 		

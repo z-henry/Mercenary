@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Mercenary
 {
@@ -9,9 +11,6 @@ namespace Mercenary
 		
 		public static void SetTask(int taskId, int mercenaryId, string title, string desc, List<Task> tasks, string progressMessage)
 		{
-			//无法完成的
-			//梵妮莎·范克里夫——任务2：匪门虎女
-
 			//难完成的
 			//闪狐 任务14:唰！ 2装备成就解锁，加速等级不够
 
@@ -1656,7 +1655,7 @@ namespace Mercenary
 
 				case MercConst.鞭笞者特里高雷:
 					{
-						//鞭笞者特里高雷 任务2:无情抽笞
+						//任务2:无情抽笞
 						if (title.Contains("无情抽笞"))
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
@@ -1675,6 +1674,32 @@ namespace Mercenary
 					{
 					}
 					break;
+
+				case MercConst.卡德加:
+					{
+						//任务9 - 搅热事态
+						//任务14 - 臻于完美
+						if (title.Contains("搅热事态") ||
+							title.Contains("臻于完美"))
+						{
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "炉火", 2),
+							}));
+							return;
+						}
+						//任务10 - 然后降温
+						if (title.Contains("然后降温"))
+						{
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "暴风雪", 1),
+							}));
+							return;
+						}
+					}
+					break;
+
 			}
 
 
@@ -2019,10 +2044,10 @@ namespace Mercenary
 			foreach (LettuceAbility lettuceAbility in CollectionManager.Get().GetMercenary((long)mercenaryId, false, true).m_abilityList)
 			{
 				CardDbfRecord cardRecord = GameDbf.GetIndex().GetCardRecord(lettuceAbility.GetCardId());
-				string @string = cardRecord.TextInHand.GetString(true);
+				string @string = cardRecord.TextInHand.GetString(Locale.zhCN);
 				if (@string != null && @string.Contains("速度值") && @string.Contains("加快"))
 				{
-					string string2 = cardRecord.Name.GetString(true);
+					string string2 = cardRecord.Name.GetString(Locale.zhCN);
 					list.Add(TaskAdapter.GetMercenary(mercenaryId, string2.Substring(0, string2.Length - 1), 0));
 				}
 			}
@@ -2037,7 +2062,7 @@ namespace Mercenary
 				water = ++m_globalWater,
 				Priority = priority,
 				Map = map,
-				Mercenaries = new List<MercenaryEntity>(mercenaries),
+				Mercenaries = mercenaries?.ToList(),
 				Id = id,
 				ProgressMessage = progress
 			};
@@ -2049,7 +2074,7 @@ namespace Mercenary
 			{
 				water = ++m_globalWater,
 				Id = id,
-				Mercenaries = new List<MercenaryEntity>(mercenaries),
+				Mercenaries = mercenaries?.ToList(),
 				Priority = priority,
 				ProgressMessage = progress
 			};
@@ -2062,7 +2087,7 @@ namespace Mercenary
 			{
 				water = ++m_globalWater,
 				Id = id,
-				Mercenaries = new List<MercenaryEntity>(mercenaries),
+				Mercenaries = mercenaries?.ToList(),
 				Priority = 5,
 				ProgressMessage = progress
 			};
@@ -2078,6 +2103,60 @@ namespace Mercenary
 		{
 			return m_dictSkillEquip.ContainsKey(skill) ? m_dictSkillEquip[skill] : 0;
 		}
+		public static void SetMainLineTask(List<Task> tasks, string desc)
+		{
+			Out.Log($"[主线] {desc}");
+
+
+			Regex regex = new Regex(@"完成(\D.+)悬赏。$");
+			Match match = regex.Match(desc);
+			if (match.Groups.Count == 2)
+			{
+				string mapName = MapUtils.GetMapByBoss(match.Groups[1].Value)?.Name ?? "";
+				tasks.Add(TaskAdapter.GetTask("", -1, 0, mapName, null));
+				return;
+			}
+
+			switch(desc)
+			{
+				//贫瘠之地
+				case "击败8只野兽。":
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, "1-6", null));
+					break;
+
+				//费伍德森林
+				case "在费伍德森林击败20个敌人。":
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, "2-1", null));
+					break;
+				case "击败15个恶魔。":
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, "2-6", null));
+					break;
+
+				//冬泉谷
+				case "击败12个熊怪。":
+				case "在完成3个悬赏。":
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, "3-1", null));
+					break;
+
+				//黑石山
+				case "在造成2000点伤害。":
+				case "在黑石山击败50个敌人。":
+				case "在黑石山击败60个敌人。":
+				case "在黑石山造成2500点伤害。":
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, "4-1", null));
+					break;
+				case "在黑石山击败25个元素。":
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, "4-4", null));
+					break;
+
+				//奥特兰克山谷
+				case "在奥特兰克山谷击败25个敌人。":
+				case "在奥特兰克造成2000点伤害。":
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, "5-1", null));
+					break;
+			}
+		}
+
 
 		private static Dictionary<string, int> m_dictSkillEquip = new Dictionary<string, int>
 		{

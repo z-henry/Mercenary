@@ -23,25 +23,14 @@ namespace Mercenary
 			return MapUtils.GetMapId(this.Map);
 		}
 
-		//流水号，保证同优先级的任务是按照添加顺序排列的（长时间不重启可能会溢出）
-		public int water;
-
 		
-		public int Id;
-
-		
-		public int Priority;
-
-		
-		public string Map;
-
-		
-		public List<MercenaryEntity> Mercenaries = new List<MercenaryEntity>();
-
-		
-		public long StartAt;
-
-		public string ProgressMessage;
+		public int water;//流水号，保证同优先级的任务是按照添加顺序排列的（长时间不重启可能会溢出）
+		public int Id;// taskid
+		public int Priority; // 优先级 小数优先级高
+		public string Map;//1-1 h2-5 等
+		public List<MercenaryEntity> Mercenaries = new List<MercenaryEntity>();// 佣兵以及佣兵技能选择列表
+		public long StartAt;//任务进度起始时间
+		public string ProgressMessage;//任务进度
 
 	}
 }

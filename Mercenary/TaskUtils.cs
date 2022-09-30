@@ -8,11 +8,17 @@ namespace Mercenary
 	public static class TaskUtils
 	{
 		
-		public static void UpdateTask()
+		public static void UpdateMercTask()
 		{
 			TaskUtils.ClearTaskSpecialNode();
-			TaskUtils.UpdateTaskInfo(HsGameUtils.GetTasks());
+			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMercTasks());
 		}
+
+		public static void UpdateMainLineTask()
+		{
+			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMainLineTask());
+		}
+
 
 		public static void ClearTaskSpecialNode()
 		{
