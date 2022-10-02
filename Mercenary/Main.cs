@@ -26,7 +26,7 @@ namespace Mercenary
 			{
 				return;
 			}
-			GUILayout.Label(new GUIContent(PluginInfo.PLUGIN_VERSION), new GUILayoutOption[]
+			GUILayout.Label(new GUIContent(hsUnitID + ' ' + PluginInfo.PLUGIN_VERSION), new GUILayoutOption[]
 			{
 				GUILayout.Width(200f)
 			});
@@ -183,12 +183,40 @@ namespace Mercenary
 					return;
 				}
 			}
-			if (Main.IsTreasure(lettuceMap))
+			if (lettuceMap.HasPendingTreasureSelection && lettuceMap.PendingTreasureSelection.TreasureOptions.Count > 0)
 			{
-				Out.Log(string.Format("[地图信息识别] 选择第一个宝藏"));
-				Network.Get().MakeMercenariesMapTreasureSelection(0);
+				string[] findTreasure =
+				{
+					"刺杀", "元素研究","严酷寒冬","便携冰墙", //最优先
+					"火焰之杖","元素之力","火球齐射",//螺丝 迦顿
+					"强化飞刺","联盟战争旗帜","暴风城战袍","埃提耶什",//巴琳达
+					"灵魂盛宴","失去控制",//卡扎
+					"精魂之刃","闪避","部落的旗帜","精灵旗帜","急速之靴",//瓦莉拉
+					"萨隆邪铁护甲"
+				};
+				List<string> treasureList = new List<string>();
+				foreach (int dbId in lettuceMap.PendingTreasureSelection.TreasureOptions)
+				{
+					string cardId = GameUtils.TranslateDbIdToCardId(dbId, false);
+					string name = DefLoader.Get()?.GetEntityDef(cardId)?.GetName();
+					Out.Log($"[宝藏测试] {name}");
+					if (name.Length > 0 &&
+						Char.IsNumber(name[name.Length - 1]))
+						name = name.Substring(0, name.Length - 1);
+					treasureList.Add(name);
+				}
+
+				int findIndex = -1;
+				foreach (var iter in findTreasure)
+				{
+					findIndex = treasureList.IndexOf(iter);
+					if (findIndex != -1)
+						break;
+				}
+				Out.Log($"[地图信息识别] 选择第{findIndex}个宝藏");
+				Network.Get().MakeMercenariesMapTreasureSelection(Math.Max(0, findIndex));
 			}
-			if (Main.IsVisitor(lettuceMap))
+			if (lettuceMap.HasPendingVisitorSelection && lettuceMap.PendingVisitorSelection.VisitorOptions.Count > 0)
 			{
 				Out.Log(string.Format("[地图信息识别] 选择第一个来访者"));
 				Network.Get().MakeMercenariesMapVisitorSelection(0);
@@ -325,19 +353,6 @@ namespace Mercenary
 		}
 
 
-
-		private static bool IsTreasure(PegasusLettuce.LettuceMap map)
-		{
-			return map.HasPendingTreasureSelection && map.PendingTreasureSelection.TreasureOptions.Count > 0;
-		}
-
-
-		private static bool IsVisitor(PegasusLettuce.LettuceMap map)
-		{
-			return map.HasPendingVisitorSelection && map.PendingVisitorSelection.VisitorOptions.Count > 0;
-		}
-
-
 		private void AutoChangeTeam()
 		{
 			Out.Log("[队伍编辑]");
@@ -386,6 +401,10 @@ namespace Mercenary
 									break;
 								}
 							}
+						}
+						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						{
+							break;
 						}
 					}
 				}
@@ -1157,6 +1176,7 @@ namespace Mercenary
 				{
 					card.GetEntity()
 				}).GetValue();
+				Main.ResetIdle();
 			}
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION)
 			{
@@ -1217,8 +1237,8 @@ namespace Mercenary
 							gameState.SetSelectedOptionTarget(0);
 							gameState.SetSelectedOptionPosition(play_index + 1);
 							gameState.SendOption();
-							Sleep(0.75f);
 						}
+						Main.ResetIdle();
 						return;
 					}
 
@@ -1513,8 +1533,8 @@ namespace Mercenary
 							//将佣兵id + 地图id 加入队列
 							Cache.unlockMercID = merc.ID;
 							Cache.unlockMapID = equipMapId[equip.ID];
-							Out.Log($"[自动解锁] 准备 [MNAME:{merc.m_mercName}] [MAPID:{equipMapId[equip.ID]}");
-							break;
+							Out.Log($"[自动解锁] 准备 [MNAME:{merc.m_mercName}] [MAPID:{equipMapId[equip.ID]}]");
+							return;
 						}
 					}
 				}
