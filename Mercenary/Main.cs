@@ -87,6 +87,26 @@ namespace Mercenary
 			{
 				return;
 			}
+
+			Main.autoTimeScaleConf.SettingChanged += delegate
+			{
+				if (Main.autoTimeScaleConf.Value)
+				{
+					HsMod.ConfigValue.Get().TimeGearEnable = true;
+					HsMod.ConfigValue.Get().TimeGearValue = 2;
+				}
+				else
+					HsMod.ConfigValue.Get().TimeGearEnable = false;
+			};
+			if (Main.autoTimeScaleConf.Value)
+			{
+				HsMod.ConfigValue.Get().TimeGearEnable = true;
+				HsMod.ConfigValue.Get().TimeGearValue = 2;
+			}
+			else
+				HsMod.ConfigValue.Get().TimeGearEnable = false;
+
+
 			this._harmony.PatchAll(typeof(Main));
 		}
 
@@ -234,13 +254,6 @@ namespace Mercenary
 				TaskUtils.UpdateMercTask();
 			}
 			List<LettuceMapNode> nodes = map.NodeData;
-			// 			foreach (LettuceMapNode node in nodes)
-			// 			{
-			// 				string childrendid = "";
-			// 				foreach (uint childid in node.ChildNodeIds)
-			// 					childrendid += (childid.ToString() + ", ");
-			// 				Out.Log(string.Format("[地图结构] [NID:{0}][NTYPE:{1}][NSTATE:{2}][CID:{3}]", node.NodeId, node.NodeTypeId, node.NodeState_, childrendid));
-			// 			}
 			ValueTuple<LettuceMapNode, int> nextNode = Main.GetNextNode(nodes.FindAll((LettuceMapNode n) => n.NodeState_ == LettuceMapNode.NodeState.UNLOCKED), nodes);
 			LettuceMapNode lettuceMapNode = nextNode.Item1;
 			int item = nextNode.Item2;
@@ -804,9 +817,11 @@ namespace Mercenary
 				if (gameState.IsGameOver())
 				{
 					//关闭对局内齿轮
-					if (HsMod.ConfigValue.Get().TimeGearEnable != false && 
-						Main.autoTimeScaleConf.Value == true)
-						HsMod.ConfigValue.Get().TimeGearEnable = false;
+					if (Main.autoTimeScaleConf.Value == true)
+					{
+						HsMod.ConfigValue.Get().TimeGearEnable = true;
+						HsMod.ConfigValue.Get().TimeGearValue = Main.TimeScaleValue.outplay;
+					}
 
 					EndGameScreen endGameScreen = EndGameScreen.Get();
 					if (endGameScreen)
@@ -1086,6 +1101,14 @@ namespace Mercenary
 				return;
 			}
 
+
+			//对局内齿轮
+			if (Main.autoTimeScaleConf.Value == true)
+			{
+				HsMod.ConfigValue.Get().TimeGearEnable = true;
+				HsMod.ConfigValue.Get().TimeGearValue = Main.TimeScaleValue.inplay;
+			}
+
 			if (EndTurnButton.Get().m_ActorStateMgr.GetActiveStateType() == ActorStateType.ENDTURN_NO_MORE_PLAYS)
 			{
 				Out.Log("[对局中] 点击结束按钮");
@@ -1191,61 +1214,59 @@ namespace Mercenary
 						Application.Quit();
 						return;
 					}
-					if (Main.autoTimeScaleConf.Value == true)
+
+					// pve上怪
+					if (GameMgr.Get().GetGameType() == GameType.GT_MERCENARIES_PVE)
 					{
-						HsMod.ConfigValue.Get().TimeGearEnable = true;
-						HsMod.ConfigValue.Get().TimeGearValue = Main.TimeScaleValue;
+						InputManager.Get().DoEndTurnButton();
+						Out.Log("[佣兵登场]");
 					}
-					ZonePlay zonePlay = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
-					ZoneHand zoneHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.FRIENDLY);
-
-					ZoneDeck zoneOppositeDeck = ZoneMgr.Get().FindZoneOfType<ZoneDeck>(Player.Side.OPPOSING);
-					ZoneHand zoneOppositeHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.OPPOSING);
-
-					if (zoneHand != null)
+					// pvp上怪
+					else
 					{
-						Dictionary<HsMercenaryStrategy.TAG_ROLE, int> dictOppositeRoleCount = new Dictionary<HsMercenaryStrategy.TAG_ROLE, int>()
-						{
-							{ HsMercenaryStrategy.TAG_ROLE.CASTER, 0 },
-							{ HsMercenaryStrategy.TAG_ROLE.FIGHTER, 0 },
-							{ HsMercenaryStrategy.TAG_ROLE.INVALID, 0 },
-							{ HsMercenaryStrategy.TAG_ROLE.NEUTRAL, 0 },
-							{ HsMercenaryStrategy.TAG_ROLE.TANK, 0 },
-						};
-						// 						string strlog = "";
-						foreach (Card card_iter in zoneOppositeDeck.GetCards())
-							dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
-						foreach (Card card_iter in zoneOppositeHand.GetCards())
-							dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
-						// 						Out.Log(string.Format("[test] 预测{0}", strlog));
+						ZonePlay zonePlay = ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY);
+						ZoneHand zoneHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.FRIENDLY);
+						ZoneDeck zoneOppositeDeck = ZoneMgr.Get().FindZoneOfType<ZoneDeck>(Player.Side.OPPOSING);
+						ZoneHand zoneOppositeHand = ZoneMgr.Get().FindZoneOfType<ZoneHand>(Player.Side.OPPOSING);
 
-						(int hand_index, int play_index) = StrategyHelper.GetStrategy(strategy_name).GetEnterOrder(
-							BuildTargetFromCards(zoneHand.GetCards(), Player.Side.FRIENDLY),
-							BuildTargetFromCards(zonePlay.GetCards(), Player.Side.FRIENDLY),
-							dictOppositeRoleCount,
-							this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
-							this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING)
-							);
-
-						GameState gameState = GameState.Get();
-						if (gameState != null)
+						if (zoneHand != null)
 						{
-							Out.Log(string.Format("[佣兵登场] 选择[佣兵{0}:{1}]，位置[{2}]",
-								hand_index, zoneHand.GetCardAtIndex(hand_index).GetEntity().GetName(), play_index));
-							gameState.SetSelectedOption(hand_index + 1);
-							gameState.SetSelectedSubOption(-1);
-							gameState.SetSelectedOptionTarget(0);
-							gameState.SetSelectedOptionPosition(play_index + 1);
-							gameState.SendOption();
+							Dictionary<HsMercenaryStrategy.TAG_ROLE, int> dictOppositeRoleCount = new Dictionary<HsMercenaryStrategy.TAG_ROLE, int>()
+							{
+								{ HsMercenaryStrategy.TAG_ROLE.CASTER, 0 },
+								{ HsMercenaryStrategy.TAG_ROLE.FIGHTER, 0 },
+								{ HsMercenaryStrategy.TAG_ROLE.INVALID, 0 },
+								{ HsMercenaryStrategy.TAG_ROLE.NEUTRAL, 0 },
+								{ HsMercenaryStrategy.TAG_ROLE.TANK, 0 },
+							};
+							foreach (Card card_iter in zoneOppositeDeck.GetCards())
+								dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
+							foreach (Card card_iter in zoneOppositeHand.GetCards())
+								dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
+
+							(int hand_index, int play_index) = StrategyHelper.GetStrategy(strategy_name).GetEnterOrder(
+								BuildTargetFromCards(zoneHand.GetCards(), Player.Side.FRIENDLY),
+								BuildTargetFromCards(zonePlay.GetCards(), Player.Side.FRIENDLY),
+								dictOppositeRoleCount,
+								this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
+								this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING)
+								);
+
+							GameState gameState = GameState.Get();
+							if (gameState != null)
+							{
+								Out.Log(string.Format("[佣兵登场] 选择[佣兵{0}:{1}]，位置[{2}]",
+									hand_index, zoneHand.GetCardAtIndex(hand_index).GetEntity().GetName(), play_index));
+								gameState.SetSelectedOption(hand_index + 1);
+								gameState.SetSelectedSubOption(-1);
+								gameState.SetSelectedOptionTarget(0);
+								gameState.SetSelectedOptionPosition(play_index + 1);
+								gameState.SendOption();
+							}
 						}
 						Main.ResetIdle();
 						return;
 					}
-
-					// 					InputManager.Get().DoEndTurnButton();
-					// 					Out.Log("[对局中] 上怪，休息5秒");
-					// 					Sleep(5);
-					// 					return;
 				}
 				// 佣兵技能选择
 				if (Main.phaseID == 2)
@@ -1524,18 +1545,19 @@ namespace Mercenary
 			List<LettuceMercenary> mercenaries = CollectionManager.Get().FindOrderedMercenaries(null, new bool?(true), null, null, null).m_mercenaries;
 			foreach (var merc in mercenaries) // 遍历所有的佣兵
 			{
+				if (false == merc.m_owned)
+					continue;
 				foreach (var equip in merc.m_equipmentList) // 遍历当前佣兵的装备列表
 				{
-					if (!equip.Owned) // 如果当前装备没有获得
+					if (equip.Owned)
+						continue;
+					if (equipMapId.ContainsKey(equip.ID)) //如果未获得的装备已经在字典中
 					{
-						if (equipMapId.ContainsKey(equip.ID)) //如果未获得的装备已经在字典中
-						{
-							//将佣兵id + 地图id 加入队列
-							Cache.unlockMercID = merc.ID;
-							Cache.unlockMapID = equipMapId[equip.ID];
-							Out.Log($"[自动解锁] 准备 [MNAME:{merc.m_mercName}] [MAPID:{equipMapId[equip.ID]}]");
-							return;
-						}
+						//将佣兵id + 地图id 加入队列
+						Cache.unlockMercID = merc.ID;
+						Cache.unlockMapID = equipMapId[equip.ID];
+						Out.Log($"[自动解锁] 准备 [MNAME:{merc.m_mercName}] [MAPID:{equipMapId[equip.ID]}]");
+						return;
 					}
 				}
 			}
@@ -1565,7 +1587,7 @@ namespace Mercenary
 		private static bool initialize;
 		private static int phaseID;
 		private static bool readyToHang = false;// 挂机收菜模式 下次战斗准备挂机
-		private static int TimeScaleValue = 2;// 齿轮倍数
+		private static (int outplay, int inplay) TimeScaleValue = (2,8);// 齿轮倍数
 		public static string hsUnitID = "";
 	}
 }
