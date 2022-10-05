@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BepInEx.Logging;
+using System;
 using System.IO;
 using System.Text;
 
@@ -42,5 +43,13 @@ namespace Mercenary
 		{
 			UIStatus.Get().AddInfo(log);
 		}
+
+		public static void MyLogger(LogLevel level, object message)
+		{
+			var myLogSource = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.PLUGIN_GUID + ".MyLogger");
+			myLogSource.Log(level, message);
+			BepInEx.Logging.Logger.Sources.Remove(myLogSource);
+		}
+
 	}
 }

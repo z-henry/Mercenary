@@ -541,6 +541,7 @@ namespace Mercenary
 		private static void Sleep(float time)
 		{
 			Main.sleepTime += (float)time;
+			//Out.MyLogger(BepInEx.Logging.LogLevel.Warning, $"sleep {time}");
 		}
 
 
@@ -612,7 +613,7 @@ namespace Mercenary
 				return;
 			}
 			this.CheckIdleTime();
-			if ((double)(Time.realtimeSinceStartup - Main.sleepTime) <= 1.0)
+			if ((double)(Time.realtimeSinceStartup - Main.sleepTime) <= 0.1)
 			{
 				return;
 			}
@@ -1080,6 +1081,7 @@ namespace Mercenary
 
 		private void HandlePlay()
 		{
+			//Out.MyLogger(BepInEx.Logging.LogLevel.Warning, $"{GameState.Get().GetResponseMode()}  {phaseID}");
 			if (Main.phaseID == 3)
 			{
 				return;
@@ -1280,7 +1282,8 @@ namespace Mercenary
 						{
 							if (card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.CASTER &&
 								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.TANK &&
-								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.FIGHTER)
+								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.FIGHTER &&
+								card.GetEntity().GetName() == "大法师卡德加")
 								continue;
 							string equipment = card.GetEntity().GetEquipmentEntity()?.GetName() ?? "";
 							if (equipment.Length > 0 && Char.IsNumber(equipment[equipment.Length - 1]))
@@ -1294,88 +1297,60 @@ namespace Mercenary
 						InputManager.Get().DoEndTurnButton();
 						return;
 					}
+
+					// 操作佣兵
 					Entity currentSelectMerc_Entity = ZoneMgr.Get().GetLettuceAbilitiesSourceEntity();
-					if (currentSelectMerc_Entity == null)
+					bool result = false;
+					Card nextSelectMerc_Card = zonePlay_friendly.GetCards().Find( (Card i) =>
+						(!i.GetEntity().HasSelectedLettuceAbility() || !i.GetEntity().HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY)) &&
+						(false == dict_mercactive.TryGetValue(i.GetEntity().GetName(), out result) || result == true)
+						);
+					// 无可操作佣兵
+					if (nextSelectMerc_Card == null)
 					{
-						foreach (Card card in zonePlay_friendly.GetCards())
-						{
-							Entity entity = card.GetEntity();
-							if (!entity.HasSelectedLettuceAbility() || !entity.HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY))
-							{
-								Out.Log(string.Format("[对局中] 佣兵选择 [{0}]的技能界面", entity.GetName()));
-								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(entity);
-								// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
-								// 								{
-								// 									entity,
-								// 									true
-								// 								}).GetValue();
-								Main.ResetIdle();
-								return;
-							}
-						}
+						Out.Log(string.Format("[对局中] 操作佣兵 无可操作佣兵 结束回合"));
+						InputManager.Get().DoEndTurnButton();
+						Main.ResetIdle();
+						return;
 					}
+					// 操作的佣兵与选中的顺序目标不一样
+					if (currentSelectMerc_Entity == null ||
+						currentSelectMerc_Entity.GetEntityId() != nextSelectMerc_Card.GetEntity().GetEntityId())
+					{
+						Out.Log(string.Format("[对局中] 操作佣兵 手动调整到[{0}]", nextSelectMerc_Card.GetEntity().GetName()));
+						ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(nextSelectMerc_Card.GetEntity());
+						RemoteActionHandler.Get().NotifyOpponentOfSelection(nextSelectMerc_Card.GetEntity().GetEntityId());
+						Main.ResetIdle();
+						return;
+					}
+					// 佣兵技能
 					else
 					{
-						BattleTarget currentMerc_BattleTarget = battleTargets.Find((BattleTarget i) => i.MercName == currentSelectMerc_Entity.GetName());
-						// 策略规定此佣兵可以操作
-						if (currentMerc_BattleTarget == null || currentMerc_BattleTarget.NeedActive == true)
+						Out.Log(string.Format("[对局中] 操作佣兵 [{0}]", currentSelectMerc_Entity.GetName()));
+						Card card = null;
+						List<Card> displayedLettuceAbilityCards = ZoneMgr.Get().GetLettuceZoneController().GetDisplayedLettuceAbilityCards();
+						foreach (BattleTarget batterTarget in battleTargets)
 						{
-							Out.Log(string.Format("[对局中] 技能选择 操作佣兵 [{0}]", currentSelectMerc_Entity.GetName()));
-							Card card = null;
-							List<Card> displayedLettuceAbilityCards = ZoneMgr.Get().GetLettuceZoneController().GetDisplayedLettuceAbilityCards();
-							foreach (BattleTarget batterTarget in battleTargets)
-							{
-								card = displayedLettuceAbilityCards.Find((Card i) => i.GetEntity().GetEntityId() == batterTarget.SkillId && GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
-								if (card != null)
-									break;
-							}
+							card = displayedLettuceAbilityCards.Find((Card i) => i.GetEntity().GetEntityId() == batterTarget.SkillId && GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
 							if (card != null)
-							{
-								Out.Log(string.Format("[对局中] 技能选择 匹配策略 [{0}]", card.GetEntity().GetName()));
-							}
-							else
-							{
-								card = displayedLettuceAbilityCards.Find((Card i) => GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
-								Out.Log(string.Format("[对局中] 技能选择 顺序选择 [{0}]", card.GetEntity().GetName()));
-							}
-							Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
-							{
-							card.GetEntity(),
-							true
-							}).GetValue();
-							Main.ResetIdle();
-							return;
+								break;
 						}
-						// 策略规定此佣兵不可以操作
+						if (card != null)
+						{
+							Out.Log(string.Format("[对局中] 技能选择 匹配策略 [{0}]", card.GetEntity().GetName()));
+						}
 						else
 						{
-							Out.Log(string.Format("[对局中] 操作佣兵 设置为不操作 [{0}]", currentSelectMerc_Entity.GetName()));
-							bool result = false;
-							Card nextSelectMerc_Card = zonePlay_friendly.GetCards().Find(
-								(Card i) =>
-								(!i.GetEntity().HasSelectedLettuceAbility() || !i.GetEntity().HasTag(GAME_TAG.LETTUCE_HAS_MANUALLY_SELECTED_ABILITY)) &&
-								(false == dict_mercactive.TryGetValue(i.GetEntity().GetName(), out result) || result == true)
-								);
-							if (nextSelectMerc_Card != null)
-							{
-								Out.Log(string.Format("[对局中] 操作佣兵 手动选择下一个佣兵 [{0}]", nextSelectMerc_Card.GetEntity().GetName()));
-								ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(nextSelectMerc_Card.GetEntity());
-								// 								Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
-								// 								{
-								// 									nextSelectMerc_Card.GetEntity(),
-								// 									true
-								// 								}).GetValue();
-								Main.ResetIdle();
-								return;
-							}
-							else
-							{
-								Out.Log(string.Format("[对局中] 操作佣兵 无可操作佣兵 结束回合"));
-								InputManager.Get().DoEndTurnButton();
-								Main.ResetIdle();
-								return;
-							}
+							card = displayedLettuceAbilityCards.Find((Card i) => GameState.Get().HasResponse(i.GetEntity(), new bool?(false)));
+							Out.Log(string.Format("[对局中] 技能选择 顺序选择 [{0}]", card.GetEntity().GetName()));
 						}
+						Traverse.Create(InputManager.Get()).Method("HandleClickOnCardInBattlefield", new object[]
+						{
+							card.GetEntity(),
+							true
+						}).GetValue();
+						Main.ResetIdle();
+						return;
 					}
 				}
 			}
