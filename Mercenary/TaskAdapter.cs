@@ -2105,55 +2105,53 @@ namespace Mercenary
 		}
 		public static void SetMainLineTask(List<Task> tasks, string desc)
 		{
-			Out.Log($"[主线] {desc}");
-
-
-			Regex regex = new Regex(@"完成(\D.+)悬赏。$");
-			Match match = regex.Match(desc);
-			if (match.Groups.Count == 2)
 			{
-				string mapName = MapUtils.GetMapByBoss(match.Groups[1].Value)?.Name ?? "";
-				tasks.Add(TaskAdapter.GetTask("", -1, 0, mapName, null));
-				return;
-			}
+				Out.Log($"[主线] {desc}");
 
-			switch(desc)
-			{
-				//贫瘠之地
-				case "击败8只野兽。":
-					tasks.Add(TaskAdapter.GetTask("", -1, 0, "1-6", null));
-					break;
 
-				//费伍德森林
-				case "在费伍德森林击败20个敌人。":
-					tasks.Add(TaskAdapter.GetTask("", -1, 0, "2-1", null));
-					break;
-				case "击败15个恶魔。":
-					tasks.Add(TaskAdapter.GetTask("", -1, 0, "2-6", null));
-					break;
+				Regex regex = new Regex(@"完成(\D.+)悬赏。$");
+				Match match = regex.Match(desc);
+				if (match.Groups.Count == 2)
+				{
+					string mapName = MapUtils.GetMapByBoss(match.Groups[1].Value)?.Name ?? "";
+					tasks.Add(TaskAdapter.GetTask("", -1, 0, mapName, null));
+					return;
+				}
 
-				//冬泉谷
-				case "击败12个熊怪。":
-				case "在完成3个悬赏。":
-					tasks.Add(TaskAdapter.GetTask("", -1, 0, "3-1", null));
-					break;
-
-				//黑石山
-				case "在造成2000点伤害。":
-				case "在黑石山击败50个敌人。":
-				case "在黑石山击败60个敌人。":
-				case "在黑石山造成2500点伤害。":
-					tasks.Add(TaskAdapter.GetTask("", -1, 0, "4-1", null));
-					break;
-				case "在黑石山击败25个元素。":
-					tasks.Add(TaskAdapter.GetTask("", -1, 0, "4-4", null));
-					break;
-
-				//奥特兰克山谷
-				case "在奥特兰克山谷击败25个敌人。":
-				case "在奥特兰克造成2000点伤害。":
-					tasks.Add(TaskAdapter.GetTask("", -1, 0, "5-1", null));
-					break;
+				switch (desc)
+				{
+					//贫瘠之地
+					case "击败8只野兽。":
+						tasks.Add(TaskAdapter.GetTask("", -1, 0, "1-6", null));
+						break;
+					//费伍德森林
+					case "在费伍德森林击败20个敌人。":
+						tasks.Add(TaskAdapter.GetTask("", -1, 0, "2-1", null));
+						break;
+					case "击败15个恶魔。":
+						tasks.Add(TaskAdapter.GetTask("", -1, 0, "2-6", null));
+						break;
+					//冬泉谷
+					case "击败12个熊怪。":
+					case "在冬泉谷完成3个悬赏。":
+						tasks.Add(TaskAdapter.GetTask("", -1, 0, "3-1", null));
+						break;
+					//黑石山
+					case "在黑石山造成2000点伤害。":
+					case "在黑石山击败50个敌人。":
+					case "在黑石山击败60个敌人。":
+					case "在黑石山造成2500点伤害。":
+						tasks.Add(TaskAdapter.GetTask("", -1, 0, "4-1", null));
+						break;
+					case "在黑石山击败25个元素。":
+						tasks.Add(TaskAdapter.GetTask("", -1, 0, "4-4", null));
+						break;
+					//奥特兰克山谷
+					case "在奥特兰克山谷击败25个敌人。":
+					case "在奥特兰克造成2000点伤害。":
+						tasks.Add(TaskAdapter.GetTask("", -1, 0, "5-1", null));
+						break;
+				}
 			}
 		}
 

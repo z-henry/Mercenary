@@ -18,7 +18,7 @@ namespace Mercenary
 			string logFile = System.IO.Path.Combine(errorLogFilePath, "mercenarylog" + "@" + DateTime.Today.ToString("yyyy-MM-dd") + ".log");
 			bool writeBaseInfo = System.IO.File.Exists(logFile);
 			StreamWriter swLogFile = new StreamWriter(logFile, true, Encoding.Unicode);
-			swLogFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "\t" + log);
+			swLogFile.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + "\t" + log);
 			swLogFile.Close();
 			swLogFile.Dispose();
 		}
@@ -32,7 +32,7 @@ namespace Mercenary
 			string logFile = System.IO.Path.Combine(errorLogFilePath, HsMod.ConfigValue.Get().HsMatchLogPathValue + "@" + DateTime.Today.ToString("yyyy-MM-dd") + ".log");
 			bool writeBaseInfo = System.IO.File.Exists(logFile);
 			StreamWriter swLogFile = new StreamWriter(logFile, true, Encoding.Unicode);
-			swLogFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "\t" + log);
+			swLogFile.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + "\t" + log);
 			swLogFile.Close();
 			swLogFile.Dispose();
 		}

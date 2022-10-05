@@ -1045,30 +1045,21 @@ namespace Mercenary
 
 		private void CheckIdleTime()
 		{
-			Main.idleTime += Time.deltaTime;
-			if (Main.idleTime > 70f && Main.modeConf.Value != Mode.Pvp.ToString())
-			{
-				if (Main.idleTime > 90f)
-				{
-					Application.Quit();
-				}
-				if (GameState.Get() != null)
-				{
-					Out.Log("[IDLE]240s 投降");
-					GameState.Get().Concede();
-				}
-			}
+			int scale = Main.autoTimeScaleConf.Value ? Main.TimeScaleValue.outplay : 1;
+			Main.idleTime += (Time.deltaTime / scale);
 			if (Main.idleTime > 240f)
 			{
-				if (Main.idleTime > 300f)
-				{
-					Out.Log("[IDLE] 300s 游戏关闭");
-					Application.Quit();
-				}
 				if (GameState.Get() != null)
 				{
-					Out.Log("[IDLE] 240s 投降");
-					GameState.Get().Concede();
+					if (Main.modeConf.Value != Mode.Pvp.ToString())
+					{
+						Out.Log("[IDLE]240s 投降");
+						GameState.Get().Concede();
+					}
+				}
+				else
+				{
+					Application.Quit();
 				}
 			}
 		}
@@ -1137,7 +1128,7 @@ namespace Mercenary
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY),
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING)
 				);
-			Dictionary<int, BattleTarget> dict = new Dictionary<int, BattleTarget>();
+			Dictionary<int, BattleTarget> dict = new Dictionary<int, BattleTarget>();// 技能id目标字典
 			foreach (BattleTarget battleTarget in battleTargets)
 			{
 				if (battleTarget.SkillId == -1)
@@ -1145,6 +1136,15 @@ namespace Mercenary
 				if (!dict.ContainsKey(battleTarget.SkillId))
 					dict.Add(battleTarget.SkillId, battleTarget);
 			}
+			Dictionary<string, bool> dict_mercactive = new Dictionary<string, bool>();// 佣兵静止字典
+			foreach (BattleTarget battleTarget in battleTargets)
+			{
+				if (battleTarget.MercName.Length <= 0)
+					continue;
+				if (!dict_mercactive.ContainsKey(battleTarget.MercName))
+					dict_mercactive.Add(battleTarget.MercName, battleTarget.NeedActive);
+			}
+
 
 			// 选择目标阶段
 			if (GameState.Get().GetResponseMode() == GameState.ResponseMode.OPTION_TARGET)
@@ -1350,14 +1350,6 @@ namespace Mercenary
 						else
 						{
 							Out.Log(string.Format("[对局中] 操作佣兵 设置为不操作 [{0}]", currentSelectMerc_Entity.GetName()));
-							Dictionary<string, bool> dict_mercactive = new Dictionary<string, bool>();
-							foreach (BattleTarget battleTarget in battleTargets)
-							{
-								if (battleTarget.MercName.Length <= 0)
-									continue;
-								if (!dict_mercactive.ContainsKey(battleTarget.MercName))
-									dict_mercactive.Add(battleTarget.MercName, battleTarget.NeedActive);
-							}
 							bool result = false;
 							Card nextSelectMerc_Card = zonePlay_friendly.GetCards().Find(
 								(Card i) =>
