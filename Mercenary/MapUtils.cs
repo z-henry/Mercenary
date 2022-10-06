@@ -7,20 +7,7 @@ namespace Mercenary
 	
 	public static class MapUtils
 	{
-
-		public static bool Behind3_6(int mapID)
-		{
-			int index3_6 = MapConfList.FindIndex(x => x.Name == "3-6");
-			int currentMap = MapConfList.FindIndex(x => x.ID == mapID);
-
-			if (currentMap == -1)
-				return true;
-			else if (currentMap > index3_6)
-				return true;
-			else
-				return false;
-		}
-		
+	
 		public static int GetMapId(string name)
 		{
 			Map map = MapUtils.GetMap(name);

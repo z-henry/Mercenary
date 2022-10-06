@@ -254,9 +254,9 @@ namespace Mercenary
 				Main.Sleep(2);
 				return;
 			}
-			if (!Main.NeedCompleted() && item > 2)
+			if (!Main.NeedCompleted() && item > 3)
 			{
-				Out.Log(string.Format("[节点选择] 通往神秘节点数或任务赐福节点步长:{0}大于2 重开", item));
+				Out.Log(string.Format("[节点选择] 通往神秘节点数或任务赐福节点步长:{0}大于3 重开", item));
 				Network.Get().RetireLettuceMap();
 				Main.Sleep(2);
 				return;
@@ -976,20 +976,29 @@ namespace Mercenary
 		{
 			LettuceBountyDbfRecord record = GameDbf.LettuceBounty.GetRecord(id);
 
-			// 3-6 之后的pt 并且3-6没完成的 IsBountyComplete不好用
-			if (true == MapUtils.Behind3_6(id) &&
-				false == MercenariesDataUtil.IsBountyComplete(78))
+			// 以下情况需要顺序解锁
+			if (record.RequiredCompletedBounty > 0)
 			{
-				return MapUtils.GetUnCompleteMap();
+				// 1. 非第一小关，前置没解锁
+				if (false == MercenariesDataUtil.IsBountyComplete(record.RequiredCompletedBounty))
+					return MapUtils.GetUnCompleteMap();
 			}
 			else
 			{
-				if (record.RequiredCompletedBounty > 0 && !MercenariesDataUtil.IsBountyComplete(record.RequiredCompletedBounty))
-				{
+				// 2. 1-1 h1-1 怎么可能没解锁？
+				if (id == 57 || id == 85)
+					return id;
+				// 3. 2-1 h2-1，1-9没解锁
+				if (id == 67 || id == 94 && false == MercenariesDataUtil.IsBountyComplete(65))
 					return MapUtils.GetUnCompleteMap();
-				}
-				return id;
+				// 4. 3-1 h3-1，2-6没解锁
+				if (id == 73 || id == 100 && false == MercenariesDataUtil.IsBountyComplete(72))
+					return MapUtils.GetUnCompleteMap();
+				// 4. 3以后的-1，3-6没解锁
+				else if (false == MercenariesDataUtil.IsBountyComplete(78))
+					return MapUtils.GetUnCompleteMap();
 			}
+			return id;
 		}
 
 
