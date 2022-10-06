@@ -636,6 +636,7 @@ namespace Mercenary
 			{
 				Global.matchFirstRecord = true;
 				Out.Log("[状态] 查找比赛");
+				Sleep(1);
 				return;
 			}
 			#endregion
@@ -1106,6 +1107,7 @@ namespace Mercenary
 			{
 				Out.Log("[对局中] 点击结束按钮");
 				InputManager.Get().DoEndTurnButton();
+				Sleep(1);
 				return;
 			}
 
@@ -1264,6 +1266,7 @@ namespace Mercenary
 								gameState.SetSelectedOptionTarget(0);
 								gameState.SetSelectedOptionPosition(play_index + 1);
 								gameState.SendOption();
+								Sleep(1);
 							}
 						}
 						Main.ResetIdle();
@@ -1310,6 +1313,7 @@ namespace Mercenary
 					{
 						Out.Log(string.Format("[对局中] 操作佣兵 无可操作佣兵 结束回合"));
 						InputManager.Get().DoEndTurnButton();
+						Sleep(1);
 						Main.ResetIdle();
 						return;
 					}
