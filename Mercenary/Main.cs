@@ -35,17 +35,7 @@ namespace Mercenary
 
 		private void Awake()
 		{
-
-			Regex regex = new Regex(@"^hsunitid:(.*)$");
-			foreach (string argument in Environment.GetCommandLineArgs())
-			{
-				Match match = regex.Match(argument);
-				if (match.Groups.Count == 2)
-				{
-					hsUnitID = match.Groups[1].Value;
-					break;
-				}
-			}
+			if (UtilsArgu.Instance.Exists("hsunitid")) hsUnitID = UtilsArgu.Instance.Single("hsunitid");
 			ConfigFile confgFile;
 			if (hsUnitID.Length <= 0)
 				confgFile = base.Config;
@@ -985,11 +975,21 @@ namespace Mercenary
 		private int EnsureMapHasUnlock(int id)
 		{
 			LettuceBountyDbfRecord record = GameDbf.LettuceBounty.GetRecord(id);
-			if (record.RequiredCompletedBounty > 0 && !MercenariesDataUtil.IsBountyComplete(record.RequiredCompletedBounty))
+
+			// 3-6 之后的pt 并且3-6没完成的 IsBountyComplete不好用
+			if (true == MapUtils.Behind3_6(id) &&
+				false == MercenariesDataUtil.IsBountyComplete(78))
 			{
 				return MapUtils.GetUnCompleteMap();
 			}
-			return id;
+			else
+			{
+				if (record.RequiredCompletedBounty > 0 && !MercenariesDataUtil.IsBountyComplete(record.RequiredCompletedBounty))
+				{
+					return MapUtils.GetUnCompleteMap();
+				}
+				return id;
+			}
 		}
 
 
