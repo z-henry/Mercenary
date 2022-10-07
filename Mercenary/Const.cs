@@ -159,16 +159,5 @@ namespace Mercenary
 		public static readonly List<int> Ignore = new List<int>
 		{
 		};
-
-		public static readonly List<(int id, int equipIndex)> AutoLockEquip_IceFire = new List<(int, int)>
-		{
-			(MercConst.巴琳达_斯通赫尔斯, 1),
-			(MercConst.迦顿男爵, 1),
-			(MercConst.拉格纳罗斯, 2),
-
-			(MercConst.瓦尔登_晨拥, 2),
-			(MercConst.冰雪之王洛克霍拉, 0),
-		};
-
 	}
 }

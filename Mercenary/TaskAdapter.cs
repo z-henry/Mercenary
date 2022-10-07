@@ -1680,7 +1680,7 @@ namespace Mercenary
 						//任务3 - 燃烧之魂
 						if (title.Contains("燃烧之魂"))
 						{
-							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, null , 1),
 								TaskAdapter.GetMercenary(MercConst.安东尼达斯, "烈焰风暴", 1)
@@ -1696,7 +1696,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "炉火", 1),
+								TaskAdapter.GetMercenary(mercenaryId, "炉火", 2, targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY),
 							}));
 							return;
 						}

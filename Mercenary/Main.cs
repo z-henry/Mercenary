@@ -10,7 +10,7 @@ using PegasusLettuce;
 using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
-using System.Text.RegularExpressions;
+using Mercenary.DefaultTeam;
 using Blizzard.GameService.SDK.Client.Integration;
 using Blizzard.T5.Core;
 
@@ -197,12 +197,42 @@ namespace Mercenary
 			{
 				string[] findTreasure =
 				{
-					"刺杀", "元素研究","严酷寒冬","便携冰墙", //最优先
-					"火焰之杖","元素之力","火球齐射",//螺丝 迦顿
-					"强化飞刺","联盟战争旗帜","暴风城战袍","埃提耶什",//巴琳达
-					"灵魂盛宴","失去控制",//卡扎
-					"精魂之刃","闪避","部落的旗帜","精灵旗帜","急速之靴",//瓦莉拉
-					"萨隆邪铁护甲"
+					"刺杀",
+					"强化飞刺",
+					"冷酷严冬",
+					"自然之噬",
+					"雷暴之怒",
+					"强化闪电箭",
+					"元素研究",
+					"火焰之杖",
+					"月之祝福",
+					"火炮轰击",
+					"宝箱",
+					"灵魂虹吸",
+					"吸取灵魂",
+					"火球齐射",
+					"蔓延炸弹",
+					"便携冰墙",
+					"冰霜之杖",
+					"冰霜齐射",
+					"自然之杖",
+					"火舌图腾",
+					"元素之力",
+					"精灵旗帜",
+					"冰霜之环",
+					"部落的旗帜",
+					"联盟战争旗帜",
+					"暴风城战袍",
+					"血之契印",
+					"奥格瑞玛战袍",
+					"隐蔽武器",
+					"近在眼前",
+					"药膏瓶",
+					"强韧",
+					"萨隆邪铁护甲",
+					"防护之戒",
+					"火炮弹幕",
+					"乔丹法杖"
 				};
 				List<string> treasureList = new List<string>();
 				foreach (int dbId in lettuceMap.PendingTreasureSelection.TreasureOptions)
@@ -356,7 +386,7 @@ namespace Mercenary
 		}
 
 
-		private void AutoChangeTeam()
+		private void AutoChangeTeam(int numTotal, int numCore, List<(int id, int equipIndex)> defaultTeamInfo)
 		{
 			Out.Log("[队伍编辑]");
 
@@ -370,7 +400,7 @@ namespace Mercenary
 			int num = 0;
 			foreach (LettuceMercenary lettuceMercenary in mercs)
 			{
-				if (num < Main.coreTeamNumConf.Value)
+				if (num < numCore)
 				{
 					num++;
 				}
@@ -384,7 +414,7 @@ namespace Mercenary
 				lettuceTeam.RemoveMerc(mercId);
 			}
 			// 1. 匹配模式
-			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
+			if (lettuceTeam.GetMercCount() < numTotal)
 			{
 				if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString())
 				{
@@ -399,25 +429,43 @@ namespace Mercenary
 								lettuceTeam.AddMerc(mercenary, -1, null);
 								Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}][EID:{2}]，因为全自动做任务",
 									mercenaryEntity.ID, mercenaryEntity.Name, mercenaryEntity.Equipment));
-								if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+								if (lettuceTeam.GetMercCount() == numTotal)
 								{
 									break;
 								}
 							}
 						}
-						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						if (lettuceTeam.GetMercCount() == numTotal)
 						{
 							break;
 						}
 					}
 				}
-				else if (Main.modeConf.Value == Mode.自动解锁装备.ToString())
+				else if (Main.modeConf.Value == Mode.自动解锁装备.ToString() ||
+					Main.modeConf.Value == Mode.自动主线.ToString() ||
+					Main.modeConf.Value == Mode.自动解锁地图.ToString())
 				{
-					if (Cache.unlockMercID != -1)
+					int tempCount = 0;
+					foreach (var merc in defaultTeamInfo)
 					{
-						LettuceMercenary mercenary_boss = HsGameUtils.GetMercenary(Cache.unlockMercID);
-						lettuceTeam.AddMerc(mercenary_boss, -1, null);
-						Out.Log($"[队伍编辑] 添加[MID:{mercenary_boss.ID}][MNAME:{mercenary_boss.m_mercName}]，因为自动解锁装备_老板");
+						tempCount++;
+						LettuceMercenary mercenary = HsGameUtils.GetMercenary(merc.id);
+						if (mercenary != null && mercenary.m_owned && !lettuceTeam.IsMercInTeam(merc.id, true))
+						{
+							HsGameUtils.UpdateEq(merc.id, merc.equipIndex);
+							lettuceTeam.AddMerc(mercenary, -1, null);
+							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，自动解锁地图/主线/装备",
+								mercenary.ID, mercenary.m_mercName));
+							if (tempCount > 5 && Main.modeConf.Value == Mode.自动解锁装备.ToString())
+							{
+								if (Cache.unlockMercID != -1)
+								{
+									LettuceMercenary mercenary_boss = HsGameUtils.GetMercenary(Cache.unlockMercID);
+									lettuceTeam.AddMerc(mercenary_boss, -1, null);
+									Out.Log($"[队伍编辑] 添加[MID:{mercenary_boss.ID}][MNAME:{mercenary_boss.m_mercName}]，因为自动解锁装备_老板");
+								}
+							}
+						}
 					}
 				}
 			}
@@ -428,7 +476,7 @@ namespace Mercenary
 				select x
 				).ToList<global::LettuceMercenary>();
 			// 2. 匹配未满级
-			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
+			if (lettuceTeam.GetMercCount() < numTotal)
 			{
 				foreach (LettuceMercenary lettuceMercenary2 in mercenaries)
 				{
@@ -438,7 +486,7 @@ namespace Mercenary
 						lettuceTeam.AddMerc(lettuceMercenary2, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，因为未满级",
 							lettuceMercenary2.ID, lettuceMercenary2.m_mercName));
-						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						if (lettuceTeam.GetMercCount() == numTotal)
 						{
 							break;
 						}
@@ -446,7 +494,7 @@ namespace Mercenary
 				}
 			}
 			// 3. 匹配优先级高
-			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
+			if (lettuceTeam.GetMercCount() < numTotal)
 			{
 				foreach (int mercid in MercConst.First)
 				{
@@ -465,7 +513,7 @@ namespace Mercenary
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，因为满级优先级设置高",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						if (lettuceTeam.GetMercCount() == numTotal)
 						{
 							break;
 						}
@@ -473,7 +521,7 @@ namespace Mercenary
 				}
 			}
 			// 4. 匹配优先级中
-			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
+			if (lettuceTeam.GetMercCount() < numTotal)
 			{
 				foreach (LettuceMercenary mercenary in mercenaries)
 				{
@@ -482,7 +530,7 @@ namespace Mercenary
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，满级",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						if (lettuceTeam.GetMercCount() == numTotal)
 						{
 							break;
 						}
@@ -490,7 +538,7 @@ namespace Mercenary
 				}
 			}
 			// 5. 匹配优先级低
-			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
+			if (lettuceTeam.GetMercCount() < numTotal)
 			{
 				foreach (LettuceMercenary mercenary in mercenaries)
 				{
@@ -499,7 +547,7 @@ namespace Mercenary
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，满级优先级设置低",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						if (lettuceTeam.GetMercCount() == numTotal)
 						{
 							break;
 						}
@@ -507,7 +555,7 @@ namespace Mercenary
 				}
 			}
 			// 6. 全满补位
-			if (lettuceTeam.GetMercCount() < Main.teamNumConf.Value)
+			if (lettuceTeam.GetMercCount() < numTotal)
 			{
 				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries)
 				{
@@ -516,7 +564,7 @@ namespace Mercenary
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，全满补位",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == Main.teamNumConf.Value)
+						if (lettuceTeam.GetMercCount() == numTotal)
 						{
 							break;
 						}
@@ -708,7 +756,12 @@ namespace Mercenary
 			#region 队伍选择
 			if (gameType == GameType.GT_UNKNOWN && mode == SceneMgr.Mode.LETTUCE_BOUNTY_TEAM_SELECT && gameState == null)
 			{
+				this.AutoUpdateSkill();
+				this.AutoCraft();
+
+
 				// 模式预处理
+				int numTotal = teamNumConf.Value, numCore = coreTeamNumConf.Value;
 				if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString())
 				{
 					TaskUtils.UpdateMercTask();
@@ -727,25 +780,24 @@ namespace Mercenary
 				else if (Main.modeConf.Value == Mode.自动解锁装备.ToString())
 				{
 					UpdateAutoUnlockEquipInfo();
-					coreTeamNumConf.Value = 5;
-					teamNumConf.Value = 6;
+					numCore = 0;
+					numTotal = 6;
 				}
 				else if (Main.modeConf.Value == Mode.自动解锁地图.ToString())
 				{
-					coreTeamNumConf.Value = 6;
-					teamNumConf.Value = 6;
+					numCore = 0;
+					numTotal = 6;
 				}
 				else if (Main.modeConf.Value == Mode.自动主线.ToString())
 				{
 					TaskUtils.UpdateMainLineTask();
-					coreTeamNumConf.Value = 6;
-					teamNumConf.Value = 6;
+					numCore = 0;
+					numTotal = 6;
 				}
 
 
-				this.AutoUpdateSkill();
-				this.AutoCraft();
-				this.AutoChangeTeam();
+				int mapId = this.GetMapId();
+				this.AutoChangeTeam(numTotal, numCore, MapUtils.GetMapByID(mapId).Team.GetTeamInfo());
 				if ((double)Main.idleTime > 20.0)
 				{
 					HsGameUtils.GotoSceneVillage();
@@ -768,7 +820,6 @@ namespace Mercenary
 					return;
 				}
 				LettuceVillageDisplay.LettuceSceneTransitionPayload lettuceSceneTransitionPayload = new LettuceVillageDisplay.LettuceSceneTransitionPayload();
-				int mapId = this.GetMapId();
 				LettuceBountyDbfRecord record = GameDbf.LettuceBounty.GetRecord(mapId);
 				lettuceSceneTransitionPayload.m_TeamId = lettuceTeam2.ID;
 				lettuceSceneTransitionPayload.m_SelectedBounty = record;
@@ -1292,8 +1343,8 @@ namespace Mercenary
 					{
 						foreach (Card card in zonePlay_opposing.GetCards())
 						{
-							if (card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.INVALID ||
-								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.NEUTRAL ||
+							if (card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) == TAG_ROLE.INVALID ||
+								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) == TAG_ROLE.NEUTRAL ||
 								card.GetEntity().GetName() == "大法师卡德加")
 								continue;
 							string equipment = card.GetEntity().GetEquipmentEntity()?.GetName() ?? "";

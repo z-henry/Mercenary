@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cache.cs" />
+    <Compile Include="DefaultTeam.cs" />
     <Compile Include="UtilsArgu.cs" />
     <Compile Include="PluginInfo.cs" />
     <Compile Include="Quest.cs" />
