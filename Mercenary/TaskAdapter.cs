@@ -1677,6 +1677,18 @@ namespace Mercenary
 
 				case MercConst.卡德加:
 					{
+						//任务3 - 燃烧之魂
+						if (title.Contains("燃烧之魂"))
+						{
+							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, null , 1),
+								TaskAdapter.GetMercenary(MercConst.安东尼达斯, "烈焰风暴", 1)
+
+							}));
+							return;
+						}
+
 						//任务9 - 搅热事态
 						//任务14 - 臻于完美
 						if (title.Contains("搅热事态") ||
@@ -1684,7 +1696,7 @@ namespace Mercenary
 						{
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, new MercenaryEntity[]
 							{
-								TaskAdapter.GetMercenary(mercenaryId, "炉火", 2),
+								TaskAdapter.GetMercenary(mercenaryId, "炉火", 1),
 							}));
 							return;
 						}
