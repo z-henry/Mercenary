@@ -1292,9 +1292,8 @@ namespace Mercenary
 					{
 						foreach (Card card in zonePlay_opposing.GetCards())
 						{
-							if (card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.CASTER &&
-								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.TANK &&
-								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.FIGHTER &&
+							if (card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.INVALID ||
+								card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) != TAG_ROLE.NEUTRAL ||
 								card.GetEntity().GetName() == "大法师卡德加")
 								continue;
 							string equipment = card.GetEntity().GetEquipmentEntity()?.GetName() ?? "";
