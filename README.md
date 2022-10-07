@@ -17,9 +17,16 @@
 | 弹出消息  | `false` |
 | 自动领奖  | `true` |
 | HsMod状态  | `true` |
+  
+ 或使用hsmod的afk模式
+ 
+ 
+|  key   | value  |
+|  ----  | ----  |
+| 设置模板  | AwayFromKeyboard |
 
 2. **[推荐方式]** 插件会识别炉石程序传入的`hsunitid`参数，作为路径的一部分  
-```Hearthstone.exe hsunitid:your_hsunitid```  
+```Hearthstone.exe --hsunitid:your_hsunitid```  
 配置文件`Hearthstone\BepInEx\config\your_hsunitid\io.github.jimowushuang.hs.cfg`  
 日志文件`Hearthstone\BepInEx\Log\your_hsunitid\`  
 3. 若启动炉石没有传递`hsunitid`参数（战网启动等），路径会发生变化  
@@ -27,6 +34,5 @@
 日志文件`Hearthstone\BepInEx\Log\`  
  
 ### 已知问题
-1. 与HsMod联动的战斗过程中开启齿轮功能，尚未测试  
-2. 与HsMod联动的战斗记录功能还未进行多账户优化  
-3. 未能找到一款configurationUI支持自定义插件路径(F1/F5失效)
+1. 与HsMod联动的战斗记录功能还未进行多账户优化  
+2. 未能找到一款configurationUI支持自定义插件路径(F1/F5失效)
