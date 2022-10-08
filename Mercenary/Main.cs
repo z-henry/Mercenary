@@ -13,6 +13,7 @@ using UnityEngine;
 using Mercenary.DefaultTeam;
 using Blizzard.GameService.SDK.Client.Integration;
 using Blizzard.T5.Core;
+using Hearthstone.DataModels;
 
 namespace Mercenary
 {
@@ -179,7 +180,9 @@ namespace Mercenary
 				{
 					if (mercenariesVisitorState.ActiveTaskState.Status_ == MercenariesTaskState.Status.COMPLETE)
 					{
-						Out.Log(string.Format("[地图信息识别] [TID:{0}]完成", mercenariesVisitorState.ActiveTaskState.TaskId));
+						MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelByTaskState(mercenariesVisitorState.ActiveTaskState, null, false, false);
+
+						Out.Log($"[地图信息识别] 任务完成 [TID:{mercenariesVisitorState.ActiveTaskState.TaskId}] [TN:{mercenaryVillageTaskItemDataModel.Description}]");
 						Network.Get().ClaimMercenaryTask(mercenariesVisitorState.ActiveTaskState.TaskId);
 					}
 				}
