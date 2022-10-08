@@ -1040,10 +1040,10 @@ namespace Mercenary
 				if (id == 57 || id == 85)
 					return id;
 				// 3. 2-1 h2-1，1-9没解锁
-				if (id == 67 || id == 94 && false == MercenariesDataUtil.IsBountyComplete(65))
+				if ((id == 67 || id == 94) && false == MercenariesDataUtil.IsBountyComplete(65))
 					return MapUtils.GetUnCompleteMap();
 				// 4. 3-1 h3-1，2-6没解锁
-				if (id == 73 || id == 100 && false == MercenariesDataUtil.IsBountyComplete(72))
+				if ((id == 73 || id == 100) && false == MercenariesDataUtil.IsBountyComplete(72))
 					return MapUtils.GetUnCompleteMap();
 				// 4. 3以后的-1，3-6没解锁
 				else if (false == MercenariesDataUtil.IsBountyComplete(78))
