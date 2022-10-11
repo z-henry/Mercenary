@@ -60,7 +60,7 @@ namespace Mercenary
 				Mode.自动主线.ToString()
 			}), Array.Empty<object>()));
 			Main.teamNameConf = confgFile.Bind<string>("配置", "使用的队伍名称", "初始队伍", "使用的队伍名称");
-			Main.strategyConf = confgFile.Bind<string>("配置", "战斗策略", FireStrategy.StrategyName, new ConfigDescription("使用的策略,注意只有在非全自动化模式下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
+			Main.strategyConf = confgFile.Bind<string>("配置", "战斗策略", PveNormal.StrategyName, new ConfigDescription("使用的策略,注意只有在非全自动化模式下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
 			Main.mapConf = confgFile.Bind<string>(new ConfigDefinition("配置", "要刷的地图"), "1-1", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(MapUtils.GetMapNameList()), Array.Empty<object>()));
 			Main.autoUpdateSkillConf = confgFile.Bind<bool>("配置", "是否自动升级技能", false, "是否自动升级技能");
 			Main.autoCraftConf = confgFile.Bind<bool>("配置", "是否自动制作佣兵", false, "是否自动制作佣兵");
@@ -391,7 +391,7 @@ namespace Mercenary
 
 		private void AutoChangeTeam(int numTotal, int numCore, List<(int id, int equipIndex)> defaultTeamInfo)
 		{
-			Out.Log("[队伍编辑]");
+			Out.Log($"[队伍编辑] 核心:{numCore} 总数:{numTotal}");
 
 			global::LettuceTeam lettuceTeam = HsGameUtils.GetAllTeams().Find((global::LettuceTeam t) => t.Name.Equals(Main.teamNameConf.Value));
 			if (lettuceTeam == null)
@@ -409,12 +409,13 @@ namespace Mercenary
 				}
 				else
 				{
-					list.Add(lettuceMercenary.ID);
+					list.Add(lettuceMercenary.ID); 
 				}
 			}
 			foreach (int mercId in list)
 			{
-				lettuceTeam.RemoveMerc(mercId);
+				lettuceTeam.RemoveMerc(mercId); 
+
 			}
 			// 1. 匹配模式
 			if (lettuceTeam.GetMercCount() < numTotal)
@@ -457,16 +458,22 @@ namespace Mercenary
 						{
 							HsGameUtils.UpdateEq(merc.id, merc.equipIndex);
 							lettuceTeam.AddMerc(mercenary, -1, null);
-							Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，自动解锁地图/主线/装备",
-								mercenary.ID, mercenary.m_mercName));
-							if (tempCount > 5 && Main.modeConf.Value == Mode.自动解锁装备.ToString())
+							Out.Log($"[队伍编辑] 添加[MID:{mercenary.ID}][MNAME:{mercenary.m_mercName}]，自动解锁地图/主线/装备");
+							if (lettuceTeam.GetMercCount() >= 5 && Main.modeConf.Value == Mode.自动解锁装备.ToString())
 							{
 								if (Cache.unlockMercID != -1)
 								{
 									LettuceMercenary mercenary_boss = HsGameUtils.GetMercenary(Cache.unlockMercID);
-									lettuceTeam.AddMerc(mercenary_boss, -1, null);
-									Out.Log($"[队伍编辑] 添加[MID:{mercenary_boss.ID}][MNAME:{mercenary_boss.m_mercName}]，因为自动解锁装备_老板");
+									if (mercenary_boss != null && mercenary_boss.m_owned && !lettuceTeam.IsMercInTeam(mercenary_boss.ID, true))
+									{
+										lettuceTeam.AddMerc(mercenary_boss, -1, null);
+										Out.Log($"[队伍编辑] 添加[MID:{mercenary_boss.ID}][MNAME:{mercenary_boss.m_mercName}]，因为自动解锁装备_老板");
+									}
 								}
+							}
+							if (lettuceTeam.GetMercCount() == numTotal)
+							{
+								break;
 							}
 						}
 					}
@@ -1287,6 +1294,7 @@ namespace Mercenary
 					{
 						InputManager.Get().DoEndTurnButton();
 						Out.Log("[佣兵登场]");
+						return;
 					}
 					// pvp上怪
 					else
@@ -1329,7 +1337,7 @@ namespace Mercenary
 								gameState.SetSelectedOptionTarget(0);
 								gameState.SetSelectedOptionPosition(play_index + 1);
 								gameState.SendOption();
-								Sleep(1);
+								Sleep(2);
 							}
 						}
 						Main.ResetIdle();
