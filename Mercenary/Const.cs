@@ -156,6 +156,16 @@ namespace Mercenary
 			MercConst.闪狐,
 		};
 
+		public static readonly List<int> EquipFirst = new List<int>
+		{   //佣兵解锁装备的优先队列
+            MercConst.冰雪之王洛克霍拉,
+			MercConst.巴琳达_斯通赫尔斯,
+			MercConst.魔像师卡扎库斯,
+			MercConst.瓦莉拉_萨古纳尔,
+			MercConst.变装大师,
+			MercConst.海盗帕奇斯,
+		};
+
 		public static readonly List<int> Ignore = new List<int>
 		{
 		};

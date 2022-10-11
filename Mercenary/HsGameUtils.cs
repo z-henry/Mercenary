@@ -209,9 +209,10 @@ namespace Mercenary
 					}
 				}
 			}
+			Network.Get().MercenariesCollectionRequest();
 		}
 
-		
+
 		public static List<global::LettuceTeam> GetAllTeams()
 		{
 			return CollectionManager.Get().GetTeams();

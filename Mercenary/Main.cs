@@ -768,7 +768,7 @@ namespace Mercenary
 			{
 				this.AutoUpdateSkill();
 				this.AutoCraft();
-
+				this.AckMercFullLevel();
 
 				// 模式预处理
 				int numTotal = teamNumConf.Value, numCore = coreTeamNumConf.Value;
@@ -1583,11 +1583,14 @@ namespace Mercenary
 					}
 				}
 			}
-			List<LettuceMercenary> mercenaries = CollectionManager.Get().FindOrderedMercenaries(null, new bool?(true), null, null, null).m_mercenaries;
+			List<LettuceMercenary> mercenaries = (
+				from x in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries
+				where x.m_owned == true
+				orderby (MercConst.EquipFirst.IndexOf(x.ID) == -1 ? int.MaxValue : MercConst.EquipFirst.IndexOf(x.ID)) ascending
+				select x
+				).ToList<global::LettuceMercenary>();
 			foreach (var merc in mercenaries) // 遍历所有的佣兵
 			{
-				if (false == merc.m_owned)
-					continue;
 				foreach (var equip in merc.m_equipmentList) // 遍历当前佣兵的装备列表
 				{
 					if (equip.Owned)
@@ -1601,6 +1604,18 @@ namespace Mercenary
 						return;
 					}
 				}
+			}
+		}
+		private void AckMercFullLevel()
+		{
+			foreach (AchievementDbfRecord achievementDbfRecord in GameDbf.Achievement.GetRecords((AchievementDbfRecord x) => x.AchievementSection == 327, -1))
+			{
+				AchievementDataModel achievementDataModel = AchievementManager.Get().GetAchievementDataModel(achievementDbfRecord.ID);
+				if (AchievementManager.AchievementStatus.COMPLETED != achievementDataModel.Status)
+					break;
+
+				Network.Get().ClaimAchievementReward(achievementDataModel.ID, 0);
+				Out.Log($"[成就领取] {achievementDataModel.Name}:{achievementDataModel.Description}");
 			}
 		}
 
