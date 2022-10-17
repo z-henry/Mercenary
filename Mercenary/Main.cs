@@ -87,7 +87,10 @@ namespace Mercenary
 					HsMod.ConfigValue.Get().TimeGearValue = 2;
 				}
 				else
+				{
 					HsMod.ConfigValue.Get().TimeGearEnable = false;
+					HsMod.ConfigValue.Get().TimeGearValue = 1;
+				}
 			};
 			if (Main.autoTimeScaleConf.Value)
 			{
@@ -95,7 +98,10 @@ namespace Mercenary
 				HsMod.ConfigValue.Get().TimeGearValue = 2;
 			}
 			else
+			{
 				HsMod.ConfigValue.Get().TimeGearEnable = false;
+				HsMod.ConfigValue.Get().TimeGearValue = 1;
+			}
 
 
 			this._harmony.PatchAll(typeof(Main));
@@ -654,6 +660,28 @@ namespace Mercenary
 // 					Out.Log(string.Format("[{0}]", achieve.ID));
 // 					break;
 // 				}
+			}
+			if (Input.GetKeyUp(KeyCode.F4))
+			{
+				try
+				{
+					Out.Log("=======================================");
+					foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
+						Out.Log($"敌方场面 name:{target_iter.Name} ForstEnhance:{target_iter.ForstEnhance} ForstWeak:{target_iter.ForstWeak}");
+					Out.Log("---------------------------------------");
+					foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.FRIENDLY).GetCards(), Player.Side.FRIENDLY))
+						Out.Log($"友方场面 name:{target_iter.Name} ForstEnhance:{target_iter.ForstEnhance} ForstWeak:{target_iter.ForstWeak}");
+					Out.Log("=======================================");
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("空间名：" + ex.Source + "；" + '\n' +
+						"方法名：" + ex.TargetSite + '\n' +
+						"故障点：" + ex.StackTrace.Substring(ex.StackTrace.LastIndexOf("\\") + 1, ex.StackTrace.Length - ex.StackTrace.LastIndexOf("\\") - 1) + '\n' +
+						"错误提示：" + ex.Message + '\n' +
+						"XXX：" + ex.ToString()
+						);
+				}
 			}
 
 			if (!Main.isRunning)
@@ -1472,6 +1500,8 @@ namespace Mercenary
 						});
 					}
 				}
+
+
 				Target item = new Target
 				{
 					Name = card.GetEntity().GetName(),
@@ -1480,9 +1510,10 @@ namespace Mercenary
 					Speed = card.GetPreparedLettuceAbilitySpeedValue(),
 					DefHealth = card.GetEntity().GetDefHealth(),
 					Attack = card.GetEntity().GetATK(),
-					Role = (HsMercenaryStrategy.TAG_ROLE)(card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE)),
+					Role = (HsMercenaryStrategy.TAG_ROLE)card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE),
 					Enable = flag_avalue,
 					Skills = skills,
+					ForstEnhance = card.GetEntity().GetTag(GAME_TAG.SPELLPOWER_FROST),
 				};
 				list.Add(item);
 			}

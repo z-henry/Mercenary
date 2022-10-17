@@ -58,8 +58,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\hs-plugin\HsMercenaryStrategy.dll</HintPath>
     </Reference>
-    <Reference Include="HsMod">
-      <HintPath>..\..\HearthstoneLib\HsMod.dll</HintPath>
+    <Reference Include="HsMod, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\hs-plugin\HsMod.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -1175,8 +1175,7 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "冰枪术", 0),
-								TaskAdapter.GetMercenary(MercConst.吉安娜_普罗德摩尔, "水元素", 1),
-								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0)
+								TaskAdapter.GetMercenary(MercConst.布莱恩_铜须, "铜须风范", 0),
 							}));
 							return;
 						}
