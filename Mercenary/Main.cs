@@ -44,10 +44,7 @@ namespace Mercenary
 				confgFile = new BepInEx.Configuration.ConfigFile(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepInEx/config", hsUnitID, PluginInfo.PLUGIN_GUID + ".cfg"), false,
 					new BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION));
 
-			Main.runningConf = confgFile.Bind<bool>("配置", "插件开关", false, new ConfigDescription("插件开关", null, new object[]
-			{
-				"Advanced"
-			}));
+			Main.runningConf = confgFile.Bind<bool>("配置", "插件开关", false, new ConfigDescription("插件开关", null, new object[] { "Advanced" }));
 			Main.modeConf = confgFile.Bind<string>("配置", "插件运行模式", Mode.刷图.ToString(), new ConfigDescription("插件运行模式", new AcceptableValueList<string>(new string[]
 			{
 				Mode.刷图.ToString(),
@@ -67,8 +64,8 @@ namespace Mercenary
 			Main.teamNumConf = confgFile.Bind<int>("配置", "总队伍人数", 6, new ConfigDescription("总队伍人数（PVE下生效）", new AcceptableValueRange<int>(1, 6), Array.Empty<object>()));
 			Main.coreTeamNumConf = confgFile.Bind<int>("配置", "队伍核心人数", 0, new ConfigDescription("前n个佣兵不会被自动换掉（PVE下生效）", new AcceptableValueRange<int>(0, 6), Array.Empty<object>()));
 			Main.cleanTaskConf = confgFile.Bind<string>(new ConfigDefinition("配置", "自动清理任务时间"), "不开启", new ConfigDescription("会定时清理长时间没完成的任务（全自动模式生效）", new AcceptableValueList<string>(new List<string>(TaskUtils.CleanConf.Keys).ToArray()), Array.Empty<object>()));
-			Main.awakeTimeConf = confgFile.Bind<string>("配置", "唤醒时间", "1999/1/1 0:0:0", "挂机收菜下的唤醒时间（无需更改）");
-			Main.awakeTimeIntervalConf = confgFile.Bind<int>("配置", "唤醒时间间隔", 22, "挂机收菜下的唤醒时间间隔");
+			Main.awakeTimeConf = confgFile.Bind<string>("配置", "唤醒时间", "1999/1/1 0:0:0", new ConfigDescription("挂机收菜下的唤醒时间（只读）", null, new object[] { "Advanced" }));
+			Main.awakeTimeIntervalConf = confgFile.Bind<int>("配置", "唤醒时间间隔", 22, new ConfigDescription("挂机收菜下的唤醒时间间隔(15-25随机，只读)", null, new object[] { "Advanced" }));
 			Main.autoTimeScaleConf = confgFile.Bind<bool>("配置", "自动齿轮加速", false, "战斗中自动启用齿轮加速");
 			Main.pvpConcedeLine = confgFile.Bind<int>("配置", "PVP投降分数线", 99999, "PVP投降分数线");
 			Main.autoRerollQuest = confgFile.Bind<bool>("配置", "自动更换日周常任务", false, "自动更换日周常任务");
