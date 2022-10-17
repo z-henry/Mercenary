@@ -1311,6 +1311,8 @@ namespace Mercenary
 				{
 					if (modeConf.Value == Mode.挂机收菜.ToString() && readyToHang == true)
 					{
+						System.Random rd = new System.Random();
+						awakeTimeIntervalConf.Value = rd.Next(0, 10) + 15;
 						Out.Log(string.Format("[战斗中] 初次进入战斗，休息{0}min后再见~", awakeTimeIntervalConf.Value));
 						awakeTimeConf.Value = DateTime.Now.AddMinutes(awakeTimeIntervalConf.Value).ToString("G");
 						Application.Quit();
