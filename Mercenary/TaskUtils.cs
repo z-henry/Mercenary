@@ -12,6 +12,23 @@ namespace Mercenary
 		{
 			TaskUtils.ClearTaskSpecialNode();
 			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMercTasks());
+			foreach (Task task in TaskUtils.GetTasks())
+			{
+				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
+				if (TaskUtils.CleanConf[Main.cleanTaskConf.Value] != -1 && TaskUtils.Current() - task.StartAt > (long)TaskUtils.CleanConf[Main.cleanTaskConf.Value])
+				{
+					Out.Log($"[TID:{task.Id}] 已过期，放弃");
+					HsGameUtils.CleanTask(task.Id);
+				}
+				if (Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3)
+				{
+					if (null == task.Mercenaries.Find((MercenaryEntity x) => x.ID == MercConst.玛法里奥_怒风))
+					{
+						Out.Log($"[TID:{task.Id}] 非玛法里奥任务，放弃");
+						HsGameUtils.CleanTask(task.Id);
+					}
+				}
+			}
 		}
 
 		public static void UpdateMainLineTask()

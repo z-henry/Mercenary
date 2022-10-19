@@ -119,45 +119,29 @@ namespace Mercenary
 		public const int 阿兰娜_逐星 = 414;
 		public const int 麦迪文 = 35;
 
-		public static readonly List<int> First = new List<int>
+		//佣兵优先练满
+		public static readonly List<int> PriorFirst = new List<int>
 		{
-			MercConst.凯瑞尔_罗姆,
-			MercConst.泽瑞拉,
-			MercConst.剑圣萨穆罗,
-
-			MercConst.安东尼达斯,
-			MercConst.拉格纳罗斯,
-			MercConst.迦顿男爵,
-			MercConst.巴琳达_斯通赫尔斯,
-
-			MercConst.古夫_符文图腾,
-			MercConst.布鲁坎,
-			MercConst.玛法里奥_怒风,
-
-			MercConst.伊莉斯_逐星,
-			MercConst.玉珑,
-			MercConst.赤精,
-			MercConst.魔像师卡扎库斯,
-			MercConst.厨师曲奇,
-			MercConst.提里奥_弗丁,
-
-			MercConst.洛卡拉,
-			MercConst.海盗帕奇斯,
-			MercConst.光明之翼,
-			MercConst.沃金,
-			MercConst.拉索利安,
-			MercConst.冰雪之王洛克霍拉,
-			MercConst.玛诺洛斯,
-
-			MercConst.安度因_乌瑞恩,
-			MercConst.吉安娜_普罗德摩尔,
-			MercConst.穆克拉,
-			MercConst.乌瑟尔_光明使者,
-			MercConst.闪狐,
+			MercConst.巴琳达_斯通赫尔斯,MercConst.海盗帕奇斯,     MercConst.奈姆希_灵沼,
+			MercConst.迦顿男爵,         MercConst.鞭笞者特里高雷, MercConst.玛法里奥_怒风,
+			MercConst.拉格纳罗斯,       MercConst.尤朵拉,         MercConst.布鲁坎,
+			MercConst.瓦尔登_晨拥,      MercConst.瓦莉拉_萨古纳尔,MercConst.安娜科德拉,
+			MercConst.冰雪之王洛克霍拉, MercConst.变装大师,       MercConst.厨师曲奇,
+			MercConst.吉安娜_普罗德摩尔,MercConst.重拳先生,       MercConst.冰雪之王洛克霍拉,
+		};
+		// 佣兵配合紫色工具人
+		public static readonly List<int> CoopTools = new List<int>
+		{
+			MercConst.变装大师,        MercConst.伊莉斯_逐星,   MercConst.瓦罗克_萨鲁法尔,
+			MercConst.先知维伦,        MercConst.赤精,          MercConst.拉索利安,
+			MercConst.贝恩_血蹄,       MercConst.布莱恩_铜须,   MercConst.尤朵拉,
+			MercConst.穆克拉,          MercConst.玛诺洛斯,      MercConst.沃金,
+			MercConst.提里奥_弗丁,     MercConst.光明之翼,
 		};
 
+		//佣兵解锁装备的优先队列
 		public static readonly List<int> EquipFirst = new List<int>
-		{   //佣兵解锁装备的优先队列
+		{   
             MercConst.冰雪之王洛克霍拉,
 			MercConst.巴琳达_斯通赫尔斯,
 			MercConst.魔像师卡扎库斯,

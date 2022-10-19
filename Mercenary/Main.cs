@@ -10,7 +10,6 @@ using PegasusLettuce;
 using PegasusShared;
 using PegasusUtil;
 using UnityEngine;
-using Mercenary.DefaultTeam;
 using Blizzard.GameService.SDK.Client.Integration;
 using Blizzard.T5.Core;
 using Hearthstone.DataModels;
@@ -41,6 +40,7 @@ namespace Mercenary
 			if (hsUnitID.Length <= 0)
 				confgFile = base.Config;
 			else
+				confgFile = new BepInEx.Configuration.ConfigFile(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepInEx/config", hsUnitID, PluginInfo.PLUGIN_GUID + ".cfg"), false,
 					new BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION));
 
 			Main.runningConf = confgFile.Bind<bool>("配置", "插件开关", false, new ConfigDescription("插件开关", null, new object[] { "Advanced" }));
@@ -49,11 +49,11 @@ namespace Mercenary
 				Mode.刷图.ToString(),
 				Mode.刷神秘人.ToString(),
 				Mode.全自动接任务做任务.ToString(),
-				Mode.自动解锁地图.ToString(),
 				Mode.Pvp.ToString(),
 				Mode.挂机收菜.ToString(),
 				Mode.自动解锁装备.ToString(),
-				Mode.自动主线.ToString()
+				Mode.自动主线.ToString(),
+				Mode.一条龙.ToString()
 			}), Array.Empty<object>()));
 			Main.teamNameConf = confgFile.Bind<string>("配置", "使用的队伍名称", "初始队伍", "使用的队伍名称");
 			Main.strategyConf = confgFile.Bind<string>("配置", "战斗策略", PveNormal.StrategyName, new ConfigDescription("使用的策略,注意只有在非全自动化模式下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
@@ -144,6 +144,24 @@ namespace Mercenary
 			__result = false;
 			if (map.HasPendingVisitorSelection && map.PendingVisitorSelection.VisitorOptions.Count > 0)
 			{
+				foreach (var iter in map.PendingVisitorSelection.VisitorOptions)
+				{
+					int num = 0;
+					if (iter.HasVisitorId)
+					{
+						num = LettuceVillageDataUtil.GetMercenaryIdForVisitor(GameDbf.MercenaryVisitor.GetRecord(iter.VisitorId), null);
+						Out.Log($"[来访者选择] VisitorId");
+					}
+					if (num == 0 && iter.HasFallbackMercenaryId)
+					{
+						num = iter.FallbackMercenaryId;
+						Out.Log($"[来访者选择] FallbackMercenaryId");
+					}
+					global::LettuceMercenary mercenary = CollectionManager.Get().GetMercenary((long)num, false, true);
+					Out.Log($"[来访者选择] {mercenary.m_mercName}");
+				}
+
+				Out.Log(string.Format("[来访者拦截] 选择第一个来访者"));
 				Network.Get().MakeMercenariesMapVisitorSelection(0);
 			}
 		}
@@ -202,49 +220,28 @@ namespace Mercenary
 			{
 				string[] findTreasure =
 				{
-					"刺杀",
-					"强化飞刺",
-					"冷酷严冬",
-					"自然之噬",
-					"雷暴之怒",
-					"强化闪电箭",
-					"元素研究",
-					"火焰之杖",
-					"月之祝福",
-					"火炮轰击",
-					"宝箱",
-					"灵魂虹吸",
-					"吸取灵魂",
-					"火球齐射",
-					"蔓延炸弹",
-					"便携冰墙",
-					"冰霜之杖",
-					"冰霜齐射",
-					"自然之杖",
-					"火舌图腾",
-					"元素之力",
-					"精灵旗帜",
-					"冰霜之环",
-					"部落的旗帜",
-					"联盟战争旗帜",
-					"暴风城战袍",
-					"血之契印",
-					"奥格瑞玛战袍",
-					"隐蔽武器",
-					"近在眼前",
-					"药膏瓶",
-					"强韧",
-					"萨隆邪铁护甲",
-					"防护之戒",
-					"火炮弹幕",
-					"乔丹法杖"
+					//T0
+					"刺杀","强化飞刺","冷酷严冬","自然之噬","雷暴之怒","强化闪电箭",
+					"洄梦仙酒","月之祝福","自然之杖","元素研究","火焰之杖",
+					"火炮轰击","宝箱","灵魂虹吸","吸取灵魂",
+					//T1
+					"火球齐射","蔓延炸弹","便携冰墙","冰霜之杖","冰霜齐射",
+					
+					//T2
+					"火舌图腾","元素之力","精灵旗帜","冰霜之环",
+					"部落的旗帜","联盟战争旗帜","暴风城战袍","血之契印","奥格瑞玛战袍",
+					"隐蔽武器","近在眼前",
+					//T3
+					"毒蛇印记","负向平衡","正向平衡",
+					"心能抗原",
+					"不许摸","药膏瓶","强韧","萨隆邪铁护甲","防护之戒","火炮弹幕","乔丹法杖"
 				};
 				List<string> treasureList = new List<string>();
 				foreach (int dbId in lettuceMap.PendingTreasureSelection.TreasureOptions)
 				{
 					string cardId = GameUtils.TranslateDbIdToCardId(dbId, false);
 					string name = DefLoader.Get()?.GetEntityDef(cardId)?.GetName();
-					Out.Log($"[宝藏测试] {name}");
+					Out.Log($"[宝藏选择] {name}");
 					if (name.Length > 0 &&
 						Char.IsNumber(name[name.Length - 1]))
 						name = name.Substring(0, name.Length - 1);
@@ -258,7 +255,7 @@ namespace Mercenary
 					if (findIndex != -1)
 						break;
 				}
-				Out.Log($"[地图信息识别] 选择第{findIndex}个宝藏");
+				Out.Log($"[地图信息识别] 选择第{findIndex+1}个宝藏");
 				Network.Get().MakeMercenariesMapTreasureSelection(Math.Max(0, findIndex));
 			}
 			if (lettuceMap.HasPendingVisitorSelection && lettuceMap.PendingVisitorSelection.VisitorOptions.Count > 0)
@@ -274,10 +271,6 @@ namespace Mercenary
 			// 			Out.Log("[节点选择]");
 			Main.ResetIdle();
 
-			if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString())
-			{
-				TaskUtils.UpdateMercTask();
-			}
 			List<LettuceMapNode> nodes = map.NodeData;
 			ValueTuple<LettuceMapNode, int> nextNode = Main.GetNextNode(nodes.FindAll((LettuceMapNode n) => n.NodeState_ == LettuceMapNode.NodeState.UNLOCKED), nodes);
 			LettuceMapNode lettuceMapNode = nextNode.Item1;
@@ -298,6 +291,11 @@ namespace Mercenary
 			}
 			if (HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
 			{
+				if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString())
+				{
+					TaskUtils.UpdateMercTask();
+				}
+
 				GameMgr gameMgr = GameMgr.Get();
 				GameType gameType = GameType.GT_MERCENARIES_PVE;
 				FormatType formatType = FormatType.FT_WILD;
@@ -391,91 +389,81 @@ namespace Mercenary
 		}
 
 
-		private void AutoChangeTeam(int numTotal, int numCore, List<(int id, int equipIndex)> defaultTeamInfo)
+		private void AutoChangeTeam(int numTotal, int numCore, Type teamType)
 		{
 			Out.Log($"[队伍编辑] 核心:{numCore} 总数:{numTotal}");
 
 			global::LettuceTeam lettuceTeam = HsGameUtils.GetAllTeams().Find((global::LettuceTeam t) => t.Name.Equals(Main.teamNameConf.Value));
 			if (lettuceTeam == null)
-			{
 				return;
-			}
 			List<LettuceMercenary> mercs = lettuceTeam.GetMercs();
 			List<int> list = new List<int>();
 			int num = 0;
 			foreach (LettuceMercenary lettuceMercenary in mercs)
 			{
 				if (num < numCore)
-				{
 					num++;
-				}
 				else
-				{
 					list.Add(lettuceMercenary.ID); 
-				}
 			}
 			foreach (int mercId in list)
-			{
-				lettuceTeam.RemoveMerc(mercId); 
+				lettuceTeam.RemoveMerc(mercId);
 
-			}
-			// 1. 匹配模式
+			// 0. 预设队伍
 			if (lettuceTeam.GetMercCount() < numTotal)
 			{
-				if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString())
+				foreach (var merc in DefaultTeam.TeamType.Get(teamType).TeamInfo)
+				{
+					if (lettuceTeam.GetMercCount() == numTotal)
+						break;
+
+					LettuceMercenary mercenary = HsGameUtils.GetMercenary(merc.id);
+					if (mercenary != null && mercenary.m_owned && !lettuceTeam.IsMercInTeam(merc.id, true))
+					{
+						HsGameUtils.UpdateEq(merc.id, merc.equipIndex);
+						lettuceTeam.AddMerc(mercenary, -1, null);
+						Out.Log($"[队伍编辑] 添加[MID:{mercenary.ID}][MNAME:{mercenary.m_mercName}]，因为预设队伍");
+					}
+					//自动解锁装备特殊处理
+					if (numTotal > 0 &&
+						lettuceTeam.GetMercCount() == numTotal - 1 &&
+						(Main.modeConf.Value == Mode.自动解锁装备.ToString() || Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动解锁装备))
+					{
+						if (Cache.unlockMercID != -1)
+						{
+							LettuceMercenary mercenary_boss = HsGameUtils.GetMercenary(Cache.unlockMercID);
+							if (mercenary_boss != null && mercenary_boss.m_owned && !lettuceTeam.IsMercInTeam(mercenary_boss.ID, true))
+							{
+								lettuceTeam.AddMerc(mercenary_boss, -1, null);
+								Out.Log($"[队伍编辑] 添加[MID:{mercenary_boss.ID}][MNAME:{mercenary_boss.m_mercName}]，因为自动解锁装备_老板");
+							}
+						}
+					}
+				}
+			}
+			// 1. 做任务模式
+			if (lettuceTeam.GetMercCount() < numTotal)
+			{
+				if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString() ||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.全自动接任务做任务)
 				{
 					foreach (Task task in TaskUtils.GetTasks())
 					{
 						foreach (MercenaryEntity mercenaryEntity in task.Mercenaries)
 						{
+							if (lettuceTeam.GetMercCount() == numTotal)
+								break;
+
 							LettuceMercenary mercenary = HsGameUtils.GetMercenary(mercenaryEntity.ID);
-							if (mercenary != null && mercenary.m_owned && !lettuceTeam.IsMercInTeam(mercenaryEntity.ID, true))
+							if (mercenary != null && 
+								mercenary.m_owned && 
+								!lettuceTeam.IsMercInTeam(mercenaryEntity.ID, true))
 							{
 								HsGameUtils.UpdateEq(mercenaryEntity.ID, mercenaryEntity.Equipment);
 								lettuceTeam.AddMerc(mercenary, -1, null);
 								Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}][EID:{2}]，因为全自动做任务",
 									mercenaryEntity.ID, mercenaryEntity.Name, mercenaryEntity.Equipment));
-								if (lettuceTeam.GetMercCount() == numTotal)
-								{
-									break;
-								}
-							}
-						}
-						if (lettuceTeam.GetMercCount() == numTotal)
-						{
-							break;
-						}
-					}
-				}
-				else if (Main.modeConf.Value == Mode.自动解锁装备.ToString() ||
-					Main.modeConf.Value == Mode.自动主线.ToString() ||
-					Main.modeConf.Value == Mode.自动解锁地图.ToString())
-				{
-					int tempCount = 0;
-					foreach (var merc in defaultTeamInfo)
-					{
-						tempCount++;
-						LettuceMercenary mercenary = HsGameUtils.GetMercenary(merc.id);
-						if (mercenary != null && mercenary.m_owned && !lettuceTeam.IsMercInTeam(merc.id, true))
-						{
-							HsGameUtils.UpdateEq(merc.id, merc.equipIndex);
-							lettuceTeam.AddMerc(mercenary, -1, null);
-							Out.Log($"[队伍编辑] 添加[MID:{mercenary.ID}][MNAME:{mercenary.m_mercName}]，自动解锁地图/主线/装备");
-							if (lettuceTeam.GetMercCount() >= 5 && Main.modeConf.Value == Mode.自动解锁装备.ToString())
-							{
-								if (Cache.unlockMercID != -1)
-								{
-									LettuceMercenary mercenary_boss = HsGameUtils.GetMercenary(Cache.unlockMercID);
-									if (mercenary_boss != null && mercenary_boss.m_owned && !lettuceTeam.IsMercInTeam(mercenary_boss.ID, true))
-									{
-										lettuceTeam.AddMerc(mercenary_boss, -1, null);
-										Out.Log($"[队伍编辑] 添加[MID:{mercenary_boss.ID}][MNAME:{mercenary_boss.m_mercName}]，因为自动解锁装备_老板");
-									}
-								}
-							}
-							if (lettuceTeam.GetMercCount() == numTotal)
-							{
-								break;
+
 							}
 						}
 					}
@@ -484,7 +472,7 @@ namespace Mercenary
 			List<LettuceMercenary> mercenaries = (
 				from x in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries
 				where x.m_owned == true && x.m_isFullyUpgraded == false && HsGameUtils.CalcMercenaryCoinNeed(x) > 0
-				orderby (MercConst.First.IndexOf(x.ID) == -1 ? int.MaxValue : MercConst.First.IndexOf(x.ID)) ascending
+				orderby (MercConst.PriorFirst.IndexOf(x.ID) == -1 ? int.MaxValue : MercConst.PriorFirst.IndexOf(x.ID)) ascending
 				select x
 				).ToList<global::LettuceMercenary>();
 			// 2. 匹配未满级
@@ -492,32 +480,29 @@ namespace Mercenary
 			{
 				foreach (LettuceMercenary lettuceMercenary2 in mercenaries)
 				{
+					if (lettuceTeam.GetMercCount() == numTotal)
+						break;
+
 					if (!lettuceTeam.IsMercInTeam(lettuceMercenary2.ID, true) &&
 						!lettuceMercenary2.IsMaxLevel())
 					{
 						lettuceTeam.AddMerc(lettuceMercenary2, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，因为未满级",
 							lettuceMercenary2.ID, lettuceMercenary2.m_mercName));
-						if (lettuceTeam.GetMercCount() == numTotal)
-						{
-							break;
-						}
 					}
 				}
 			}
 			// 3. 匹配优先级高
 			if (lettuceTeam.GetMercCount() < numTotal)
 			{
-				foreach (int mercid in MercConst.First)
+				foreach (int mercid in MercConst.PriorFirst)
 				{
+					if (lettuceTeam.GetMercCount() == numTotal)
+						break;
+
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(mercid);
-					if (mercenary == null)
-					{
-						Out.Log(string.Format("[队伍编辑] 无此佣兵[MID:{0}]",
-							mercenary.ID));
-						continue;
-					}
-					if (mercenary.m_owned &&
+					if (mercenary != null &&
+						mercenary.m_owned &&
 						!lettuceTeam.IsMercInTeam(mercid, true) &&
 						!mercenary.m_isFullyUpgraded &&
 						HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 0)
@@ -525,10 +510,6 @@ namespace Mercenary
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，因为满级优先级设置高",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == numTotal)
-						{
-							break;
-						}
 					}
 				}
 			}
@@ -537,15 +518,14 @@ namespace Mercenary
 			{
 				foreach (LettuceMercenary mercenary in mercenaries)
 				{
+					if (lettuceTeam.GetMercCount() == numTotal)
+						break;
+
 					if (!lettuceTeam.IsMercInTeam(mercenary.ID, true))
 					{
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，满级",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == numTotal)
-						{
-							break;
-						}
 					}
 				}
 			}
@@ -554,15 +534,14 @@ namespace Mercenary
 			{
 				foreach (LettuceMercenary mercenary in mercenaries)
 				{
+					if (lettuceTeam.GetMercCount() == numTotal)
+						break;
+
 					if (!lettuceTeam.IsMercInTeam(mercenary.ID, true))
 					{
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，满级优先级设置低",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == numTotal)
-						{
-							break;
-						}
 					}
 				}
 			}
@@ -571,15 +550,14 @@ namespace Mercenary
 			{
 				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries)
 				{
+					if (lettuceTeam.GetMercCount() == numTotal)
+						break;
+
 					if (!lettuceTeam.IsMercInTeam(mercenary.ID, true))
 					{
 						lettuceTeam.AddMerc(mercenary, -1, null);
 						Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}]，全满补位",
 							mercenary.ID, mercenary.m_mercName));
-						if (lettuceTeam.GetMercCount() == numTotal)
-						{
-							break;
-						}
 					}
 				}
 			}
@@ -778,9 +756,8 @@ namespace Mercenary
 				if (Main.autoRerollQuest.Value == true)
 					QuestManager.Instance.RollAQuest();
 
-				int mapID = GetMapId();
-				Out.Log($"[状态] 目前处于悬赏面板，切换到队伍选择，选择[MAP:{MapUtils.GetMapByID(mapID).Name}]，休息3秒");
-				HsGameUtils.SelectBoss(mapID);
+				Out.Log($"[状态] 目前处于悬赏面板，切换到队伍选择，休息3秒");
+				HsGameUtils.SelectBoss(57);
 				Main.ResetIdle();
 				Main.Sleep(3);
 				return;
@@ -794,44 +771,51 @@ namespace Mercenary
 				this.AutoCraft();
 				this.AckMercFullLevel();
 
-				// 模式预处理
-				int numTotal = teamNumConf.Value, numCore = coreTeamNumConf.Value;
-				if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString())
+
+				// 更新缓存，一定要更新一条龙缓存
+				if (Main.modeConf.Value == Mode.一条龙.ToString())
+				{
+					OnePackageService.UpdateStage();
+				}
+				else if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString() ||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.全自动接任务做任务)
 				{
 					TaskUtils.UpdateMercTask();
-					foreach (Task task in TaskUtils.GetTasks())
-					{
-						Out.Log(string.Format("[TID:{0}] 已持续：{1}s",
-							task.Id, (TaskUtils.Current() - task.StartAt)));
-						if (TaskUtils.CleanConf[Main.cleanTaskConf.Value] != -1 && TaskUtils.Current() - task.StartAt > (long)TaskUtils.CleanConf[Main.cleanTaskConf.Value])
-						{
-							Out.Log(string.Format("[TID:{0}] 已过期，放弃",
-								task.Id));
-							HsGameUtils.CleanTask(task.Id);
-						}
-					}
 				}
-				else if (Main.modeConf.Value == Mode.自动解锁装备.ToString())
+				else if (Main.modeConf.Value == Mode.自动解锁装备.ToString() ||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动解锁装备)
 				{
 					UpdateAutoUnlockEquipInfo();
-					numCore = 0;
-					numTotal = 6;
 				}
-				else if (Main.modeConf.Value == Mode.自动解锁地图.ToString())
+				else if (Main.modeConf.Value == Mode.自动主线.ToString() ||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动主线)
+				{
+					TaskUtils.UpdateMainLineTask();
+				}
+
+				//参数设置
+				int numCore = coreTeamNumConf.Value, numTotal = teamNumConf.Value, mapId = this.GetMapId();
+				Type teamType = null;
+				if (Main.modeConf.Value == Mode.自动解锁装备.ToString())
 				{
 					numCore = 0;
 					numTotal = 6;
+					teamType = MapUtils.GetMapByID(mapId).TeamType;
 				}
 				else if (Main.modeConf.Value == Mode.自动主线.ToString())
 				{
-					TaskUtils.UpdateMainLineTask();
 					numCore = 0;
 					numTotal = 6;
+					teamType = MapUtils.GetMapByID(mapId).TeamType;
+				}
+				else if (Main.modeConf.Value == Mode.一条龙.ToString())
+				{
+					numCore = 0;
+					numTotal = OnePackageService.TranslateCurrentStage().m_teamTotal;
+					teamType = OnePackageService.TranslateCurrentStage().m_teamType ?? MapUtils.GetMapByID(mapId).TeamType;
 				}
 
-
-				int mapId = this.GetMapId();
-				this.AutoChangeTeam(numTotal, numCore, MapUtils.GetMapByID(mapId).Team.GetTeamInfo());
+				this.AutoChangeTeam(numCore, numTotal, teamType);
 				if ((double)Main.idleTime > 20.0)
 				{
 					HsGameUtils.GotoSceneVillage();
@@ -1057,7 +1041,7 @@ namespace Mercenary
 		}
 
 
-		private int EnsureMapHasUnlock(int id)
+		private static int EnsureMapHasUnlock(int id)
 		{
 			LettuceBountyDbfRecord record = GameDbf.LettuceBounty.GetRecord(id);
 
@@ -1090,29 +1074,36 @@ namespace Mercenary
 		private int GetMapId()
 		{
 			int result = 57;
-			if (Main.modeConf.Value == Mode.自动解锁地图.ToString())
-			{
-				return MapUtils.GetUnCompleteMap();
-			}
-			else if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString() ||
-				Main.modeConf.Value == Mode.自动主线.ToString())
+			if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.全自动接任务做任务)
 			{
 				int taskMap = TaskUtils.GetTaskMap();
 				if (taskMap != -1)
 				{
-					return this.EnsureMapHasUnlock(taskMap);
+					return EnsureMapHasUnlock(taskMap);
 				}
-				return this.EnsureMapHasUnlock(MapUtils.GetMapId("2-5"));
+				return EnsureMapHasUnlock(MapUtils.GetMapId("2-5"));
 			}
-			else if (Main.modeConf.Value == Mode.自动解锁装备.ToString())
+			else if (Main.modeConf.Value == Mode.自动主线.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动主线)
+			{
+				int taskMap = TaskUtils.GetTaskMap();
+				if (taskMap != -1)
+				{
+					return EnsureMapHasUnlock(taskMap);
+				}
+				return MapUtils.GetUnCompleteMap();
+			}
+			else if (Main.modeConf.Value == Mode.自动解锁装备.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动解锁装备)
 			{
 				int taskMap = Cache.unlockMapID;
 				if (taskMap != -1)
 				{
-					return this.EnsureMapHasUnlock(taskMap);
+					return EnsureMapHasUnlock(taskMap);
 				}
 
-				return this.EnsureMapHasUnlock(MapUtils.GetMapId("2-5"));
+				return EnsureMapHasUnlock(MapUtils.GetMapId("1-1"));
 			}
 			else
 			{
@@ -1130,11 +1121,7 @@ namespace Mercenary
 					Main.isRunning = false;
 					return result;
 				}
-				while (record.RequiredCompletedBounty > 0 && !MercenariesDataUtil.IsBountyComplete(record.RequiredCompletedBounty))
-				{
-					record = GameDbf.LettuceBounty.GetRecord(record.RequiredCompletedBounty);
-				}
-				return this.EnsureMapHasUnlock(record.ID);
+				return EnsureMapHasUnlock(record.ID);
 			}
 		}
 
@@ -1177,18 +1164,12 @@ namespace Mercenary
 		private void HandlePlay()
 		{
 			//Out.MyLogger(BepInEx.Logging.LogLevel.Warning, $"{GameState.Get().GetResponseMode()}  {phaseID}");
-			if (Main.phaseID == 3)
+			if (Main.phaseID == 3 ||
+				Main.phaseID == 0)
 			{
+				Sleep(1);
 				return;
 			}
-			// 			Out.Log("[状态] 对局进行中");
-			if (Main.phaseID == 0)
-			{
-				// 				Out.Log("[对局中] 回合结束");
-				// 				InputManager.Get().DoEndTurnButton();
-				return;
-			}
-
 
 			//对局内齿轮
 			if (Main.autoTimeScaleConf.Value == true)
@@ -1219,7 +1200,10 @@ namespace Mercenary
 			// 			foreach (Target target_iter in BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZoneGraveyard>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING))
 			// 				strlog += string.Format("{0}[{1}][{2}]\t", target_iter.Name, target_iter.Enable ? "√" : "×", target_iter.Role.ToString());
 			// 			Out.Log(string.Format("[test] 坟场：敌方 {0}", strlog));
-			string strategy_name = Main.modeConf.Value == Mode.全自动接任务做任务.ToString() ? "_Sys_Default" : Main.strategyConf.Value;
+			string strategy_name =  Main.strategyConf.Value;
+			if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.全自动接任务做任务)
+				strategy_name = "_Sys_Default";
 			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
 				GameState.Get().GetTurn(),
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
@@ -1541,12 +1525,15 @@ namespace Mercenary
 
 		private static bool NeedCompleted()
 		{
-			return Main.modeConf.Value == Mode.自动解锁地图.ToString() ||
-				Main.modeConf.Value == Mode.刷图.ToString() || 
+			return Main.modeConf.Value == Mode.刷图.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.刷图 ||
 				Main.modeConf.Value == Mode.挂机收菜.ToString() ||
 				Main.modeConf.Value == Mode.自动解锁装备.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动解锁装备 ||
 				Main.modeConf.Value == Mode.自动主线.ToString() ||
-				TaskUtils.GetTaskMap() != -1;
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动主线 ||
+				Main.modeConf.Value == Mode.全自动接任务做任务.ToString() && TaskUtils.GetTaskMap() != -1 ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.全自动接任务做任务 && TaskUtils.GetTaskMap() != -1;
 		}
 
 
@@ -1554,7 +1541,8 @@ namespace Mercenary
 		private static int GetMinNode(LettuceMapNode node, int value, List<LettuceMapNode> nodes)
 		{
 			//全自动做任务，如果有赐福，需要走对应的点
-			if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString())
+			if (Main.modeConf.Value == Mode.全自动接任务做任务.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.全自动接任务做任务)
 			{
 				if ((TaskUtils.HaveTaskDocter && HsGameUtils.IsDoctor(node.NodeTypeId)) ||
 					(TaskUtils.HaveTaskFighter && HsGameUtils.IsFighter(node.NodeTypeId)) ||
@@ -1566,7 +1554,6 @@ namespace Mercenary
 			// 需要不需要完成地图，只打到神秘人
 			if (!Main.NeedCompleted())
 			{
-
 				if (HsGameUtils.IsMysteryNode(node.NodeTypeId))
 					return value;
 				if (HsGameUtils.IsBoss(node.NodeTypeId))
@@ -1577,7 +1564,29 @@ namespace Mercenary
 				if (HsGameUtils.IsBoss(node.NodeTypeId))
 					return value;
 			}
-			int num = (!HsGameUtils.IsMonster(node.NodeTypeId)) ? 0 : 1;
+			int num = 0;
+			if (Main.modeConf.Value == Mode.自动主线.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动主线 ||
+				Main.modeConf.Value == Mode.自动解锁装备.ToString() ||
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.自动解锁装备 ||
+				Main.modeConf.Value == Mode.刷图.ToString() && Main.teamNameConf.Value == "刷图")
+			{
+				if (HsGameUtils.IsCaster(node.NodeTypeId) ||
+					HsGameUtils.IsFighter(node.NodeTypeId) ||
+					HsGameUtils.IsTank(node.NodeTypeId) ||
+					HsGameUtils.IsMysteryNode(node.NodeTypeId))
+					num = 99;
+				else if (HsGameUtils.IsMonster(node.NodeTypeId))
+					num = 1;
+				else num = 0;
+			}
+			else if (HsGameUtils.IsMysteryNode(node.NodeTypeId))
+				num = -3;
+			else
+			{
+				num = (!HsGameUtils.IsMonster(node.NodeTypeId)) ? 0 : 1;
+			}
+
 			if (node.ChildNodeIds.Count == 1)
 			{
 				return Main.GetMinNode(nodes[(int)node.ChildNodeIds[0]], value + num, nodes);
@@ -1594,7 +1603,7 @@ namespace Mercenary
 			}
 			return Math.Min(minNode, minNode2);
 		}
-		private void UpdateAutoUnlockEquipInfo()
+		public static bool UpdateAutoUnlockEquipInfo()
 		{
 			Cache.unlockMercID = -1;
 			Cache.unlockMapID = -1;
@@ -1606,7 +1615,7 @@ namespace Mercenary
 				var tierRecord = GameDbf.LettuceEquipmentTier.GetRecord(item.LettuceEquipmentTierId);
 				if (tierRecord != null)
 				{
-					if (EnsureMapHasUnlock(item.LettuceBountyRecord.ID) != 57)
+					if (EnsureMapHasUnlock(item.LettuceBountyRecord.ID) == item.LettuceBountyRecord.ID)
 					{
 						equipMapId.Add(tierRecord.LettuceEquipmentId, item.LettuceBountyRecord.ID);
 					}
@@ -1630,10 +1639,11 @@ namespace Mercenary
 						Cache.unlockMercID = merc.ID;
 						Cache.unlockMapID = equipMapId[equip.ID];
 						Out.Log($"[自动解锁] 准备 [MNAME:{merc.m_mercName}] [MAPID:{equipMapId[equip.ID]}]");
-						return;
+						return true;
 					}
 				}
 			}
+			return false;
 		}
 		private void AckMercFullLevel()
 		{
@@ -1657,10 +1667,10 @@ namespace Mercenary
 		private static ConfigEntry<bool> autoCraftConf;
 		private static ConfigEntry<int> coreTeamNumConf;
 		private static ConfigEntry<int> teamNumConf;
-		private static ConfigEntry<string> modeConf;
+		public static ConfigEntry<string> modeConf;
 		private static ConfigEntry<bool> runningConf;
 		private static ConfigEntry<string> strategyConf;
-		private static ConfigEntry<string> cleanTaskConf;
+		public static ConfigEntry<string> cleanTaskConf;
 		private static ConfigEntry<string> awakeTimeConf;
 		private static ConfigEntry<int> awakeTimeIntervalConf;
 		private static ConfigEntry<bool> autoTimeScaleConf;

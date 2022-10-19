@@ -944,7 +944,7 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 1),
-								TaskAdapter.GetMercenary(MercConst.瓦尔登_晨拥,null, 2),
+								TaskAdapter.GetMercenary(MercConst.吉安娜_普罗德摩尔,null,2),
 								TaskAdapter.GetMercenary(mercenaryId,"圣剑挺击", 0)
 							}));
 							return;
@@ -958,7 +958,7 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 0),
-								TaskAdapter.GetMercenary(MercConst.瓦尔登_晨拥,null, 2),
+								TaskAdapter.GetMercenary(MercConst.吉安娜_普罗德摩尔,null,2),
 								TaskAdapter.GetMercenary(mercenaryId,"圣剑挺击", 0)
 							}));
 							return;
@@ -972,7 +972,7 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 0),
-								TaskAdapter.GetMercenary(MercConst.瓦尔登_晨拥,null, 2),
+								TaskAdapter.GetMercenary(MercConst.吉安娜_普罗德摩尔,null,2),
 								TaskAdapter.GetMercenary(mercenaryId,"圣剑挺击", 0)
 							}));
 							return;
@@ -986,7 +986,7 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(MercConst.迦顿男爵,"地狱火", 1),
 								TaskAdapter.GetMercenary(MercConst.拉格纳罗斯,"死吧，虫子", 2),
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 0),
-								TaskAdapter.GetMercenary(MercConst.瓦尔登_晨拥,null, 2),
+								TaskAdapter.GetMercenary(MercConst.吉安娜_普罗德摩尔,null,2),
 								TaskAdapter.GetMercenary(mercenaryId,"圣剑挺击", 0)
 
 							}));
