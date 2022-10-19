@@ -358,7 +358,7 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H1-2", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId,"多彩能量", 1),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆,"光明圣印",1),
+								TaskAdapter.GetMercenary(MercConst.卡德加, "炉火", 0),
 								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯,"暗影之爪",2)
 							}));
 							return;
@@ -609,8 +609,7 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-6", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "屠魔者", 2),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "嘲讽", 1),
+								TaskAdapter.GetMercenary(MercConst.卡德加,"炉火",0),
 								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
 							}));
 							return;
@@ -644,7 +643,7 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H1-2", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, null, 0),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
+								TaskAdapter.GetMercenary(MercConst.卡德加, "炉火", 0),
 								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
 							}));
 							return;
@@ -846,7 +845,7 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "战斗怒火", 2),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
+								TaskAdapter.GetMercenary(MercConst.卡德加,"炉火",0),
 								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
 							}));
 							return;
@@ -1429,7 +1428,8 @@ namespace Mercenary
 							{
 								TaskAdapter.GetMercenary(mercenaryId,"天神下凡", 1),
 								TaskAdapter.GetMercenary(mercenaryId,"向前推进", 1),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆,"光明圣印",1),
+								TaskAdapter.GetMercenary(MercConst.卡德加,"炉火",0),
+								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯,"暗影之爪", 2),
 							}));
 							return;
 						}
@@ -1439,8 +1439,8 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId,"向前推进", 1),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆,"光明圣印",1),
-					TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯,"暗影之爪",2)
+								TaskAdapter.GetMercenary(MercConst.卡德加,"炉火",0),
+								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯,"暗影之爪",2)
 							}));
 							return;
 						}
@@ -1621,7 +1621,7 @@ namespace Mercenary
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "伏虎闪雷", 2),
 								TaskAdapter.GetMercenary(mercenaryId, "白虎飞扑", 2),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆, "光明圣印", 1),
+								TaskAdapter.GetMercenary(MercConst.卡德加, "炉火", 0),
 								TaskAdapter.GetMercenary(MercConst.穆克拉, "原始之力", 0)
 							}));
 							return;
@@ -1632,7 +1632,7 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(progressMessage, taskId, 0, "H1-2", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId,"白虎飞扑", 1),
-								TaskAdapter.GetMercenary(MercConst.凯瑞尔_罗姆,"光明圣印",1),
+								TaskAdapter.GetMercenary(MercConst.卡德加, "炉火", 0),
 								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯,"暗影之爪",2)
 							}));
 							return;
