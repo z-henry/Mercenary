@@ -5,7 +5,7 @@ namespace Mercenary
 	public enum Mode
 	{
 		刷图,
-		刷神秘人,
+		神秘人,
 		佣兵任务,
 		PVP,
 		挂机收菜,
