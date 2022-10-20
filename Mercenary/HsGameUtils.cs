@@ -177,7 +177,7 @@ namespace Mercenary
 				}
 			}
 			num -= merc.m_currencyAmount;
-			return num;
+			return Math.Max(0, num);
 		}
 
 
