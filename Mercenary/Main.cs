@@ -47,7 +47,7 @@ namespace Mercenary
 			Main.modeConf = confgFile.Bind<string>("配置", "插件运行模式", Mode.刷图.ToString(), new ConfigDescription("插件运行模式", new AcceptableValueList<string>(new string[]
 			{
 				Mode.刷图.ToString(),
-				Mode.刷神秘人.ToString(),
+				Mode.神秘人.ToString(),
 				Mode.佣兵任务.ToString(),
 				Mode.PVP.ToString(),
 				Mode.挂机收菜.ToString(),

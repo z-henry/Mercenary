@@ -265,7 +265,7 @@ namespace Mercenary
 				}
 
 				//是否全佣兵
-				if (CollectionManager.Get().FindOrderedMercenaries(isOwned: false, isCraftable: false).m_mercenaries.Count > 0 ||
+				if (CollectionManager.Get().FindOrderedMercenaries(isOwned: false, isCraftable: false).m_mercenaries.Count > 0 &&
 					Main.mercHasTaskChainConf.Value != 0)
 				{
 					return STAGE.获得_全佣兵;
@@ -311,10 +311,10 @@ namespace Mercenary
 			{ STAGE.获得_萨穆罗, new StageInfo(Mode.主线任务, -1, new List<Type> (){typeof(DefaultTeam.Origin0)}) },
 			{ STAGE.满级_初始五人, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.Origin)}) },
 			{ STAGE.解锁_2杠6, new StageInfo(Mode.主线任务, -1, new List<Type> (){typeof(DefaultTeam.Origin)}) },
-			{ STAGE.获得_AOE队, new StageInfo(Mode.刷神秘人, 72, new List<Type> (){typeof(DefaultTeam.Origin)}) },
+			{ STAGE.获得_AOE队, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.Origin)}) },
 			{ STAGE.刷满_AOE, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.AOE)}, targetCoinNeeded:2000) },
 			{ STAGE.获得_大德, new StageInfo(Mode.刷图, 69, new List<Type> (){typeof(DefaultTeam.AOE)}) },
-			{ STAGE.获得_自然队, new StageInfo(Mode.刷神秘人, 72, new List<Type> (){typeof(DefaultTeam.AOE)}) },
+			{ STAGE.获得_自然队, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.AOE)}) },
 			{ STAGE.获得_大德装备3, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.DruidsExclusive) }, teamtotal:3) },
 			{ STAGE.刷满_自然队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.Nature)}, targetCoinNeeded:1000) },
 			{ STAGE.解锁_3杠6, new StageInfo(Mode.主线任务, -1, new List<Type> (){typeof(DefaultTeam.Nature)}) },
@@ -322,17 +322,17 @@ namespace Mercenary
 			{ STAGE.获得_迦顿, new StageInfo(Mode.刷图, 74, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_安东尼, new StageInfo(Mode.刷图, 76, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.刷满_小火焰队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}, targetCoinNeeded:0) },
-			{ STAGE.获得_紫色配合, new StageInfo(Mode.刷神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
+			{ STAGE.获得_紫色配合, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
 			{ STAGE.刷空任务栏, new StageInfo(Mode.佣兵任务, -1, null) },
-			{ STAGE.获得_预设卡组, new StageInfo(Mode.刷神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
+			{ STAGE.获得_预设卡组, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
 			{ STAGE.刷满_预设卡组, new StageInfo(Mode.刷图, 85, m_DefaultTeam, targetCoinNeeded:0) },
 			{ STAGE.解锁_5杠5, new StageInfo(Mode.主线任务, -1, null) },
 			{ STAGE.获得_冰火装备, new StageInfo(Mode.解锁装备, -1, null) },
-			{ STAGE.获得_全佣兵, new StageInfo(Mode.刷神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
+			{ STAGE.获得_全佣兵, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 			{ STAGE.解锁_主线, new StageInfo(Mode.主线任务, -1, null) },
 			{ STAGE.解锁_全装备, new StageInfo(Mode.解锁装备, -1, null) },
 			{ STAGE.刷满_全佣兵, new StageInfo(Mode.刷图, 85, null) },
-			{ STAGE.广积粮, new StageInfo(Mode.刷神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
+			{ STAGE.广积粮, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 		};
 		private static STAGE m_stage = STAGE.满级_初始四人;
 		private static List<Type> m_DefaultTeam = new List<Type> {
