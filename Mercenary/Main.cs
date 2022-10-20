@@ -158,7 +158,8 @@ namespace Mercenary
 						Out.Log($"[来访者选择] FallbackMercenaryId");
 					}
 					global::LettuceMercenary mercenary = CollectionManager.Get().GetMercenary((long)num, false, true);
-					Out.Log($"[来访者选择] {mercenary.m_mercName}");
+					int taskChainIndex = GameDbf.GetIndex().GetTaskChainIndexForTask(iter.TaskId);
+					Out.Log($"[来访者选择] {mercenary.m_mercName} index:{taskChainIndex}");
 				}
 
 				Out.Log(string.Format("[来访者拦截] 选择第一个来访者"));
@@ -268,7 +269,6 @@ namespace Mercenary
 
 		private static void SelectNextNode(LettuceMap map)
 		{
-			// 			Out.Log("[节点选择]");
 			Main.ResetIdle();
 
 			List<LettuceMapNode> nodes = map.NodeData;
@@ -315,7 +315,7 @@ namespace Mercenary
 			}
 			else
 			{
-				Out.Log(string.Format("[节点选择] 普通怪物节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
+				Out.Log(string.Format("[节点选择] 非怪物节点[NID:{0}][NTYPE:{1}]", lettuceMapNode.NodeId, lettuceMapNode.NodeTypeId));
 				Network.Get().ChooseLettuceMapNode(lettuceMapNode.NodeId);
 			}
 		}
