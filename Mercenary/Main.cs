@@ -81,7 +81,7 @@ namespace Mercenary
 				if (Main.autoTimeScaleConf.Value)
 				{
 					HsMod.ConfigValue.Get().TimeGearEnable = true;
-					HsMod.ConfigValue.Get().TimeGearValue = 2;
+					HsMod.ConfigValue.Get().TimeGearValue = TimeScaleValue.outplay;
 				}
 				else
 				{
@@ -91,8 +91,9 @@ namespace Mercenary
 			};
 			if (Main.autoTimeScaleConf.Value)
 			{
+				// 刚启动时为1 稳
 				HsMod.ConfigValue.Get().TimeGearEnable = true;
-				HsMod.ConfigValue.Get().TimeGearValue = 2;
+				HsMod.ConfigValue.Get().TimeGearValue = 1;
 			}
 			else
 			{
@@ -894,8 +895,9 @@ namespace Mercenary
 				// 游戏结束
 				if (gameState.IsGameOver())
 				{
-					//关闭对局内齿轮
-					if (Main.autoTimeScaleConf.Value == true)
+					//关闭对局内齿轮(传统模式设置齿轮，会导致卡结算)
+					if (Main.autoTimeScaleConf.Value == true &&
+						gameType != GameType.GT_RANKED)
 					{
 						HsMod.ConfigValue.Get().TimeGearEnable = true;
 						HsMod.ConfigValue.Get().TimeGearValue = Main.TimeScaleValue.outplay;
