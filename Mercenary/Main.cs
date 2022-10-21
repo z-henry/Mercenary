@@ -30,6 +30,11 @@ namespace Mercenary
 			{
 				GUILayout.Width(200f)
 			});
+			if (modeConf.Value == Mode.一条龙.ToString())
+				GUILayout.Label(new GUIContent($"阶段{(int)OnePackageService.Stage} {OnePackageService.Stage}"), new GUILayoutOption[]
+				{
+					GUILayout.Width(200f)
+				});
 		}
 
 
@@ -399,9 +404,9 @@ namespace Mercenary
 		}
 
 
-		private void AutoChangeTeam(int numTotal, int numCore, List<Type> teamTypes, int mercTargetCoinNeeded)
+		private void AutoChangeTeam(int numCore, int numTotal, List<Type> teamTypes, int mercTargetCoinNeeded)
 		{
-			Out.Log($"[队伍编辑] 模式:{Main.modeConf.Value} 核心:{numCore} 总数:{numTotal} 预设队伍:{teamTypes} 硬币目标{mercTargetCoinNeeded}");
+			Out.Log($"[队伍编辑] 模式:{Main.modeConf.Value} 核心:{numCore} 总数:{numTotal} 预设队伍:{(teamTypes?.ElementAt(0)).ToString()} 硬币目标{mercTargetCoinNeeded}");
 
 			global::LettuceTeam lettuceTeam = HsGameUtils.GetAllTeams().Find((global::LettuceTeam t) => t.Name.Equals(Main.teamNameConf.Value));
 			if (lettuceTeam == null)
@@ -1124,6 +1129,17 @@ namespace Mercenary
 
 				return EnsureMapHasUnlock(MapUtils.GetMapId("1-1"));
 			}
+			else if (Main.modeConf.Value == Mode.一条龙.ToString())
+			{
+				int taskMap = OnePackageService.TranslateCurrentStage().m_mapid;
+				if (taskMap != -1)
+				{
+					return EnsureMapHasUnlock(taskMap);
+				}
+
+				return EnsureMapHasUnlock(MapUtils.GetMapId("1-1"));
+			}
+
 			else
 			{
 				Map map = MapUtils.GetMap(Main.mapConf.Value);
@@ -1147,7 +1163,7 @@ namespace Mercenary
 
 		private void CheckIdleTime()
 		{
-			int scale = Main.autoTimeScaleConf.Value ? Main.TimeScaleValue.outplay : 1;
+			int scale = Main.autoTimeScaleConf.Value ? Main.TimeScaleValue.inplay : 1;
 			Main.idleTime += (Time.deltaTime / scale);
 			if (Main.idleTime > 240f)
 			{
