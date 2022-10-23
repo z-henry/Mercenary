@@ -65,7 +65,7 @@ namespace Mercenary
 			try
 			{
 				//初始队伍，凯瑞尔，豪斯，泰兰德，泽瑞拉，4个人，是否全部30级
-				foreach (var iter in DefaultTeam.Origin0.Type.TeamInfo)
+				foreach (var iter in DefaultTeam.Origin0.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
 					if (!mercenary.IsReadyForCrafting()
@@ -84,7 +84,7 @@ namespace Mercenary
 				}
 
 				//初始队伍，豪斯，泽瑞拉，剑圣，泰兰德，凯瑞尔， 5个人，是否30级
-				foreach (var iter in DefaultTeam.Origin.Type.TeamInfo)
+				foreach (var iter in DefaultTeam.Origin.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
 					if (!mercenary.IsReadyForCrafting()
@@ -102,7 +102,7 @@ namespace Mercenary
 				}
 
 				//AOE初级队，是否获得，雪王，晨拥，米尔豪斯
-				foreach (var iter in DefaultTeam.AOE.Type.TeamInfo)
+				foreach (var iter in DefaultTeam.AOE.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
 					if (!mercenary.m_owned)
@@ -112,7 +112,7 @@ namespace Mercenary
 				}
 
 				//AOE初级队， 是否碎片够满级  雪王，晨拥，米尔豪斯
-				foreach (var iter in DefaultTeam.AOE.Type.TeamInfo)
+				foreach (var iter in DefaultTeam.AOE.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
 					if (HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 2000)
@@ -128,7 +128,7 @@ namespace Mercenary
 				}
 
 				//自然队是否全拥有
-				foreach (var iter in DefaultTeam.Nature.Type.TeamInfo)
+				foreach (var iter in DefaultTeam.Nature.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
 					if (!mercenary.m_owned)
@@ -146,7 +146,7 @@ namespace Mercenary
 
 				//自然队两人以上差1000碎片
 				int sum = 0;
-				foreach (var iter in DefaultTeam.Nature.Type.TeamInfo)
+				foreach (var iter in DefaultTeam.Nature.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
 					if (HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 1000)
@@ -182,7 +182,7 @@ namespace Mercenary
 				}
 
 				//初级火焰队差1000点以上的碎片
-				foreach (var iter in DefaultTeam.PrimaryFire.Type.TeamInfo)
+				foreach (var iter in DefaultTeam.PrimaryFire.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
 					if (mercenary.m_owned &&

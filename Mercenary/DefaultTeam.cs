@@ -1,18 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Mercenary.DefaultTeam
 {
 
 	public class TeamUnit
 	{
+		public static void RegisterAll()
+		{
+			foreach (var item in Assembly.GetExecutingAssembly().GetTypes())
+			{
+				if (item.BaseType?.Name == "TeamBase")
+				{
+					TeamBase teamBase = (TeamBase)Activator.CreateInstance(item);
+					teamBase.Register();
+				}
+			}
+			foreach (var iter in _types)
+			{
+				Out.Log($"[registered_team] {iter.Key}");
+			}
+		}
+
 		public TeamUnit(List<(int id, int equipIndex)> teaminfo)
 		{
 			TeamInfo = teaminfo;
 		}
 		public static void Register(Type type, TeamUnit teamType)
 		{
-			_types.Add(type, teamType);
+			if (false == _types.ContainsKey(type))
+				_types.Add(type, teamType);
 		}
 
 		public static TeamUnit Get(Type type)
@@ -25,17 +44,19 @@ namespace Mercenary.DefaultTeam
 		private static IDictionary<Type, TeamUnit> _types = new Dictionary<Type, TeamUnit>();
 
 	}
-	public abstract class TeamBase
+	public class TeamBase
 	{
-		public abstract TeamUnit Unit { get; }
-
+		public void Register() 
+		{ 
+			TeamUnit.Register(GetType(), TeamInfo); 
+		}
+		public virtual TeamUnit TeamInfo { get; }
 	}
 	public class Ice : TeamBase
 	{
-		static Ice() { TeamUnit.Register(typeof(Ice), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.巴琳达_斯通赫尔斯, 1),
@@ -49,10 +70,9 @@ namespace Mercenary.DefaultTeam
 
 	public class IceFire : TeamBase
 	{
-		static IceFire() { TeamUnit.Register(typeof(IceFire), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.巴琳达_斯通赫尔斯, 1),
@@ -66,10 +86,9 @@ namespace Mercenary.DefaultTeam
 
 	public class FireKill : TeamBase
 	{
-		static FireKill() { TeamUnit.Register(typeof(FireKill), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.巴琳达_斯通赫尔斯, 1),
@@ -82,10 +101,9 @@ namespace Mercenary.DefaultTeam
 	}
 	public class PirateSnake : TeamBase
 	{
-		static PirateSnake() { TeamUnit.Register(typeof(PirateSnake), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.海盗帕奇斯, 1),
@@ -98,10 +116,9 @@ namespace Mercenary.DefaultTeam
 	}
 	public class Nature : TeamBase
 	{
-		static Nature() { TeamUnit.Register(typeof(Nature), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.奈姆希_灵沼, 0),
@@ -114,10 +131,9 @@ namespace Mercenary.DefaultTeam
 	}
 	public class Origin0 : TeamBase
 	{
-		static Origin0() { TeamUnit.Register(typeof(Origin0), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.米尔豪斯_法力风暴, 0),
@@ -128,10 +144,9 @@ namespace Mercenary.DefaultTeam
 	}
 	public class Origin : TeamBase
 	{
-		static Origin() { TeamUnit.Register(typeof(Origin), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.米尔豪斯_法力风暴, 0),
@@ -143,10 +158,9 @@ namespace Mercenary.DefaultTeam
 	}
 	public class AOE : TeamBase
 	{
-		static AOE() { TeamUnit.Register(typeof(AOE), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.米尔豪斯_法力风暴, 0),
@@ -156,10 +170,9 @@ namespace Mercenary.DefaultTeam
 	}
 	public class PrimaryFire : TeamBase
 	{
-		static PrimaryFire() { TeamUnit.Register(typeof(PrimaryFire), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.安东尼达斯, 0),
@@ -169,10 +182,9 @@ namespace Mercenary.DefaultTeam
 	}
 	public class DruidsExclusive : TeamBase
 	{
-		static DruidsExclusive() { TeamUnit.Register(typeof(DruidsExclusive), Type); }
-		override public TeamUnit Unit { get { return Type; } }
+		public override TeamUnit TeamInfo { get { return Member; } }
 
-		public static readonly TeamUnit Type = new TeamUnit(
+		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
 			{
 				(MercConst.玛法里奥_怒风, 2),
