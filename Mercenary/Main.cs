@@ -1687,7 +1687,7 @@ namespace Mercenary
 			{
 				AchievementDataModel achievementDataModel = AchievementManager.Get().GetAchievementDataModel(achievementDbfRecord.ID);
 				if (AchievementManager.AchievementStatus.COMPLETED != achievementDataModel.Status)
-					break;
+					continue;
 
 				Network.Get().ClaimAchievementReward(achievementDataModel.ID, 0);
 				Out.Log($"[成就领取] {achievementDataModel.Name}:{achievementDataModel.Description}");
