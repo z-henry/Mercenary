@@ -145,7 +145,7 @@ namespace Mercenary
 				}
 
 				//自然队两人以上差1000碎片
-				int sum = 0;
+				int sum = 1;
 				foreach (var iter in DefaultTeam.Nature.Member.TeamInfo)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(iter.id);
@@ -193,7 +193,7 @@ namespace Mercenary
 				}
 
 				//配合紫色佣兵没刷到的多与8个
-				sum = 0;
+				sum = 1;
 				foreach (int ID in MercConst.CoopTools)
 				{
 					LettuceMercenary mercenary = HsGameUtils.GetMercenary(ID);

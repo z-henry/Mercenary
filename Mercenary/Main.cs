@@ -407,7 +407,7 @@ namespace Mercenary
 
 		private void AutoChangeTeam(int numCore, int numTotal, List<Type> teamTypes, int mercTargetCoinNeeded)
 		{
-			Out.Log($"[队伍编辑] 模式:{Main.modeConf.Value} 核心:{numCore} 总数:{numTotal} 预设队伍:{(teamTypes?.ElementAt(0)).ToString()} 硬币目标{mercTargetCoinNeeded}");
+			Out.Log($"[队伍编辑] 模式:{Main.modeConf.Value} 核心:{numCore} 总数:{numTotal} 预设队伍:{(teamTypes.Count > 0 ? teamTypes.ElementAt(0) : null)} 硬币目标{mercTargetCoinNeeded}");
 
 			global::LettuceTeam lettuceTeam = HsGameUtils.GetAllTeams().Find((global::LettuceTeam t) => t.Name.Equals(Main.teamNameConf.Value));
 			if (lettuceTeam == null)
@@ -639,21 +639,21 @@ namespace Mercenary
 						result1.VisitLogic + " " +
 						result1.GetVar("NOTE_DESC") + " " +
 						result1.BossType + " " +
-						result1.NodeVisualId 
+						result1.NodeVisualId
 						);
 
-// 				foreach (AchievementDataModel achieve in
-// 					from x in AchievementManager.Get().GetRecentlyCompletedAchievements()
-// 					where x.Status == AchievementManager.AchievementStatus.COMPLETED
-// 					orderby x.ID ascending
-// 					select x
-// 					)
-// 				{
-// 					AchievementManager.Get().AckAchievement(achieve.ID);
-// 					// 					Network.Get().AckAchievement(achieve.ID);
-// 					Out.Log(string.Format("[{0}]", achieve.ID));
-// 					break;
-// 				}
+				// 				foreach (AchievementDataModel achieve in
+				// 					from x in AchievementManager.Get().GetRecentlyCompletedAchievements()
+				// 					where x.Status == AchievementManager.AchievementStatus.COMPLETED
+				// 					orderby x.ID ascending
+				// 					select x
+				// 					)
+				// 				{
+				// 					AchievementManager.Get().AckAchievement(achieve.ID);
+				// 					// 					Network.Get().AckAchievement(achieve.ID);
+				// 					Out.Log(string.Format("[{0}]", achieve.ID));
+				// 					break;
+				// 				}
 			}
 			if (Input.GetKeyUp(KeyCode.F4))
 			{
@@ -699,7 +699,7 @@ namespace Mercenary
 			SceneMgr sceneMgr = SceneMgr.Get();
 			SceneMgr.Mode mode = sceneMgr.GetMode();
 			GameState gameState = GameState.Get();
-// 			HsMod.ConfigValue.Get().TimeGearEnable = Main.autoTimeScaleConf.Value;
+			// 			HsMod.ConfigValue.Get().TimeGearEnable = Main.autoTimeScaleConf.Value;
 
 			#region 查找比赛
 			if (gameMgr.IsFindingGame())
@@ -814,27 +814,27 @@ namespace Mercenary
 				}
 
 				//参数设置
-				int numCore = coreTeamNumConf.Value, numTotal = teamNumConf.Value, 
+				int numCore = coreTeamNumConf.Value, numTotal = teamNumConf.Value,
 					mapId = this.GetMapId(),
 					mercTargetCoinNeeded = -1;// 对于预设队伍，小于此硬币需求的佣兵，不再携带
-				List<Type> teamTypes = null;// 预设队伍
+				List<Type> teamTypes = new List<Type>();// 预设队伍
 				if (Main.modeConf.Value == Mode.解锁装备.ToString())
 				{
 					numCore = 0;
 					numTotal = 6;
-					teamTypes = new List<Type>() { MapUtils.GetMapByID(mapId).TeamType };
+					teamTypes.Add(MapUtils.GetMapByID(mapId).TeamType);
 				}
 				else if (Main.modeConf.Value == Mode.主线任务.ToString())
 				{
 					numCore = 0;
 					numTotal = 6;
-					teamTypes = new List<Type>() { MapUtils.GetMapByID(mapId).TeamType };
+					teamTypes.Add(MapUtils.GetMapByID(mapId).TeamType);
 				}
 				else if (Main.modeConf.Value == Mode.一条龙.ToString())
 				{
 					numCore = 0;
 					numTotal = OnePackageService.TranslateCurrentStage().m_teamTotal;
-					teamTypes = OnePackageService.TranslateCurrentStage().m_teamTypes ?? 
+					teamTypes = OnePackageService.TranslateCurrentStage().m_teamTypes ??
 						new List<Type>() { MapUtils.GetMapByID(mapId).TeamType };
 					mercTargetCoinNeeded = OnePackageService.TranslateCurrentStage().m_TargetCoinNeeded;
 				}
@@ -916,7 +916,7 @@ namespace Mercenary
 						if (Global.matchFirstRecord == true)
 						{
 							Global.matchFirstRecord = false;
-							
+
 							// 输赢
 							string gameResult = "";
 							switch (endGameScreen.GetType().Name)
@@ -1340,6 +1340,7 @@ namespace Mercenary
 					{
 						InputManager.Get().DoEndTurnButton();
 						Out.Log("[佣兵登场]");
+						Sleep(1);
 						return;
 					}
 					// pvp上怪
@@ -1441,6 +1442,7 @@ namespace Mercenary
 						ZoneMgr.Get().DisplayLettuceAbilitiesForEntity(nextSelectMerc_Card.GetEntity());
 						RemoteActionHandler.Get().NotifyOpponentOfSelection(nextSelectMerc_Card.GetEntity().GetEntityId());
 						Main.ResetIdle();
+						Sleep(0.5f);
 						return;
 					}
 					// 佣兵技能
@@ -1683,6 +1685,7 @@ namespace Mercenary
 		}
 		private void AckMercFullLevel()
 		{
+			Out.Log("[成就领取]");
 			foreach (AchievementDbfRecord achievementDbfRecord in GameDbf.Achievement.GetRecords((AchievementDbfRecord x) => x.AchievementSection == 327, -1))
 			{
 				AchievementDataModel achievementDataModel = AchievementManager.Get().GetAchievementDataModel(achievementDbfRecord.ID);
