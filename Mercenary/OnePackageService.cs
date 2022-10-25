@@ -336,7 +336,8 @@ namespace Mercenary
 		};
 		private static STAGE m_stage = STAGE.满级_初始四人;
 		private static List<Type> m_DefaultTeam = new List<Type> {
-			typeof(DefaultTeam.Ice), typeof(DefaultTeam.IceFire), typeof(DefaultTeam.PirateSnake), typeof(DefaultTeam.FireKill), typeof(DefaultTeam.Nature)
+			typeof(DefaultTeam.Ice), typeof(DefaultTeam.IceFire), typeof(DefaultTeam.PirateSnake), 
+			typeof(DefaultTeam.FireKill), typeof(DefaultTeam.Nature)
 		};
 	}
 }

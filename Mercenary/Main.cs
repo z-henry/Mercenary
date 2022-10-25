@@ -818,13 +818,10 @@ namespace Mercenary
 					mapId = this.GetMapId(),
 					mercTargetCoinNeeded = -1;// 对于预设队伍，小于此硬币需求的佣兵，不再携带
 				List<Type> teamTypes = new List<Type>();// 预设队伍
-				if (Main.modeConf.Value == Mode.解锁装备.ToString())
-				{
-					numCore = 0;
-					numTotal = 6;
-					teamTypes.Add(MapUtils.GetMapByID(mapId).TeamType);
-				}
-				else if (Main.modeConf.Value == Mode.主线任务.ToString())
+				if (Main.modeConf.Value == Mode.解锁装备.ToString() ||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.解锁装备 ||
+					Main.modeConf.Value == Mode.主线任务.ToString() ||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.主线任务)
 				{
 					numCore = 0;
 					numTotal = 6;
@@ -834,8 +831,7 @@ namespace Mercenary
 				{
 					numCore = 0;
 					numTotal = OnePackageService.TranslateCurrentStage().m_teamTotal;
-					teamTypes = OnePackageService.TranslateCurrentStage().m_teamTypes ??
-						new List<Type>() { MapUtils.GetMapByID(mapId).TeamType };
+					teamTypes = OnePackageService.TranslateCurrentStage().m_teamTypes ?? teamTypes;
 					mercTargetCoinNeeded = OnePackageService.TranslateCurrentStage().m_TargetCoinNeeded;
 				}
 
