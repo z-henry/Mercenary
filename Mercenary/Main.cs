@@ -113,8 +113,11 @@ namespace Mercenary
 
 		private void Start()
 		{
-			Out.Log("启动");
-			DefaultTeam.TeamUnit.RegisterAll();
+			if (Main.isRunning)
+			{
+				Out.Log("启动");
+				DefaultTeam.TeamUnit.RegisterAll();
+			}
 		}
 
 		[HarmonyPrefix]
@@ -152,7 +155,20 @@ namespace Mercenary
 			__result = false;
 			if (map.HasPendingVisitorSelection && map.PendingVisitorSelection.VisitorOptions.Count > 0)
 			{
-				List<int> findVistor = new List<int>() {MercConst.玛法里奥_怒风}.Concat(MercConst.PriorFirst).ToList();
+				Out.Log("[来访者拦截]");
+				//优先选来访者队列
+				List<int> findVistor = MercConst.PriorFirst;
+				if (Main.modeConf.Value == Mode.一条龙.ToString())
+				{
+					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3)
+						findVistor = new List<int> { MercConst.玛法里奥_怒风 };
+					else if (OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3)
+						findVistor = new List<int> { MercConst.拉格纳罗斯 };
+					else if (OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2)
+						findVistor = new List<int> { MercConst.迦顿男爵 };
+				}
+
+				// 来访者列表
 				List<(int merid, int taskchain)> visitorList = new List<(int merid, int taskchain)>();
 				foreach (var iter in map.PendingVisitorSelection.VisitorOptions)
 				{
@@ -170,6 +186,8 @@ namespace Mercenary
 					Out.Log($"[来访者选择] [{mercid}]{mercenary.m_mercName} index:{taskChainIndex}");
 					visitorList.Add((mercid, taskChainIndex));
 				}
+
+				//开始选妃
 				mercHasTaskChainConf.Value = visitorList.FindAll(((int merid, int taskchain) x) => x.taskchain != -1).Count;
 				int findIndex = -1;
 				foreach (var iter in findVistor)

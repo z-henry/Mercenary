@@ -121,6 +121,8 @@ namespace Mercenary
 		
 		private static readonly List<string> FirstAbilityName = new List<string>
 		{
+			"地狱火",
+			"死吧，虫子",
 		};
 	}
 }

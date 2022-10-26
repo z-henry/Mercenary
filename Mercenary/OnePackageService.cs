@@ -39,6 +39,8 @@ namespace Mercenary
 			获得_拉格,
 			获得_迦顿,
 			获得_安东尼,
+			获得_迦顿装备2,
+			获得_拉格装备3,
 			刷满_小火焰队,
 			获得_紫色配合,
 			刷空任务栏,
@@ -181,6 +183,18 @@ namespace Mercenary
 					return STAGE.获得_安东尼;
 				}
 
+				//迦顿是否获得了 装备2
+				if (!HsGameUtils.GetMercenary(MercConst.迦顿男爵).m_equipmentList[1].Owned)
+				{
+					return STAGE.获得_迦顿装备2;
+				}
+
+				//拉格纳罗斯是否获得了 装备3
+				if (!HsGameUtils.GetMercenary(MercConst.拉格纳罗斯).m_equipmentList[2].Owned)
+				{
+					return STAGE.获得_拉格装备3;
+				}
+
 				//初级火焰队差1000点以上的碎片
 				foreach (var iter in DefaultTeam.PrimaryFire.Member.TeamInfo)
 				{
@@ -321,7 +335,9 @@ namespace Mercenary
 			{ STAGE.获得_拉格, new StageInfo(Mode.刷图, 75, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_迦顿, new StageInfo(Mode.刷图, 74, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_安东尼, new StageInfo(Mode.刷图, 76, new List<Type> (){typeof(DefaultTeam.Nature)}) },
-			{ STAGE.刷满_小火焰队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}, targetCoinNeeded:0, teamtotal:3) },
+			{ STAGE.获得_迦顿装备2, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.PrimaryFire) }, teamtotal:3) },
+			{ STAGE.获得_拉格装备3, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.PrimaryFire) }, teamtotal:3) },
+			{ STAGE.刷满_小火焰队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}, targetCoinNeeded:1000, teamtotal:3) },
 			{ STAGE.获得_紫色配合, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
 			{ STAGE.刷空任务栏, new StageInfo(Mode.佣兵任务, -1, null) },
 			{ STAGE.获得_预设卡组, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },

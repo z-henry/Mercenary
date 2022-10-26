@@ -31,6 +31,7 @@ namespace Mercenary
 		public List<MercenaryEntity> Mercenaries = new List<MercenaryEntity>();// 佣兵以及佣兵技能选择列表
 		public long StartAt;//任务进度起始时间
 		public string ProgressMessage;//任务进度
+		public int mercID;//任务的佣兵id
 
 	}
 }

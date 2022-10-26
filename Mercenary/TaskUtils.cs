@@ -20,11 +20,13 @@ namespace Mercenary
 					Out.Log($"[TID:{task.Id}] 已过期，放弃");
 					HsGameUtils.CleanTask(task.Id);
 				}
-				if (Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3)
+				if (Main.modeConf.Value == Mode.一条龙.ToString())
 				{
-					if (null == task.Mercenaries.Find((MercenaryEntity x) => x.ID == MercConst.玛法里奥_怒风))
+					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && task.mercID != MercConst.玛法里奥_怒风 ||
+						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && task.mercID != MercConst.拉格纳罗斯 ||
+						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && task.mercID != MercConst.迦顿男爵)
 					{
-						Out.Log($"[TID:{task.Id}] 非玛法里奥任务，放弃");
+						Out.Log($"[TID:{task.Id}] 非一条龙阶段任务，放弃");
 						HsGameUtils.CleanTask(task.Id);
 					}
 				}
