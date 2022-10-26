@@ -325,7 +325,8 @@ namespace Mercenary
 			}
 			if (HsGameUtils.IsMonster(lettuceMapNode.NodeTypeId))
 			{
-				if (Main.modeConf.Value == Mode.佣兵任务.ToString())
+				if (Main.modeConf.Value == Mode.佣兵任务.ToString()||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.佣兵任务)
 				{
 					TaskUtils.UpdateMercTask();
 				}

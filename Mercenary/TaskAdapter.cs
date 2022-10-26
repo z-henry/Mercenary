@@ -678,6 +678,15 @@ namespace Mercenary
 
 				case MercConst.拉格纳罗斯:
 					{
+						//拉格纳罗斯 任务3 
+						if (title.Contains("强力陨石"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "陨石术", 0)
+							}));
+							return;
+						}
 						//拉格纳罗斯 任务10 
 						if (title.Contains("全部烧光"))
 						{
