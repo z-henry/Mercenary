@@ -321,7 +321,7 @@ namespace Mercenary
 			{ STAGE.获得_拉格, new StageInfo(Mode.刷图, 75, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_迦顿, new StageInfo(Mode.刷图, 74, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_安东尼, new StageInfo(Mode.刷图, 76, new List<Type> (){typeof(DefaultTeam.Nature)}) },
-			{ STAGE.刷满_小火焰队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}, targetCoinNeeded:0) },
+			{ STAGE.刷满_小火焰队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}, targetCoinNeeded:0, teamtotal:3) },
 			{ STAGE.获得_紫色配合, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
 			{ STAGE.刷空任务栏, new StageInfo(Mode.佣兵任务, -1, null) },
 			{ STAGE.获得_预设卡组, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
