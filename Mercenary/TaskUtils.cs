@@ -29,6 +29,18 @@ namespace Mercenary
 						Out.Log($"[TID:{task.Id}] 非一条龙阶段任务，放弃");
 						HsGameUtils.CleanTask(task.Id);
 					}
+					if (task.mercID == MercConst.泰瑞尔)
+					{
+						foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
+						{
+							LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
+							if (!mercenary.m_owned || HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 0)
+							{
+								Out.Log($"[TID:{task.Id}] 冰火队未满，放弃泰瑞尔");
+								HsGameUtils.CleanTask(task.Id);
+							}
+						}
+					}
 				}
 			}
 		}
