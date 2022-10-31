@@ -1065,6 +1065,7 @@ namespace Mercenary
 				{
 					Network.Get().CraftMercenary(lettuceMercenary.ID);
 					Out.Log(string.Format("[制作佣兵] [MID:{0}]", lettuceMercenary.ID));
+					Main.mercHasTaskChainConf.Value++;
 				}
 			}
 		}

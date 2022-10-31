@@ -51,6 +51,7 @@ namespace Mercenary
 			获得_全佣兵,
 			解锁_主线,
 			解锁_全装备,
+			刷满_全任务,
 			刷满_全佣兵,
 			广积粮,
 
@@ -297,6 +298,12 @@ namespace Mercenary
 					return STAGE.解锁_全装备;
 				}
 
+				//佣兵任务做完
+				if (Main.mercHasTaskChainConf.Value > 0)
+				{
+					return STAGE.刷满_全任务;
+				}
+
 				//佣兵全满
 				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindOrderedMercenaries(isOwned: true).m_mercenaries)
 				{
@@ -347,6 +354,7 @@ namespace Mercenary
 			{ STAGE.获得_全佣兵, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 			{ STAGE.解锁_主线, new StageInfo(Mode.主线任务, -1, null) },
 			{ STAGE.解锁_全装备, new StageInfo(Mode.解锁装备, -1, null) },
+			{ STAGE.刷满_全任务, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 			{ STAGE.刷满_全佣兵, new StageInfo(Mode.刷图, 85, null) },
 			{ STAGE.广积粮, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 		};
