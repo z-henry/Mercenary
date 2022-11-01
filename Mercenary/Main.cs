@@ -713,6 +713,8 @@ namespace Mercenary
 				return;
 			}
 
+			HandleDialogs();
+
 			GameMgr gameMgr = GameMgr.Get();
 			GameType gameType = gameMgr.GetGameType();
 			SceneMgr sceneMgr = SceneMgr.Get();
@@ -1711,6 +1713,22 @@ namespace Mercenary
 				Network.Get().ClaimAchievementReward(achievementDataModel.ID, 0);
 				Out.Log($"[成就领取] {achievementDataModel.Name}:{achievementDataModel.Description}");
 			}
+		}
+		private void HandleDialogs()
+		{
+			DialogManager dialogManager = DialogManager.Get();
+			if (dialogManager == null)
+				return;
+
+			if (!dialogManager.ShowingDialog())
+				return;
+
+			DialogBase currentDialog = (DialogBase)Traverse.Create(dialogManager).Field("m_currentDialog").GetValue();
+			if (currentDialog == null)
+				return;
+
+			string realClassName = currentDialog.GetType().Name;
+			Out.Log($"[HandleDialogs] A dialog of type {realClassName} is showing.");
 		}
 
 
