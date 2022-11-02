@@ -1,15 +1,13 @@
-﻿using System;
+﻿using HsMercenaryStrategy;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HsMercenaryStrategy;
 
 namespace Mercenary
 {
-	
 	public class StrategyHelper
 	{
-		
 		static StrategyHelper()
 		{
 			Type[] array = AppDomain.CurrentDomain.GetAssemblies().SelectMany((Assembly a) => from t in a.GetTypes()
@@ -25,19 +23,16 @@ namespace Mercenary
 			}
 		}
 
-		
 		public static List<string> GetAllStrategiesName()
 		{
 			return StrategyHelper.StrategiesDict.Keys.ToList<string>().FindAll((string i) => !i.Equals("_Sys_Default"));
 		}
 
-		
 		public static IStrategy GetStrategy(string name)
 		{
 			return StrategyHelper.StrategiesDict[name];
 		}
 
-		
 		private static readonly Dictionary<string, IStrategy> StrategiesDict = new Dictionary<string, IStrategy>();
 	}
 }

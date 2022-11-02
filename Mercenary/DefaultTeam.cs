@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Mercenary.DefaultTeam
 {
-
 	public class TeamUnit
 	{
 		public static void RegisterAll()
@@ -28,6 +26,7 @@ namespace Mercenary.DefaultTeam
 		{
 			TeamInfo = teaminfo;
 		}
+
 		public static void Register(Type type, TeamUnit teamType)
 		{
 			if (false == _types.ContainsKey(type))
@@ -42,19 +41,22 @@ namespace Mercenary.DefaultTeam
 		public List<(int id, int equipIndex)> TeamInfo { get; private set; }// 队伍列表
 
 		private static IDictionary<Type, TeamUnit> _types = new Dictionary<Type, TeamUnit>();
-
 	}
+
 	public class TeamBase
 	{
-		public void Register() 
-		{ 
-			TeamUnit.Register(GetType(), TeamInfo); 
+		public void Register()
+		{
+			TeamUnit.Register(GetType(), TeamInfo);
 		}
+
 		public virtual TeamUnit TeamInfo { get; }
 	}
+
 	public class Ice : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -70,7 +72,8 @@ namespace Mercenary.DefaultTeam
 
 	public class IceFire : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -86,7 +89,8 @@ namespace Mercenary.DefaultTeam
 
 	public class FireKill : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -99,9 +103,11 @@ namespace Mercenary.DefaultTeam
 				(MercConst.变装大师, 1)
 			});
 	}
+
 	public class PirateSnake : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -114,9 +120,11 @@ namespace Mercenary.DefaultTeam
 				(MercConst.重拳先生, 1)
 			});
 	}
+
 	public class Nature : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -129,9 +137,11 @@ namespace Mercenary.DefaultTeam
 				(MercConst.冰雪之王洛克霍拉, 0),
 			});
 	}
+
 	public class Origin0 : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -142,9 +152,11 @@ namespace Mercenary.DefaultTeam
 				(MercConst.凯瑞尔_罗姆, 0),
 			});
 	}
+
 	public class Origin : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -156,9 +168,11 @@ namespace Mercenary.DefaultTeam
 				(MercConst.剑圣萨穆罗, 2),
 			});
 	}
+
 	public class AOE : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -168,9 +182,11 @@ namespace Mercenary.DefaultTeam
 				(MercConst.瓦尔登_晨拥, 2),
 			});
 	}
+
 	public class PrimaryFire : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()
@@ -180,9 +196,11 @@ namespace Mercenary.DefaultTeam
 				(MercConst.拉格纳罗斯, 2),
 			});
 	}
+
 	public class DruidsExclusive : TeamBase
 	{
-		public override TeamUnit TeamInfo { get { return Member; } }
+		public override TeamUnit TeamInfo
+		{ get { return Member; } }
 
 		public static readonly TeamUnit Member = new TeamUnit(
 			new List<(int id, int equipIndex)>()

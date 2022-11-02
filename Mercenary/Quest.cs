@@ -5,12 +5,13 @@ using System.Collections.Generic;
 
 namespace Mercenary
 {
-	class QuestManager
+	internal class QuestManager
 	{
 		public QuestManager()
 		{
 			m_RollTime = DateTime.Now.AddHours(interval);
 		}
+
 		public static QuestManager Instance
 		{
 			get { return m_Instance ?? (m_Instance = new QuestManager()); }
@@ -21,7 +22,7 @@ namespace Mercenary
 			Out.Log("[任务调整]");
 			// 			if (DateTime.Now < m_RollTime)
 			// 				return;
-			// 
+			//
 			// 			m_RollTime = m_RollTime.Date.AddDays(1).AddHours(interval);
 			// 			Out.Log(string.Format("[任务调整] 下次检测时间为{0}",
 			// 				m_RollTime.ToString("G")));
@@ -87,6 +88,7 @@ namespace Mercenary
 				}
 			}
 		}
+
 		private const int interval = 2;
 
 		private static QuestManager m_Instance;

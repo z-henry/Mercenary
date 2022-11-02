@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets;
+﻿using Assets;
 using HarmonyLib;
 using Hearthstone.DataModels;
 using PegasusLettuce;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mercenary
 {
-	
 	public static class HsGameUtils
 	{
-		
 		public static void CleanTask(int taskId)
 		{
 			VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(taskId);
@@ -22,19 +21,16 @@ namespace Mercenary
 			Network.Get().DismissMercenaryTask(mercenaryVisitorId);
 		}
 
-		
 		public static void GotoSceneMap()
 		{
 			SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_MAP, SceneMgr.TransitionHandlerType.NEXT_SCENE, null, null);
 		}
 
-		
 		public static void GotoSceneVillage()
 		{
 			SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_VILLAGE, SceneMgr.TransitionHandlerType.SCENEMGR, null, null);
 		}
 
-		
 		public static bool IsMysteryNode(uint nodeType)
 		{
 			return Array.IndexOf<uint>(new uint[]
@@ -47,12 +43,12 @@ namespace Mercenary
 				44U
 			}, nodeType) > -1;
 		}
-						
+
 		public static bool IsBoss(uint nodeType)
 		{
 			return nodeType == 3U;
 		}
-		
+
 		public static bool IsMonster(uint nodeType)
 		{
 			return Array.IndexOf<uint>(new uint[]
@@ -105,8 +101,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
-// 			if (result.NodeVisualId == "OPPORTUNITY_CASTER")
-// 				Out.Log("IsCaster");
+			// 			if (result.NodeVisualId == "OPPORTUNITY_CASTER")
+			// 				Out.Log("IsCaster");
 			return result.NodeVisualId == "OPPORTUNITY_CASTER";
 		}
 
@@ -116,8 +112,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
-// 			if (result.NodeVisualId == "OPPORTUNITY_FIGHTER")
-// 				Out.Log("IsFighter");
+			// 			if (result.NodeVisualId == "OPPORTUNITY_FIGHTER")
+			// 				Out.Log("IsFighter");
 			return result.NodeVisualId == "OPPORTUNITY_FIGHTER";
 		}
 
@@ -127,8 +123,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
-// 			if (result.NodeVisualId == "OPPORTUNITY_PROTECTOR")
-// 				Out.Log("IsTank");
+			// 			if (result.NodeVisualId == "OPPORTUNITY_PROTECTOR")
+			// 				Out.Log("IsTank");
 			return result.NodeVisualId == "OPPORTUNITY_PROTECTOR";
 		}
 
@@ -137,8 +133,8 @@ namespace Mercenary
 			LettuceMapNodeTypeDbfRecord result = GameDbf.LettuceMapNodeType.GetRecord((int)nodeType);
 			if (result == null)
 				return false;
-// 			if (result.NodeVisualId == "HEALER")
-// 				Out.Log("IsDoctor");
+			// 			if (result.NodeVisualId == "HEALER")
+			// 				Out.Log("IsDoctor");
 			return result.NodeVisualId == "HEALER";
 		}
 
@@ -180,8 +176,6 @@ namespace Mercenary
 			return Math.Max(0, num);
 		}
 
-
-
 		public static void SelectBoss(int mapId)
 		{
 			LettuceVillageDisplay.LettuceSceneTransitionPayload lettuceSceneTransitionPayload = new LettuceVillageDisplay.LettuceSceneTransitionPayload();
@@ -192,7 +186,6 @@ namespace Mercenary
 			SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_BOUNTY_TEAM_SELECT, SceneMgr.TransitionHandlerType.CURRENT_SCENE, null, lettuceSceneTransitionPayload);
 		}
 
-		
 		public static void UpdateAllSkill()
 		{
 			foreach (global::LettuceMercenary lettuceMercenary in CollectionManager.Get().FindMercenaries(null, new bool?(true), null, null, null).m_mercenaries)
@@ -212,49 +205,51 @@ namespace Mercenary
 			Network.Get().MercenariesCollectionRequest();
 		}
 
-
 		public static List<global::LettuceTeam> GetAllTeams()
 		{
 			return CollectionManager.Get().GetTeams();
 		}
 
-		
 		public static List<Task> GetMercTasks()
 		{
 			NetCache.NetCacheMercenariesVillageVisitorInfo netObject = NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>();
 			List<Task> list = new List<Task>();
+			List<MercenaryVillageTaskItemDataModel> list_alltasks = new List<MercenaryVillageTaskItemDataModel>();
 			foreach (var iter in netObject.VisitorStates)
 			{
 				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(iter.ActiveTaskState, null);
-				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(iter.ActiveTaskState.TaskId);
 				if (mercenaryVillageTaskItemDataModel.TaskType != MercenaryVisitor.VillageVisitorType.STANDARD)
 					continue;
 
-				MercenaryVisitorDbfRecord visitorRecordByID = LettuceVillageDataUtil.GetVisitorRecordByID(taskRecordByID.MercenaryVisitorId);
-
+				list_alltasks.Add(mercenaryVillageTaskItemDataModel);
+			}
+			// 排个序，不然每次netchache都不一样
+			foreach (var mercenaryVillageTaskItemDataModel in from x in list_alltasks orderby x.MercenaryId ascending select x)
+			{
 				if (Main.modeConf.Value == Mode.一条龙.ToString())
 				{
-					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && visitorRecordByID.MercenaryId != MercConst.玛法里奥_怒风 ||
-						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && visitorRecordByID.MercenaryId != MercConst.拉格纳罗斯 ||
-						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && visitorRecordByID.MercenaryId != MercConst.迦顿男爵)
+					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.玛法里奥_怒风 ||
+						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.拉格纳罗斯 ||
+						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.迦顿男爵)
 					{
 						continue;
 					}
 				}
-				if (visitorRecordByID.MercenaryId == MercConst.泰瑞尔)
+				if (mercenaryVillageTaskItemDataModel.MercenaryId == MercConst.泰瑞尔)
 				{
 					bool skip = false;
 					foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
 					{
-						LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
-						if (!mercenary.m_owned)
+						if (!HsGameUtils.GetMercenary(iterMerc.id).m_owned)
 							skip = true;
 					}
 					if (skip == true)
 						continue;
 				}
 
-				TaskAdapter.SetTask(taskRecordByID.ID, visitorRecordByID.MercenaryId, taskRecordByID.TaskTitle.GetString(Locale.zhCN), taskRecordByID.TaskDescription.GetString(Locale.zhCN), list, mercenaryVillageTaskItemDataModel.ProgressMessage);
+				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(mercenaryVillageTaskItemDataModel.TaskId);
+				TaskAdapter.SetTask(mercenaryVillageTaskItemDataModel.TaskId, mercenaryVillageTaskItemDataModel.MercenaryId, mercenaryVillageTaskItemDataModel.Title,
+					taskRecordByID.TaskDescription.GetString(Locale.zhCN), list, mercenaryVillageTaskItemDataModel.ProgressMessage);
 				if (list.Count >= 6)
 					break;
 			}
@@ -276,8 +271,6 @@ namespace Mercenary
 			return list;
 		}
 
-
-
 		public static void UpdateEq(int mercenaryId, int equipmentIndex)
 		{
 			global::LettuceMercenary mercenary = CollectionManager.Get().GetMercenary((long)mercenaryId, false, true);
@@ -297,14 +290,12 @@ namespace Mercenary
 			}
 		}
 
-		
 		public static bool HasIdleTask()
 		{
 			int currentTierPropertyForBuilding = LettuceVillageDataUtil.GetCurrentTierPropertyForBuilding(MercenaryBuilding.Mercenarybuildingtype.TASKBOARD, TierProperties.Buildingtierproperty.TASKSLOTS, null);
 			return 2 + currentTierPropertyForBuilding - LettuceVillageDataUtil.VisitorStates.Count > 0;
 		}
 
-		
 		private static void UpgradeSkill(global::LettuceMercenary mrc, LettuceAbility ability)
 		{
 			global::LettuceMercenary mercenary = CollectionManager.Get().GetMercenary((long)mrc.ID, false, true);

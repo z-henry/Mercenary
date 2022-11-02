@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Mercenary
 {
-	
 	public class Task
 	{
-		
 		public Task()
 		{
 		}
 
-		
 		public Task(int id)
 		{
 			this.Mercenaries.Add(new MercenaryEntity(id));
 		}
 
-		
 		public int GetMapId()
 		{
 			return MapUtils.GetMapId(this.Map);
 		}
 
-		
 		public int water;//流水号，保证同优先级的任务是按照添加顺序排列的（长时间不重启可能会溢出）
 		public int Id;// taskid
 		public int Priority; // 优先级 小数优先级高
@@ -32,6 +26,5 @@ namespace Mercenary
 		public long StartAt;//任务进度起始时间
 		public string ProgressMessage;//任务进度
 		public int mercID;//任务的佣兵id
-
 	}
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Mercenary
 {
-	
 	internal class MercConst
 	{
 		public const int 乌瑟尔_光明使者 = 94;
@@ -129,6 +127,7 @@ namespace Mercenary
 			MercConst.冰雪之王洛克霍拉, MercConst.变装大师,       MercConst.厨师曲奇,
 			MercConst.吉安娜_普罗德摩尔,MercConst.重拳先生,       MercConst.冰雪之王洛克霍拉,
 		};
+
 		// 佣兵配合紫色工具人
 		public static readonly List<int> CoopTools = new List<int>
 		{
@@ -141,8 +140,8 @@ namespace Mercenary
 
 		//佣兵解锁装备的优先队列
 		public static readonly List<int> EquipFirst = new List<int>
-		{   
-            MercConst.冰雪之王洛克霍拉,
+		{
+			MercConst.冰雪之王洛克霍拉,
 			MercConst.巴琳达_斯通赫尔斯,
 			MercConst.魔像师卡扎库斯,
 			MercConst.瓦莉拉_萨古纳尔,

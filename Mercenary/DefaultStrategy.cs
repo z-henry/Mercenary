@@ -1,10 +1,8 @@
-﻿using System;
+﻿using HsMercenaryStrategy;
 using System.Collections.Generic;
-using HsMercenaryStrategy;
 
 namespace Mercenary
 {
-	
 	public class DefaultStrategy : IStrategy
 	{
 		public (int hand_index, int play_index) GetEnterOrder(List<Target> hand_mercenaries, List<Target> play_mercenaries, Dictionary<HsMercenaryStrategy.TAG_ROLE, int> dictOppositeRoleCount,
@@ -12,7 +10,6 @@ namespace Mercenary
 		{
 			return (0, play_mercenaries.Count);
 		}
-
 
 		public List<BattleTarget> GetBattleTargets(int turn, List<Target> targets_opposite_all, List<Target> targets_friendly_all, List<Target> targets_opposite_graveyrad)
 		{
@@ -45,14 +42,13 @@ namespace Mercenary
 					{
 						merc_battleTargets.Add(new BattleTarget()
 						{
-							SkillId = skill.Id, 
-							SkillName = skill.Name, 
-							SubSkillIndex = taskMercenary.SubSkillIndex, 
+							SkillId = skill.Id,
+							SkillName = skill.Name,
+							SubSkillIndex = taskMercenary.SubSkillIndex,
 							TargetType = taskMercenary.TargetType
 						});
 					}
 				}
-
 
 				//再 设置的优先级队列FirstAbilityName
 				foreach (Skill skill in mercenary.Skills)
@@ -64,7 +60,6 @@ namespace Mercenary
 							SkillId = skill.Id,
 							SkillName = skill.Name
 						});
-
 					}
 				}
 				//最后 用第一个得了
@@ -82,7 +77,6 @@ namespace Mercenary
 							SkillId = -1,
 							SkillName = ""
 						});
-
 				}
 
 				battleTargets.AddRange(merc_battleTargets);
@@ -105,20 +99,16 @@ namespace Mercenary
 				}
 			}
 
-
 			return battleTargets;
 		}
 
-		
 		public string Name()
 		{
 			return DefaultName;
 		}
 
-		
 		public const string DefaultName = "_Sys_Default";
 
-		
 		private static readonly List<string> FirstAbilityName = new List<string>
 		{
 		};

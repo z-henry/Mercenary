@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Mercenary
+﻿namespace Mercenary
 {
 	public enum Mode
 	{

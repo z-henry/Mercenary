@@ -63,10 +63,12 @@ namespace Mercenary
 					case 1:
 						SaveArgueValue(argueArray[0]);
 						break;
+
 					case 2:
 						SaveArgueKey();
 						argueKey = argueArray[1];
 						break;
+
 					case 3:
 						{
 							SaveArgueKey();

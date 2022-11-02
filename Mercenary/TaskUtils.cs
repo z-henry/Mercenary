@@ -4,52 +4,49 @@ using System.Linq;
 
 namespace Mercenary
 {
-	
 	public static class TaskUtils
 	{
-		
 		public static void UpdateMercTask()
 		{
 			TaskUtils.ClearTaskSpecialNode();
 			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMercTasks());
-// 			foreach (Task task in TaskUtils.GetTasks())
-// 			{
-// 				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
-// 				if (TaskUtils.CleanConf[Main.cleanTaskConf.Value] != -1 && TaskUtils.Current() - task.StartAt > (long)TaskUtils.CleanConf[Main.cleanTaskConf.Value])
-// 				{
-// 					Out.Log($"[TID:{task.Id}] 已过期，放弃");
-// 					HsGameUtils.CleanTask(task.Id);
-// 				}
-// 				if (Main.modeConf.Value == Mode.一条龙.ToString())
-// 				{
-// 					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && task.mercID != MercConst.玛法里奥_怒风 ||
-// 						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && task.mercID != MercConst.拉格纳罗斯 ||
-// 						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && task.mercID != MercConst.迦顿男爵)
-// 					{
-// 						Out.Log($"[TID:{task.Id}] 非一条龙阶段任务，放弃");
-// 						HsGameUtils.CleanTask(task.Id);
-// 					}
-// 					if (task.mercID == MercConst.泰瑞尔)
-// 					{
-// 						foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
-// 						{
-// 							LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
-// 							if (!mercenary.m_owned || HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 0)
-// 							{
-// 								Out.Log($"[TID:{task.Id}] 冰火队未满，放弃泰瑞尔");
-// 								HsGameUtils.CleanTask(task.Id);
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
+			// 			foreach (Task task in TaskUtils.GetTasks())
+			// 			{
+			// 				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
+			// 				if (TaskUtils.CleanConf[Main.cleanTaskConf.Value] != -1 && TaskUtils.Current() - task.StartAt > (long)TaskUtils.CleanConf[Main.cleanTaskConf.Value])
+			// 				{
+			// 					Out.Log($"[TID:{task.Id}] 已过期，放弃");
+			// 					HsGameUtils.CleanTask(task.Id);
+			// 				}
+			// 				if (Main.modeConf.Value == Mode.一条龙.ToString())
+			// 				{
+			// 					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && task.mercID != MercConst.玛法里奥_怒风 ||
+			// 						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && task.mercID != MercConst.拉格纳罗斯 ||
+			// 						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && task.mercID != MercConst.迦顿男爵)
+			// 					{
+			// 						Out.Log($"[TID:{task.Id}] 非一条龙阶段任务，放弃");
+			// 						HsGameUtils.CleanTask(task.Id);
+			// 					}
+			// 					if (task.mercID == MercConst.泰瑞尔)
+			// 					{
+			// 						foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
+			// 						{
+			// 							LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
+			// 							if (!mercenary.m_owned || HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 0)
+			// 							{
+			// 								Out.Log($"[TID:{task.Id}] 冰火队未满，放弃泰瑞尔");
+			// 								HsGameUtils.CleanTask(task.Id);
+			// 							}
+			// 						}
+			// 					}
+			// 				}
+			// 			}
 		}
 
 		public static void UpdateMainLineTask()
 		{
 			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMainLineTask());
 		}
-
 
 		public static void ClearTaskSpecialNode()
 		{
@@ -58,13 +55,12 @@ namespace Mercenary
 			HaveTaskFighter = false;
 			HaveTaskCaster = false;
 		}
-		
+
 		public static long Current()
 		{
 			return new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 		}
 
-		
 		private static void UpdateTaskInfo(List<Task> newTasks)
 		{
 			using (List<Task>.Enumerator enumerator = newTasks.GetEnumerator())
@@ -79,7 +75,6 @@ namespace Mercenary
 			TaskUtils.tasks = newTasks;
 		}
 
-		
 		public static int GetTaskMap()
 		{
 			List<Task> taskOrder = (from t in TaskUtils.tasks orderby t.Priority, t.water select t).ToList<Task>();
@@ -92,13 +87,12 @@ namespace Mercenary
 			}
 			return -1;
 		}
-		
+
 		public static List<Task> GetTasks()
 		{
 			List<Task> taskOrder = (from t in TaskUtils.tasks orderby t.Priority, t.water select t).ToList<Task>();
 			return taskOrder;
 		}
-
 
 		public static List<MercenaryEntity> GetTaskMercenaries(string mercName)
 		{
@@ -107,7 +101,7 @@ namespace Mercenary
 			{
 				foreach (MercenaryEntity item in task.Mercenaries)
 				{
-					if (item .Name != mercName)
+					if (item.Name != mercName)
 						continue;
 					list.Add(item);
 				}
@@ -139,10 +133,11 @@ namespace Mercenary
 			}
 		};
 
-		
 		private static List<Task> tasks = new List<Task>();
+
 		//有对应赐福任务
-		public static bool HaveTaskTank  { get; set; }
+		public static bool HaveTaskTank { get; set; }
+
 		public static bool HaveTaskFighter { get; set; }
 		public static bool HaveTaskCaster { get; set; }
 		public static bool HaveTaskDocter { get; set; }

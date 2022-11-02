@@ -5,10 +5,8 @@ using System.Text;
 
 namespace Mercenary
 {
-	
 	public static class Out
 	{
-		
 		public static void Log(string log)
 		{
 			string errorLogFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepinEx/Log", Main.hsUnitID);
@@ -23,6 +21,7 @@ namespace Mercenary
 			swLogFile.Close();
 			swLogFile.Dispose();
 		}
+
 		public static void LogGameRecord(string log)
 		{
 			string errorLogFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepinEx/Log", Main.hsUnitID);
@@ -38,7 +37,6 @@ namespace Mercenary
 			swLogFile.Dispose();
 		}
 
-
 		public static void UI(string log)
 		{
 			UIStatus.Get().AddInfo(log);
@@ -50,6 +48,5 @@ namespace Mercenary
 			myLogSource.Log(level, message);
 			BepInEx.Logging.Logger.Sources.Remove(myLogSource);
 		}
-
 	}
 }

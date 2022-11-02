@@ -5,10 +5,8 @@ using System.Text.RegularExpressions;
 
 namespace Mercenary
 {
-	
 	public static class TaskAdapter
 	{
-		
 		public static void SetTask(int taskId, int mercenaryId, string title, string desc, List<Task> tasks, string progressMessage)
 		{
 			//难完成的
@@ -39,7 +37,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.亚煞极:
 					{
 						//亚煞极 任务3:愤怒即是力量
@@ -58,12 +55,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.伊利丹_怒风:
 					{
 					}
 					break;
-
 
 				case MercConst.伊瑞尔:
 					{
@@ -82,12 +77,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.伊莉斯_逐星:
 					{
 					}
 					break;
-
 
 				case MercConst.先知维伦:
 					{
@@ -114,12 +107,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.光明之翼:
 					{
 					}
 					break;
-
 
 				case MercConst.冰雪之王洛克霍拉:
 					{
@@ -142,7 +133,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.凯恩_血蹄:
 					{
 						//任务14 - 踩在蹄下
@@ -162,22 +152,18 @@ namespace Mercenary
 							}));
 							return;
 						}
-
 					}
 					break;
-
 
 				case MercConst.凯瑞尔_罗姆:
 					{
 					}
 					break;
 
-
 				case MercConst.剑圣萨穆罗:
 					{
 					}
 					break;
-
 
 				case MercConst.加尔范上尉:
 					{
@@ -195,12 +181,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.加尔鲁什_地狱咆哮:
 					{
 					}
 					break;
-
 
 				case MercConst.加拉克苏斯大王:
 					{
@@ -219,7 +203,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.厨师曲奇:
 					{
 						//厨师曲奇 任务17:船上的厨子
@@ -235,12 +218,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.变装大师:
 					{
 					}
 					break;
-
 
 				case MercConst.古夫_符文图腾:
 					{
@@ -257,12 +238,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.古尔丹:
 					{
 					}
 					break;
-
 
 				case MercConst.吉安娜_普罗德摩尔:
 					{
@@ -285,7 +264,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.塔姆辛_罗姆:
 					{
 						//塔姆辛·罗姆 任务10
@@ -306,7 +284,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.塔维什_雷矛:
 					{
@@ -329,7 +306,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.奈法利安:
 					{
 						//奈法利安 任务2:多彩龙，完美的龙
@@ -341,7 +317,7 @@ namespace Mercenary
 							}));
 							return;
 						}
-						//奈法利安 任务12 
+						//奈法利安 任务12
 						if (title.Contains("暗影烈焰"))
 						{
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, new MercenaryEntity[]
@@ -366,12 +342,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.奔波尔霸:
 					{
 					}
 					break;
-
 
 				case MercConst.奥妮克希亚:
 					{
@@ -404,10 +378,8 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.娜塔莉_塞林:
 					{
-
 						//娜塔莉·赛琳 任务4
 						if (title.Contains("圣光治愈一切"))
 						{
@@ -421,10 +393,8 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.安东尼达斯:
 					{
-
 						// 安东尼达斯 任务12
 						if (title.Contains("火焰滚滚"))
 						{
@@ -450,18 +420,15 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.安娜科德拉:
 					{
 					}
 					break;
 
-
 				case MercConst.安度因_乌瑞恩:
 					{
 					}
 					break;
-
 
 				case MercConst.尤朵拉:
 					{
@@ -490,12 +457,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.尤格_萨隆:
 					{
 					}
 					break;
-
 
 				case MercConst.巫妖王:
 					{
@@ -511,18 +476,15 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.巴琳达_斯通赫尔斯:
 					{
 					}
 					break;
 
-
 				case MercConst.布莱恩_铜须:
 					{
 					}
 					break;
-
 
 				case MercConst.布鲁坎:
 					{
@@ -545,7 +507,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.希奈丝特拉:
 					{
 						//希奈丝特拉 任务2
@@ -559,7 +520,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.希尔瓦娜斯_风行者:
 					{
@@ -596,10 +556,8 @@ namespace Mercenary
 							}));
 							return;
 						}
-
 					}
 					break;
-
 
 				case MercConst.库尔特鲁斯_陨烬:
 					{
@@ -616,7 +574,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.德雷克塔尔:
 					{
@@ -651,12 +608,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.恩佐斯:
 					{
 					}
 					break;
-
 
 				case MercConst.拉希奥:
 					{
@@ -675,10 +630,9 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.拉格纳罗斯:
 					{
-						//拉格纳罗斯 任务3 
+						//拉格纳罗斯 任务3
 						if (title.Contains("强力陨石"))
 						{
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
@@ -687,7 +641,7 @@ namespace Mercenary
 							}));
 							return;
 						}
-						//拉格纳罗斯 任务10 
+						//拉格纳罗斯 任务10
 						if (title.Contains("全部烧光"))
 						{
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, new MercenaryEntity[]
@@ -699,7 +653,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.拉索利安:
 					{
@@ -737,7 +690,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.指挥官沃恩:
 					{
 						//指挥官沃恩 任务9:燃棘必胜
@@ -770,7 +722,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.提里奥_弗丁:
 					{
 						//弗丁 任务2 任务14
@@ -785,7 +736,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.斯卡布斯_刀油:
 					{
 						//斯卡布斯·刀油 任务1 任务9
@@ -795,13 +745,11 @@ namespace Mercenary
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "战术打击", 0),
 								TaskAdapter.GetMercenary(MercConst.玉珑, "玉火打击", 0)
-
 							}));
 							return;
 						}
 					}
 					break;
-
 
 				case MercConst.斯尼德:
 					{
@@ -828,7 +776,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.暴龙王克鲁什:
 					{
 						//暴龙王克鲁什 任务12:暴龙之王
@@ -844,7 +791,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.格罗玛什_地狱咆哮:
 					{
@@ -873,12 +819,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.格鲁尔:
 					{
 					}
 					break;
-
 
 				case MercConst.梵妮莎_范克里夫:
 					{
@@ -912,12 +856,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.死亡之翼:
 					{
 					}
 					break;
-
 
 				case MercConst.沃金:
 					{
@@ -935,12 +877,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.泰兰德_语风:
 					{
 					}
 					break;
-
 
 				case MercConst.泰瑞尔:
 					{
@@ -997,19 +937,16 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(MercConst.冰雪之王洛克霍拉, null, 0),
 								TaskAdapter.GetMercenary(MercConst.吉安娜_普罗德摩尔,null,2),
 								TaskAdapter.GetMercenary(mercenaryId,"圣剑挺击", 0)
-
 							}));
 							return;
 						}
 					}
 					break;
 
-
 				case MercConst.泽瑞拉:
 					{
 					}
 					break;
-
 
 				case MercConst.洛卡拉:
 					{
@@ -1026,30 +963,25 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.海巫扎尔吉拉:
 					{
 					}
 					break;
-
 
 				case MercConst.海盗帕奇斯:
 					{
 					}
 					break;
 
-
 				case MercConst.深水领主卡拉瑟雷斯:
 					{
 					}
 					break;
 
-
 				case MercConst.游学者周卓:
 					{
 					}
 					break;
-
 
 				case MercConst.滑矛领主:
 					{
@@ -1068,7 +1000,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.潮汐主母阿茜萨:
 					{
 						//潮汐主母阿茜萨 任务3:以艾萨拉之名
@@ -1086,12 +1017,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.火车王里诺艾:
 					{
 					}
 					break;
-
 
 				case MercConst.玉珑:
 					{
@@ -1108,7 +1037,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.玛法里奥_怒风:
 					{
 						//玛法里奥·怒风 任务3:自然力量
@@ -1123,12 +1051,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.玛维_影歌:
 					{
 					}
 					break;
-
 
 				case MercConst.玛诺洛斯:
 					{
@@ -1154,7 +1080,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.珑心:
 					{
 						// 珑心	任务3 任务10
@@ -1169,16 +1094,14 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.瓦丝琪女士:
 					{
 					}
 					break;
 
-
 				case MercConst.瓦尔登_晨拥:
 					{
-						//瓦尔登·晨拥 任务9 
+						//瓦尔登·晨拥 任务9
 						if (title.Contains("学术道德"))
 						{
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, new MercenaryEntity[]
@@ -1213,7 +1136,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.瓦罗克_萨鲁法尔:
 					{
 						//瓦罗克·萨鲁法尔 任务12:全力一击
@@ -1229,12 +1151,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.瓦莉拉_萨古纳尔:
 					{
 					}
 					break;
-
 
 				case MercConst.瓦里安_乌瑞恩:
 					{
@@ -1250,12 +1170,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.砮皂:
 					{
 					}
 					break;
-
 
 				case MercConst.神谕者摩戈尔:
 					{
@@ -1273,7 +1191,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.穆克拉:
 					{
 						//穆克拉 任务17:家族纽带
@@ -1287,7 +1204,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.穆坦努斯:
 					{
@@ -1307,7 +1223,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.空军上将罗杰斯:
 					{
 						// 空军上将罗杰斯 任务2
@@ -1321,7 +1236,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.米尔豪斯_法力风暴:
 					{
@@ -1341,7 +1255,7 @@ namespace Mercenary
 							}));
 							return;
 						}
-						//任务12 
+						//任务12
 						if (title.Contains("嗞，啪，嘭！"))
 						{
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
@@ -1353,7 +1267,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.老瞎眼:
 					{
@@ -1380,7 +1293,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.考内留斯_罗姆:
 					{
 						//考内留斯·罗姆 任务2:我来承受伤害
@@ -1398,7 +1310,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.艾德温_迪菲亚首脑:
 					{
 						//艾德温·迪菲亚首脑 任务11 任务17
@@ -1407,26 +1318,23 @@ namespace Mercenary
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "2-5", new MercenaryEntity[]
 							{
 								TaskAdapter.GetMercenary(mercenaryId, "首脑的悬赏", 2),
-								TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, null, 0), 
+								TaskAdapter.GetMercenary(MercConst.海盗帕奇斯, null, 0),
 								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "黄金猿", 2),
 								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "指引道路", 2),
 								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "开启任务", 2),
 								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "躲避毒镖", 2),
 								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "丛林导航", 2),
 								TaskAdapter.GetMercenary(MercConst.伊莉斯_逐星, "摆脱滚石", 2),
-
 							}));
 							return;
 						}
 					}
 					break;
 
-
 				case MercConst.艾萨拉女王:
 					{
 					}
 					break;
-
 
 				case MercConst.范达尔_雷矛:
 					{
@@ -1442,7 +1350,7 @@ namespace Mercenary
 							}));
 							return;
 						}
-						//范达尔·雷矛 任务17 
+						//范达尔·雷矛 任务17
 						if (title.Contains("拼尽全力"))
 						{
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, new MercenaryEntity[]
@@ -1456,24 +1364,20 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.萨尔:
 					{
 					}
 					break;
-
 
 				case MercConst.贝恩_血蹄:
 					{
 					}
 					break;
 
-
 				case MercConst.赤精:
 					{
 					}
 					break;
-
 
 				case MercConst.迦顿男爵:
 					{
@@ -1503,7 +1407,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.迪亚波罗:
 					{
 						//迪亚波罗 任务12:死亡降临
@@ -1518,7 +1421,6 @@ namespace Mercenary
 						}
 					}
 					break;
-
 
 				case MercConst.重拳先生:
 					{
@@ -1536,12 +1438,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.钩牙船长:
 					{
 					}
 					break;
-
 
 				case MercConst.闪狐:
 					{
@@ -1558,7 +1458,6 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(mercenaryId, "群体缠绕", 2),
 								TaskAdapter.GetMercenary(mercenaryId, "树皮肌肤", 2),
 								TaskAdapter.GetMercenary(mercenaryId, "大地的敌意", 2)
-								
 							}));
 							return;
 						}
@@ -1578,10 +1477,9 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.阿莱克丝塔萨:
 					{
-						//阿莱克丝塔萨 任务9 
+						//阿莱克丝塔萨 任务9
 						if (title.Contains("生命守护者"))
 						{
 							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, new MercenaryEntity[]
@@ -1619,10 +1517,8 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.雪怒:
 					{
-
 						//雪怒 任务12:往日旧梦
 						if (title.Contains("往日旧梦"))
 						{
@@ -1649,7 +1545,6 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.雷克萨:
 					{
 						//雷克萨 任务17:唯一的朋友
@@ -1665,12 +1560,10 @@ namespace Mercenary
 					}
 					break;
 
-
 				case MercConst.雷诺_杰克逊:
 					{
 					}
 					break;
-
 
 				case MercConst.鞭笞者特里高雷:
 					{
@@ -1692,13 +1585,11 @@ namespace Mercenary
 							{
 								TaskAdapter.GetMercenary(mercenaryId,null,0),
 								TaskAdapter.GetMercenary(MercConst.瓦罗克_萨鲁法尔, "旋风斩", 1)
-
 							}));
 							return;
 						}
 					}
 					break;
-
 
 				case MercConst.魔像师卡扎库斯:
 					{
@@ -1714,7 +1605,6 @@ namespace Mercenary
 							{
 								TaskAdapter.GetMercenary(mercenaryId, null , 1),
 								TaskAdapter.GetMercenary(MercConst.安东尼达斯, "烈焰风暴", 1)
-
 							}));
 							return;
 						}
@@ -1741,9 +1631,7 @@ namespace Mercenary
 						}
 					}
 					break;
-
 			}
-
 
 			//回复生命类任务
 			//娜塔莉·塞林 任务17:平衡倾斜
@@ -1754,11 +1642,10 @@ namespace Mercenary
 			//库尔特鲁斯·陨烬 任务14:包扎伤口
 			//阿莱克丝塔萨 任务9:生命守护者
 			//神谕者摩戈尔 任务14:耐心取胜
-			if (title.Contains("平衡倾斜") || title.Contains("纯净圣光") || title.Contains("治疗朋友") || 
-				title.Contains("我们交朋友吧") || title.Contains("低语显现") || title.Contains("包扎伤口") || 
+			if (title.Contains("平衡倾斜") || title.Contains("纯净圣光") || title.Contains("治疗朋友") ||
+				title.Contains("我们交朋友吧") || title.Contains("低语显现") || title.Contains("包扎伤口") ||
 				title.Contains("生命守护者") || title.Contains("耐心取胜"))
 			{
-				
 				tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
 				{
 					TaskAdapter.GetMercenary(MercConst.光明之翼,"妖精之尘", 1),
@@ -1877,10 +1764,9 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.奈法利安,"龙人突袭",1)
-
 				}));
 				return;
-            }
+			}
 			//人类造成伤害
 			if (desc.Contains("使用包含此佣兵的队伍") && desc.Contains("使用人类造成"))
 			{
@@ -1888,7 +1774,6 @@ namespace Mercenary
 				{
 					TaskAdapter.GetMercenary(mercenaryId, null, 0),
 					TaskAdapter.GetMercenary(MercConst.安东尼达斯, "烈焰风暴", 1)
-
 				}));
 				return;
 			}
@@ -2078,8 +1963,7 @@ namespace Mercenary
 				TaskAdapter.GetMercenary(mercenaryId, record2.AbilityName, GetEquipEnHanceSkill(record2.AbilityName))
 			}));
 		}
-		
-		
+
 		private static MercenaryEntity[] GetQuickMercenary(int mercenaryId)
 		{
 			List<MercenaryEntity> list = new List<MercenaryEntity>();
@@ -2096,7 +1980,6 @@ namespace Mercenary
 			return list.ToArray();
 		}
 
-		
 		private static Task GetTask(int mercid, string progress, int id, int priority, string map, params MercenaryEntity[] mercenaries)
 		{
 			return new Task
@@ -2124,7 +2007,6 @@ namespace Mercenary
 			};
 		}
 
-		
 		private static Task GetTask(int mercid, string progress, int id, params MercenaryEntity[] mercenaries)
 		{
 			return new Task
@@ -2138,7 +2020,6 @@ namespace Mercenary
 			};
 		}
 
-		
 		private static MercenaryEntity GetMercenary(int id, string skill = null, int eq = 0, int subskill = -1, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
 		{
 			return new MercenaryEntity(id, skill, eq, subskill, targettype);
@@ -2148,11 +2029,11 @@ namespace Mercenary
 		{
 			return m_dictSkillEquip.ContainsKey(skill) ? m_dictSkillEquip[skill] : 0;
 		}
+
 		public static void SetMainLineTask(List<Task> tasks, string desc)
 		{
 			{
 				Out.Log($"[主线] {desc}");
-
 
 				Regex regex = new Regex(@"完成(\D.+)悬赏。$");
 				Match match = regex.Match(desc);
@@ -2173,6 +2054,7 @@ namespace Mercenary
 					case "在费伍德森林击败20个敌人。":
 						tasks.Add(TaskAdapter.GetTask(-1, "", -1, 0, "2-1", null));
 						break;
+
 					case "击败15个恶魔。":
 						tasks.Add(TaskAdapter.GetTask(-1, "", -1, 0, "2-6", null));
 						break;
@@ -2188,6 +2070,7 @@ namespace Mercenary
 					case "在黑石山造成2500点伤害。":
 						tasks.Add(TaskAdapter.GetTask(-1, "", -1, 0, "4-1", null));
 						break;
+
 					case "在黑石山击败25个元素。":
 						tasks.Add(TaskAdapter.GetTask(-1, "", -1, 0, "4-4", null));
 						break;
@@ -2199,7 +2082,6 @@ namespace Mercenary
 				}
 			}
 		}
-
 
 		private static Dictionary<string, int> m_dictSkillEquip = new Dictionary<string, int>
 		{

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Mercenary
 {
@@ -13,6 +9,7 @@ namespace Mercenary
 		public static int unlockMercID = -1;// 自动解锁装备-佣兵
 		public static int unlockMapID = -1;// 自动解锁装备-地图
 	}
+
 	public static class Global
 	{
 		public static bool matchFirstRecord = true;

@@ -15,16 +15,19 @@ namespace Mercenary
 			m_teamTotal = teamtotal;
 			m_TargetCoinNeeded = targetCoinNeeded;
 		}
+
 		public Mode m_mode;
 		public int m_mapid;
 		public List<Type> m_teamTypes;
 		public int m_teamTotal;
 		public int m_TargetCoinNeeded;// 对于预设队伍，小于此硬币需求的佣兵，不再携带。默认-1必须携带
 	}
+
 	public static class OnePackageService
 	{
 		public enum STAGE
 		{
+			UNINIT = -1,
 			满级_初始四人 = 0,
 			获得_萨穆罗,
 			满级_初始五人,
@@ -53,17 +56,28 @@ namespace Mercenary
 			解锁_全装备,
 			刷满_全佣兵,
 			广积粮,
-
 		}
-		public static STAGE Stage { get { return m_stage; } private set { m_stage = value; } }
+
+		public static STAGE Stage
+		{
+			get
+			{
+				if (false == m_hasInit)
+					m_stage = ClacStage();
+				return m_stage;
+			}
+			private set { m_stage = value; }
+		}
 
 		public static void UpdateStage()
 		{
-			Stage = ClacStage();
+			m_stage = ClacStage();
 			Out.Log($"[一条龙阶段] 阶段{(int)Stage} {Stage}");
 		}
+
 		private static STAGE ClacStage()
 		{
+			m_hasInit = true;
 			try
 			{
 				//初始队伍，凯瑞尔，豪斯，泰兰德，泽瑞拉，4个人，是否全部30级
@@ -122,7 +136,7 @@ namespace Mercenary
 						return STAGE.刷满_AOE;
 					}
 				}
-				//大德是否获得 
+				//大德是否获得
 				mercenary_temp = HsGameUtils.GetMercenary(MercConst.玛法里奥_怒风);
 				if (!mercenary_temp.m_owned)
 				{
@@ -305,18 +319,21 @@ namespace Mercenary
 						return STAGE.刷满_全佣兵;
 					}
 				}
+				//3火焰队刷图2-6
+				return STAGE.广积粮;
 			}
-
 			catch (Exception e)
 			{
 				Console.WriteLine(e.ToString());
 			}
-			//3火焰队刷图2-6
-			return STAGE.广积粮;
+			m_hasInit = false;
+			return STAGE.UNINIT;
 		}
 
 		public static StageInfo TranslateCurrentStage()
 		{
+			if (false == m_hasInit)
+				m_stage = ClacStage();
 			return m_dictTranslate[m_stage];
 		}
 
@@ -350,9 +367,12 @@ namespace Mercenary
 			{ STAGE.刷满_全佣兵, new StageInfo(Mode.刷图, 85, null) },
 			{ STAGE.广积粮, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 		};
+
 		private static STAGE m_stage = STAGE.满级_初始四人;
+		private static bool m_hasInit = false;
+
 		private static List<Type> m_DefaultTeam = new List<Type> {
-			typeof(DefaultTeam.Ice), typeof(DefaultTeam.IceFire), typeof(DefaultTeam.PirateSnake), 
+			typeof(DefaultTeam.Ice), typeof(DefaultTeam.IceFire), typeof(DefaultTeam.PirateSnake),
 			typeof(DefaultTeam.FireKill), typeof(DefaultTeam.Nature)
 		};
 	}

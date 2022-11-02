@@ -3,10 +3,8 @@ using System.Linq;
 
 namespace Mercenary
 {
-	
 	public static class MapUtils
 	{
-	
 		public static int GetMapId(string name)
 		{
 			Map map = MapUtils.GetMap(name);
@@ -17,15 +15,16 @@ namespace Mercenary
 			return -1;
 		}
 
-		
 		public static Map GetMap(string name)
 		{
 			return MapUtils.MapConfList.Find((Map m) => m.Name.Equals(name));
 		}
+
 		public static Map GetMapByBoss(string boss)
 		{
 			return MapUtils.MapConfList.Find((Map m) => m.Boss.Equals(boss));
 		}
+
 		public static Map GetMapByID(int id)
 		{
 			return MapUtils.MapConfList.Find((Map m) => m.ID.Equals(id));
@@ -44,14 +43,12 @@ namespace Mercenary
 			return MapUtils.GetMapId("1-1");
 		}
 
-		
 		public static string[] GetMapNameList()
 		{
 			return (from m in MapUtils.MapConfList
 					select m.Name).ToArray<string>();
 		}
 
-		
 		private static readonly List<Map> MapConfList = new List<Map>
 		{
 			new Map(57, "1-1", "残暴的野猪人", typeof(DefaultTeam.Nature)),
@@ -228,7 +225,6 @@ namespace Mercenary
 			new Map(254, "H9-11", "")
 		};
 
-		
 		private static int lastTryIndex = 0;
 	}
 }
