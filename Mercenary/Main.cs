@@ -955,8 +955,10 @@ namespace Mercenary
 								List<RewardTrackXpChange> xpChanges = (List<RewardTrackXpChange>)Traverse.Create(rewardXpNotificationManager).Field("m_xpChanges").GetValue();
 								foreach (RewardTrackXpChange xpChange in xpChanges)
 								{
-									Out.Log(string.Format("[对局结束] 战令信息 {0} 等级:{1} 经验:{2} {3} {4}",
-										gameResult, xpChange.CurrLevel, xpChange.CurrXp, xpChange.RewardSourceType, xpChange.RewardSourceId));
+									if (xpChange.RewardTrackType != 1)
+										continue;
+									Out.Log(string.Format("[对局结束] 战令信息 {0} 等级:{1} 经验:{2} {3} {4} {5}",
+										gameResult, xpChange.CurrLevel, xpChange.CurrXp, xpChange.RewardSourceType, xpChange.RewardSourceId, xpChange.RewardTrackType));
 								}
 							}
 							if (gameType == GameType.GT_MERCENARIES_PVP)

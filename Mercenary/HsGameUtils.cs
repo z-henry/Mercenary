@@ -223,38 +223,40 @@ namespace Mercenary
 		{
 			NetCache.NetCacheMercenariesVillageVisitorInfo netObject = NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>();
 			List<Task> list = new List<Task>();
-			for (int i = 0; i< Math.Min(6,netObject.VisitorStates.Count); --i)
+			foreach (var iter in netObject.VisitorStates)
 			{
-				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(netObject.VisitorStates[i - 1].ActiveTaskState, null);
-				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(netObject.VisitorStates[i-1].ActiveTaskState.TaskId);
- 				if (mercenaryVillageTaskItemDataModel.TaskType == MercenaryVisitor.VillageVisitorType.STANDARD)
+				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(iter.ActiveTaskState, null);
+				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(iter.ActiveTaskState.TaskId);
+				if (mercenaryVillageTaskItemDataModel.TaskType != MercenaryVisitor.VillageVisitorType.STANDARD)
+					continue;
+
+				MercenaryVisitorDbfRecord visitorRecordByID = LettuceVillageDataUtil.GetVisitorRecordByID(taskRecordByID.MercenaryVisitorId);
+
+				if (Main.modeConf.Value == Mode.一条龙.ToString())
 				{
-					MercenaryVisitorDbfRecord visitorRecordByID = LettuceVillageDataUtil.GetVisitorRecordByID(taskRecordByID.MercenaryVisitorId);
-
-					if (Main.modeConf.Value == Mode.一条龙.ToString())
+					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && visitorRecordByID.MercenaryId != MercConst.玛法里奥_怒风 ||
+						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && visitorRecordByID.MercenaryId != MercConst.拉格纳罗斯 ||
+						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && visitorRecordByID.MercenaryId != MercConst.迦顿男爵)
 					{
-						if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && visitorRecordByID.MercenaryId != MercConst.玛法里奥_怒风 ||
-							OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && visitorRecordByID.MercenaryId != MercConst.拉格纳罗斯 ||
-							OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && visitorRecordByID.MercenaryId != MercConst.迦顿男爵)
-						{
-							continue;
-						}
+						continue;
 					}
-					if (visitorRecordByID.MercenaryId == MercConst.泰瑞尔)
-					{
-						bool skip = false;
-						foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
-						{
-							LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
-							if (!mercenary.m_owned)
-								skip = true;
-						}
-						if (skip == true)
-							continue;
-					}
-
-					TaskAdapter.SetTask(taskRecordByID.ID, visitorRecordByID.MercenaryId, taskRecordByID.TaskTitle.GetString(Locale.zhCN), taskRecordByID.TaskDescription.GetString(Locale.zhCN), list, mercenaryVillageTaskItemDataModel.ProgressMessage);
 				}
+				if (visitorRecordByID.MercenaryId == MercConst.泰瑞尔)
+				{
+					bool skip = false;
+					foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
+					{
+						LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
+						if (!mercenary.m_owned)
+							skip = true;
+					}
+					if (skip == true)
+						continue;
+				}
+
+				TaskAdapter.SetTask(taskRecordByID.ID, visitorRecordByID.MercenaryId, taskRecordByID.TaskTitle.GetString(Locale.zhCN), taskRecordByID.TaskDescription.GetString(Locale.zhCN), list, mercenaryVillageTaskItemDataModel.ProgressMessage);
+				if (list.Count >= 6)
+					break;
 			}
 			return list;
 		}
