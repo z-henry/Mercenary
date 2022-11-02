@@ -235,7 +235,7 @@ namespace Mercenary
 				{
 					if (mercenariesVisitorState.ActiveTaskState.Status_ == MercenariesTaskState.Status.COMPLETE)
 					{
-						MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelByTaskState(mercenariesVisitorState.ActiveTaskState, null, false, false);
+						MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(mercenariesVisitorState.ActiveTaskState, null);
 
 						Out.Log($"[地图信息识别] 任务完成 [TID:{mercenariesVisitorState.ActiveTaskState.TaskId}] [TN:{mercenaryVillageTaskItemDataModel.Description}]");
 						Network.Get().ClaimMercenaryTask(mercenariesVisitorState.ActiveTaskState.TaskId);
@@ -509,7 +509,7 @@ namespace Mercenary
 				}
 			}
 			List<LettuceMercenary> mercenaries = (
-				from x in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries
+				from x in CollectionManager.Get().FindMercenaries(null, true, null, null, null).m_mercenaries
 				where x.m_owned == true && x.m_isFullyUpgraded == false && HsGameUtils.CalcMercenaryCoinNeed(x) > 0
 				orderby (MercConst.PriorFirst.IndexOf(x.ID) == -1 ? int.MaxValue : MercConst.PriorFirst.IndexOf(x.ID)) ascending
 				select x
@@ -587,7 +587,7 @@ namespace Mercenary
 			// 6. 全满补位
 			if (lettuceTeam.GetMercCount() < numTotal)
 			{
-				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries)
+				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindMercenaries(null, true, null, null, null).m_mercenaries)
 				{
 					if (lettuceTeam.GetMercCount() == numTotal)
 						break;
@@ -636,7 +636,7 @@ namespace Mercenary
 				Out.Log("F3查询");
 
 				// 查拥有的佣兵情况
-				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindOrderedMercenaries();
+				CollectionManager.FindMercenariesResult result = CollectionManager.Get().FindMercenaries();
 				foreach (LettuceMercenary mercy in result.m_mercenaries)
 				{
 					foreach (LettuceAbility ability in mercy.m_abilityList)
@@ -883,7 +883,7 @@ namespace Mercenary
 				lettuceSceneTransitionPayload.m_TeamId = lettuceTeam2.ID;
 				lettuceSceneTransitionPayload.m_SelectedBounty = record;
 				lettuceSceneTransitionPayload.m_SelectedBountySet = record.BountySetRecord;
-				lettuceSceneTransitionPayload.m_IsHeroic = record.Heroic;
+				lettuceSceneTransitionPayload.m_DifficultyMode = record.DifficultyMode;
 				Out.Log($"[状态] 目前处于队伍选择，选择[MAP:{MapUtils.GetMapByID(mapId).Name}] [BOSS:{MapUtils.GetMapByID(mapId).Boss}]");
 				SceneMgr.Get().SetNextMode(SceneMgr.Mode.LETTUCE_MAP, SceneMgr.TransitionHandlerType.CURRENT_SCENE, null, lettuceSceneTransitionPayload);
 				Main.Sleep(5);
@@ -1061,7 +1061,7 @@ namespace Mercenary
 				return;
 			}
 			Out.Log("[制作佣兵]");
-			foreach (LettuceMercenary lettuceMercenary in CollectionManager.Get().FindOrderedMercenaries(null, new bool?(true), null, null, null).m_mercenaries)
+			foreach (LettuceMercenary lettuceMercenary in CollectionManager.Get().FindMercenaries(null, new bool?(true), null, null, null).m_mercenaries)
 			{
 				if (lettuceMercenary.IsReadyForCrafting())
 				{
@@ -1678,7 +1678,7 @@ namespace Mercenary
 				}
 			}
 			List<LettuceMercenary> mercenaries = (
-				from x in CollectionManager.Get().FindOrderedMercenaries(null, true, null, null, null).m_mercenaries
+				from x in CollectionManager.Get().FindMercenaries(null, true, null, null, null).m_mercenaries
 				where x.m_owned == true
 				orderby (MercConst.EquipFirst.IndexOf(x.ID) == -1 ? int.MaxValue : MercConst.EquipFirst.IndexOf(x.ID)) ascending
 				select x

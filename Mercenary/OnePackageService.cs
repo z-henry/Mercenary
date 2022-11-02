@@ -51,7 +51,6 @@ namespace Mercenary
 			获得_全佣兵,
 			解锁_主线,
 			解锁_全装备,
-			刷满_全任务,
 			刷满_全佣兵,
 			广积粮,
 
@@ -225,7 +224,7 @@ namespace Mercenary
 				for (int i = netObject.VisitorStates.Count - 1; i >= 0; --i)
 				{
 					MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel =
-						LettuceVillageDataUtil.CreateTaskModelByTaskState(netObject.VisitorStates[i].ActiveTaskState, null, false, false);
+						LettuceVillageDataUtil.CreateTaskModelFromTaskState(netObject.VisitorStates[i].ActiveTaskState, null);
 					VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(netObject.VisitorStates[i].ActiveTaskState.TaskId);
 
 					if (mercenaryVillageTaskItemDataModel.TaskType == MercenaryVisitor.VillageVisitorType.STANDARD)
@@ -280,7 +279,7 @@ namespace Mercenary
 				}
 
 				//是否全佣兵
-				if (CollectionManager.Get().FindOrderedMercenaries(isOwned: false, isCraftable: false).m_mercenaries.Count > 0 &&
+				if (CollectionManager.Get().FindMercenaries(isOwned: false, isCraftable: false).m_mercenaries.Count > 0 &&
 					Main.mercHasTaskChainConf.Value != 0)
 				{
 					return STAGE.获得_全佣兵;
@@ -298,14 +297,8 @@ namespace Mercenary
 					return STAGE.解锁_全装备;
 				}
 
-				//佣兵任务做完
-				if (Main.mercHasTaskChainConf.Value > 0)
-				{
-					return STAGE.刷满_全任务;
-				}
-
 				//佣兵全满
-				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindOrderedMercenaries(isOwned: true).m_mercenaries)
+				foreach (LettuceMercenary mercenary in CollectionManager.Get().FindMercenaries(isOwned: true).m_mercenaries)
 				{
 					if (HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 0)
 					{
@@ -354,7 +347,6 @@ namespace Mercenary
 			{ STAGE.获得_全佣兵, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 			{ STAGE.解锁_主线, new StageInfo(Mode.主线任务, -1, null) },
 			{ STAGE.解锁_全装备, new StageInfo(Mode.解锁装备, -1, null) },
-			{ STAGE.刷满_全任务, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 			{ STAGE.刷满_全佣兵, new StageInfo(Mode.刷图, 85, null) },
 			{ STAGE.广积粮, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
 		};

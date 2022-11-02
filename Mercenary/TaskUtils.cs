@@ -12,37 +12,37 @@ namespace Mercenary
 		{
 			TaskUtils.ClearTaskSpecialNode();
 			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMercTasks());
-			foreach (Task task in TaskUtils.GetTasks())
-			{
-				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
-				if (TaskUtils.CleanConf[Main.cleanTaskConf.Value] != -1 && TaskUtils.Current() - task.StartAt > (long)TaskUtils.CleanConf[Main.cleanTaskConf.Value])
-				{
-					Out.Log($"[TID:{task.Id}] 已过期，放弃");
-					HsGameUtils.CleanTask(task.Id);
-				}
-				if (Main.modeConf.Value == Mode.一条龙.ToString())
-				{
-					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && task.mercID != MercConst.玛法里奥_怒风 ||
-						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && task.mercID != MercConst.拉格纳罗斯 ||
-						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && task.mercID != MercConst.迦顿男爵)
-					{
-						Out.Log($"[TID:{task.Id}] 非一条龙阶段任务，放弃");
-						HsGameUtils.CleanTask(task.Id);
-					}
-					if (task.mercID == MercConst.泰瑞尔)
-					{
-						foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
-						{
-							LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
-							if (!mercenary.m_owned || HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 0)
-							{
-								Out.Log($"[TID:{task.Id}] 冰火队未满，放弃泰瑞尔");
-								HsGameUtils.CleanTask(task.Id);
-							}
-						}
-					}
-				}
-			}
+// 			foreach (Task task in TaskUtils.GetTasks())
+// 			{
+// 				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
+// 				if (TaskUtils.CleanConf[Main.cleanTaskConf.Value] != -1 && TaskUtils.Current() - task.StartAt > (long)TaskUtils.CleanConf[Main.cleanTaskConf.Value])
+// 				{
+// 					Out.Log($"[TID:{task.Id}] 已过期，放弃");
+// 					HsGameUtils.CleanTask(task.Id);
+// 				}
+// 				if (Main.modeConf.Value == Mode.一条龙.ToString())
+// 				{
+// 					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && task.mercID != MercConst.玛法里奥_怒风 ||
+// 						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && task.mercID != MercConst.拉格纳罗斯 ||
+// 						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && task.mercID != MercConst.迦顿男爵)
+// 					{
+// 						Out.Log($"[TID:{task.Id}] 非一条龙阶段任务，放弃");
+// 						HsGameUtils.CleanTask(task.Id);
+// 					}
+// 					if (task.mercID == MercConst.泰瑞尔)
+// 					{
+// 						foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
+// 						{
+// 							LettuceMercenary mercenary = HsGameUtils.GetMercenary(iterMerc.id);
+// 							if (!mercenary.m_owned || HsGameUtils.CalcMercenaryCoinNeed(mercenary) > 0)
+// 							{
+// 								Out.Log($"[TID:{task.Id}] 冰火队未满，放弃泰瑞尔");
+// 								HsGameUtils.CleanTask(task.Id);
+// 							}
+// 						}
+// 					}
+// 				}
+// 			}
 		}
 
 		public static void UpdateMainLineTask()
