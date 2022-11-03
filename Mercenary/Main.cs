@@ -412,6 +412,15 @@ namespace Mercenary
 			__result = ___m_hsGameAccount.GetBattleTag()?.GetName();
 			return false;
 		}
+		//排队日志记录
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(SplashScreen), "UpdateQueueInfo")]
+		public static bool PatchUpdateQueueInfo(Network.QueueInfo queueInfo)
+		{
+			Out.Log($"排队中，预计{queueInfo.secondsTilEnd}秒");
+			ResetIdle();
+			return true;
+		}
 
 		private void AutoChangeTeam(int numCore, int numTotal, List<Type> teamTypes, int mercTargetCoinNeeded)
 		{
@@ -489,8 +498,8 @@ namespace Mercenary
 							{
 								HsGameUtils.UpdateEq(mercenaryEntity.ID, mercenaryEntity.Equipment);
 								lettuceTeam.AddMerc(mercenary, -1, null);
-								Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}][EID:{2}]，因为佣兵任务",
-									mercenaryEntity.ID, mercenaryEntity.Name, mercenaryEntity.Equipment));
+								Out.Log(string.Format("[队伍编辑] 添加[MID:{0}][MNAME:{1}][EID:{2}]，因为佣兵任务[TID:{3}]",
+									mercenaryEntity.ID, mercenaryEntity.Name, mercenaryEntity.Equipment, task.Id));
 							}
 						}
 					}
@@ -955,10 +964,12 @@ namespace Mercenary
 								List<RewardTrackXpChange> xpChanges = (List<RewardTrackXpChange>)Traverse.Create(rewardXpNotificationManager).Field("m_xpChanges").GetValue();
 								foreach (RewardTrackXpChange xpChange in xpChanges)
 								{
-									if (xpChange.RewardTrackType != 1)
-										continue;
-									Out.Log(string.Format("[对局结束] 战令信息 {0} 等级:{1} 经验:{2} {3} {4} {5}",
-										gameResult, xpChange.CurrLevel, xpChange.CurrXp, xpChange.RewardSourceType, xpChange.RewardSourceId, xpChange.RewardTrackType));
+									if (xpChange.RewardTrackType == 1)
+										Out.Log(string.Format("[对局结束] 战令信息 {0} 等级:{1} 经验:{2} {3} {4} {5}",
+											gameResult, xpChange.CurrLevel, xpChange.CurrXp, xpChange.RewardSourceType, xpChange.RewardSourceId, xpChange.RewardTrackType));
+									else
+										Out.Log(string.Format("[对局结束] 战令{5} {0} 等级:{1} 经验:{2} {3} {4}",
+											gameResult, xpChange.CurrLevel, xpChange.CurrXp, xpChange.RewardSourceType, xpChange.RewardSourceId, xpChange.RewardTrackType));
 								}
 							}
 							if (gameType == GameType.GT_MERCENARIES_PVP)
@@ -1180,7 +1191,7 @@ namespace Mercenary
 
 		private void CheckIdleTime()
 		{
-			double threshhold = 30 * 60f;
+			double threshhold = 4 * 60f;
 			int scale = Main.autoTimeScaleConf.Value ? Main.TimeScaleValue.inplay : 1;
 			Main.idleTime += (Time.deltaTime / scale);
 			if (Main.idleTime > threshhold)
@@ -1203,7 +1214,6 @@ namespace Mercenary
 
 		private static void ResetIdle()
 		{
-			// 			Out.Log("[IDLE] reset");
 			Main.idleTime = 0f;
 		}
 

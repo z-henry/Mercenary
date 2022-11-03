@@ -94,6 +94,17 @@ namespace Mercenary
 							}));
 							return;
 						}
+						//先知维伦 任务14
+						if (title.Contains("纯净圣光"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "神圣冲击", 0),
+								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+							}));
+							return;
+						}
 						//先知维伦 任务17
 						if (title.Contains("完美圣光"))
 						{
@@ -109,6 +120,18 @@ namespace Mercenary
 
 				case MercConst.光明之翼:
 					{
+						//光明之翼 任务17:治疗朋友
+						//光明之翼 任务11:我们交朋友吧
+						if (title.Contains("治疗朋友") || title.Contains("我们交朋友吧"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "妖精之尘", 1),
+								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -380,6 +403,17 @@ namespace Mercenary
 
 				case MercConst.娜塔莉_塞林:
 					{
+						//任务17
+						if (title.Contains("平衡倾斜"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "集束之光", 1, targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY),
+								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+							}));
+							return;
+						}
 						//娜塔莉·赛琳 任务4
 						if (title.Contains("圣光治愈一切"))
 						{
@@ -518,6 +552,17 @@ namespace Mercenary
 							}));
 							return;
 						}
+						//希奈丝特拉 任务12:低语显现
+						if (title.Contains("低语显现"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "法力壁垒", 1, targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY),
+								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -569,6 +614,17 @@ namespace Mercenary
 								TaskAdapter.GetMercenary(mercenaryId, "屠魔者", 2),
 								TaskAdapter.GetMercenary(MercConst.卡德加,"炉火",0),
 								TaskAdapter.GetMercenary(MercConst.魔像师卡扎库斯, "暗影之爪", 2)
+							}));
+							return;
+						}
+						//库尔特鲁斯·陨烬 任务14:包扎伤口
+						if (title.Contains("包扎伤口"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "眼棱", 0),
+								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
 							}));
 							return;
 						}
@@ -1188,6 +1244,17 @@ namespace Mercenary
 							}));
 							return;
 						}
+						//神谕者摩戈尔 任务14:耐心取胜
+						if (title.Contains("耐心取胜"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "治疗波", 2, targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY),
+								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -1514,6 +1581,17 @@ namespace Mercenary
 							}));
 							return;
 						}
+						//阿莱克丝塔萨 任务9:生命守护者
+						if (title.Contains("生命守护者"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "巨龙吐息", 0, targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY),
+								TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
+								TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,targettype:HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+							}));
+							return;
+						}
 					}
 					break;
 
@@ -1633,27 +1711,6 @@ namespace Mercenary
 					break;
 			}
 
-			//回复生命类任务
-			//娜塔莉·塞林 任务17:平衡倾斜
-			//先知维伦 任务14:纯净圣光
-			//光明之翼 任务17:治疗朋友
-			//光明之翼 任务11:我们交朋友吧
-			//希奈丝特拉 任务12:低语显现
-			//库尔特鲁斯·陨烬 任务14:包扎伤口
-			//阿莱克丝塔萨 任务9:生命守护者
-			//神谕者摩戈尔 任务14:耐心取胜
-			if (title.Contains("平衡倾斜") || title.Contains("纯净圣光") || title.Contains("治疗朋友") ||
-				title.Contains("我们交朋友吧") || title.Contains("低语显现") || title.Contains("包扎伤口") ||
-				title.Contains("生命守护者") || title.Contains("耐心取胜"))
-			{
-				tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, 0, "H2-5", new MercenaryEntity[]
-				{
-					TaskAdapter.GetMercenary(MercConst.光明之翼,"妖精之尘", 1),
-					TaskAdapter.GetMercenary(MercConst.赤精,"振奋之歌", 1),
-					TaskAdapter.GetMercenary(MercConst.泽瑞拉,"快速治疗", 0,-1,HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
-				}));
-				return;
-			}
 			//杀恶魔
 			if (desc.Contains("击败") && desc.Contains("个恶魔"))
 			{

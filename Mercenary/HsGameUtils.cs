@@ -250,7 +250,7 @@ namespace Mercenary
 				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(mercenaryVillageTaskItemDataModel.TaskId);
 				TaskAdapter.SetTask(mercenaryVillageTaskItemDataModel.TaskId, mercenaryVillageTaskItemDataModel.MercenaryId, mercenaryVillageTaskItemDataModel.Title,
 					taskRecordByID.TaskDescription.GetString(Locale.zhCN), list, mercenaryVillageTaskItemDataModel.ProgressMessage);
-				if (list.Count >= 6)
+				if (list.Sum(x => x.Mercenaries.Count) >= 6)
 					break;
 			}
 			return list;
