@@ -293,8 +293,7 @@ namespace Mercenary
 				}
 
 				//是否全佣兵
-				if (CollectionManager.Get().FindMercenaries(isOwned: false, isCraftable: false).m_mercenaries.Count > 0 &&
-					Main.mercHasTaskChainConf.Value != 0)
+				if (CollectionManager.Get().FindMercenaries(isOwned: false, isCraftable: false).m_mercenaries.Count > 0)
 				{
 					return STAGE.获得_全佣兵;
 				}

@@ -1709,6 +1709,19 @@ namespace Mercenary
 						}
 					}
 					break;
+				case MercConst.血骨傀儡:
+					{
+						//任务10
+						if (title.Contains("血骨教育"))
+						{
+							tasks.Add(TaskAdapter.GetTask(mercenaryId, progressMessage, taskId, new MercenaryEntity[]
+							{
+								TaskAdapter.GetMercenary(mercenaryId, "骨焰", 0),
+							}));
+							return;
+						}
+					}
+					break;
 			}
 
 			//杀恶魔

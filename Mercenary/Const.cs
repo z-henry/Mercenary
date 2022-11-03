@@ -116,6 +116,7 @@ namespace Mercenary
 		public const int 阿克蒙德 = 398;
 		public const int 阿兰娜_逐星 = 414;
 		public const int 麦迪文 = 35;
+		public const int 血骨傀儡 = 410;
 
 		//佣兵优先练满
 		public static readonly List<int> PriorFirst = new List<int>

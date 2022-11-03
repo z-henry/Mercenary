@@ -1,4 +1,6 @@
-﻿namespace Mercenary
+﻿using System.Collections.Generic;
+
+namespace Mercenary
 {
 	public class MercenaryEntity
 	{
@@ -31,5 +33,22 @@
 		public readonly HsMercenaryStrategy.TARGETTYPE TargetType = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED;
 
 		public readonly string Name;
+	}
+
+
+
+	public class MercenaryEntityComparer : IEqualityComparer<MercenaryEntity>
+	{
+		public bool Equals(MercenaryEntity x, MercenaryEntity y)
+		{
+			//这里定义比较的逻辑
+			return x.ID == y.ID;
+		}
+
+		public int GetHashCode(MercenaryEntity obj)
+		{
+			//返回字段的HashCode，只有HashCode相同才会去比较
+			return obj.ID.GetHashCode();
+		}
 	}
 }

@@ -71,7 +71,6 @@ namespace Mercenary
 			Main.autoTimeScaleConf = confgFile.Bind<bool>("配置", "自动齿轮加速", false, "战斗中自动启用齿轮加速");
 			Main.pvpConcedeLine = confgFile.Bind<int>("配置", "PVP投降分数线", 99999, "PVP投降分数线");
 			Main.autoRerollQuest = confgFile.Bind<bool>("配置", "自动更换日周常任务", false, "自动更换日周常任务");
-			Main.mercHasTaskChainConf = confgFile.Bind<int>("配置", "有任务链佣兵数量", 0, new ConfigDescription("来访者检测到的完成任务链的佣兵数量(只读)", null, new object[] { "Advanced" }));
 
 			Main.isRunning = Main.runningConf.Value;
 			if (!isRunning)
@@ -182,7 +181,6 @@ namespace Mercenary
 				}
 
 				//开始选妃
-				mercHasTaskChainConf.Value = visitorList.FindAll(((int merid, int taskchain) x) => x.taskchain != -1).Count;
 				int findIndex = -1;
 				foreach (var iter in findVistor)
 				{
@@ -1081,7 +1079,6 @@ namespace Mercenary
 				{
 					Network.Get().CraftMercenary(lettuceMercenary.ID);
 					Out.Log(string.Format("[制作佣兵] [MID:{0}]", lettuceMercenary.ID));
-					Main.mercHasTaskChainConf.Value++;
 				}
 			}
 		}
@@ -1753,7 +1750,6 @@ namespace Mercenary
 		private static ConfigEntry<bool> autoTimeScaleConf;
 		private static ConfigEntry<int> pvpConcedeLine;
 		private static ConfigEntry<bool> autoRerollQuest;
-		public static ConfigEntry<int> mercHasTaskChainConf;
 
 		private static float sleepTime;
 		private static float idleTime;
