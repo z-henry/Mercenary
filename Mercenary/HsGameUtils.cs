@@ -228,23 +228,13 @@ namespace Mercenary
 			{
 				if (Main.modeConf.Value == Mode.一条龙.ToString())
 				{
-					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.玛法里奥_怒风 ||
-						OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.拉格纳罗斯 ||
-						OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.迦顿男爵)
+					if (OnePackageService.Stage == OnePackageService.STAGE.任务_大德装备3 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.玛法里奥_怒风 ||
+						OnePackageService.Stage == OnePackageService.STAGE.任务_拉格装备3 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.拉格纳罗斯 ||
+						OnePackageService.Stage == OnePackageService.STAGE.任务_迦顿装备2 && mercenaryVillageTaskItemDataModel.MercenaryId != MercConst.迦顿男爵 ||
+						OnePackageService.Stage == OnePackageService.STAGE.任务_除泰瑞尔 && mercenaryVillageTaskItemDataModel.MercenaryId == MercConst.泰瑞尔)
 					{
 						continue;
 					}
-				}
-				if (mercenaryVillageTaskItemDataModel.MercenaryId == MercConst.泰瑞尔)
-				{
-					bool skip = false;
-					foreach (var iterMerc in DefaultTeam.IceFire.Member.TeamInfo)
-					{
-						if (!HsGameUtils.GetMercenary(iterMerc.id).m_owned)
-							skip = true;
-					}
-					if (skip == true)
-						continue;
 				}
 
 				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(mercenaryVillageTaskItemDataModel.TaskId);

@@ -153,11 +153,11 @@ namespace Mercenary
 				List<int> findVistor = MercConst.PriorFirst;
 				if (Main.modeConf.Value == Mode.一条龙.ToString())
 				{
-					if (OnePackageService.Stage == OnePackageService.STAGE.获得_大德装备3)
+					if (OnePackageService.Stage == OnePackageService.STAGE.任务_大德装备3)
 						findVistor = new List<int> { MercConst.玛法里奥_怒风 };
-					else if (OnePackageService.Stage == OnePackageService.STAGE.获得_拉格装备3)
+					else if (OnePackageService.Stage == OnePackageService.STAGE.任务_拉格装备3)
 						findVistor = new List<int> { MercConst.拉格纳罗斯 };
-					else if (OnePackageService.Stage == OnePackageService.STAGE.获得_迦顿装备2)
+					else if (OnePackageService.Stage == OnePackageService.STAGE.任务_迦顿装备2)
 						findVistor = new List<int> { MercConst.迦顿男爵 };
 				}
 

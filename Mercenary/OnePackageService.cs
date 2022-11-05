@@ -36,22 +36,23 @@ namespace Mercenary
 			刷满_AOE,
 			获得_大德,
 			获得_自然队,
-			获得_大德装备3,
+			任务_大德装备3,
 			刷满_自然队,
 			解锁_3杠6,
 			获得_拉格,
 			获得_迦顿,
 			获得_安东尼,
-			获得_迦顿装备2,
-			获得_拉格装备3,
+			任务_迦顿装备2,
+			任务_拉格装备3,
 			刷满_小火焰队,
 			获得_紫色配合,
-			刷空任务栏,
+			任务_除泰瑞尔,
 			获得_预设卡组,
 			刷满_预设卡组,
 			解锁_5杠5,
 			获得_冰火装备,
 			获得_全佣兵,
+			任务_泰瑞尔,
 			解锁_主线,
 			解锁_全装备,
 			刷满_全佣兵,
@@ -157,7 +158,7 @@ namespace Mercenary
 				LettuceAbility lettuceAbility = mercenary_temp.m_equipmentList[2];
 				if (!lettuceAbility.Owned)
 				{
-					return STAGE.获得_大德装备3;
+					return STAGE.任务_大德装备3;
 				}
 
 				//自然队两人以上差1000碎片
@@ -200,13 +201,13 @@ namespace Mercenary
 				//迦顿是否获得了 装备2
 				if (!HsGameUtils.GetMercenary(MercConst.迦顿男爵).m_equipmentList[1].Owned)
 				{
-					return STAGE.获得_迦顿装备2;
+					return STAGE.任务_迦顿装备2;
 				}
 
 				//拉格纳罗斯是否获得了 装备3
 				if (!HsGameUtils.GetMercenary(MercConst.拉格纳罗斯).m_equipmentList[2].Owned)
 				{
-					return STAGE.获得_拉格装备3;
+					return STAGE.任务_拉格装备3;
 				}
 
 				//初级火焰队差1000点以上的碎片
@@ -235,15 +236,15 @@ namespace Mercenary
 				//当前的佣兵任务栏，是不是空的
 				NetCache.NetCacheMercenariesVillageVisitorInfo netObject =
 					NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>();
-				for (int i = netObject.VisitorStates.Count - 1; i >= 0; --i)
+				foreach (var iter in netObject.VisitorStates)
 				{
-					MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel =
-						LettuceVillageDataUtil.CreateTaskModelFromTaskState(netObject.VisitorStates[i].ActiveTaskState, null);
-					VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(netObject.VisitorStates[i].ActiveTaskState.TaskId);
-
+					MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(iter.ActiveTaskState, null);
 					if (mercenaryVillageTaskItemDataModel.TaskType == MercenaryVisitor.VillageVisitorType.STANDARD)
 					{
-						return STAGE.刷空任务栏;
+						if (mercenaryVillageTaskItemDataModel.MercenaryId == MercConst.泰瑞尔)
+							continue;
+
+						return STAGE.任务_除泰瑞尔;
 					}
 				}
 
@@ -292,10 +293,23 @@ namespace Mercenary
 					return STAGE.获得_冰火装备;
 				}
 
+
 				//是否全佣兵
 				if (CollectionManager.Get().FindMercenaries(isOwned: false, isCraftable: false).m_mercenaries.Count > 0)
 				{
 					return STAGE.获得_全佣兵;
+				}
+
+				//做泰瑞尔任务
+				foreach (var iter in netObject.VisitorStates)
+				{
+					MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(iter.ActiveTaskState, null);
+					if (mercenaryVillageTaskItemDataModel.TaskType == MercenaryVisitor.VillageVisitorType.STANDARD)
+					{
+						if (mercenaryVillageTaskItemDataModel.MercenaryId == MercConst.泰瑞尔)
+							return STAGE.任务_泰瑞尔;
+
+					}
 				}
 
 				//是否完成主线任务
@@ -345,22 +359,23 @@ namespace Mercenary
 			{ STAGE.刷满_AOE, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.AOE)}, targetCoinNeeded:2000) },
 			{ STAGE.获得_大德, new StageInfo(Mode.刷图, 69, new List<Type> (){typeof(DefaultTeam.AOE)}) },
 			{ STAGE.获得_自然队, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.AOE)}) },
-			{ STAGE.获得_大德装备3, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.DruidsExclusive) }, teamtotal:3) },
+			{ STAGE.任务_大德装备3, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.DruidsExclusive) }, teamtotal:3) },
 			{ STAGE.刷满_自然队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.Nature)}, targetCoinNeeded:1000) },
 			{ STAGE.解锁_3杠6, new StageInfo(Mode.主线任务, -1, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_拉格, new StageInfo(Mode.刷图, 75, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_迦顿, new StageInfo(Mode.刷图, 74, new List<Type> (){typeof(DefaultTeam.Nature)}) },
 			{ STAGE.获得_安东尼, new StageInfo(Mode.刷图, 76, new List<Type> (){typeof(DefaultTeam.Nature)}) },
-			{ STAGE.获得_迦顿装备2, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.PrimaryFire) }, teamtotal:3) },
-			{ STAGE.获得_拉格装备3, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.PrimaryFire) }, teamtotal:3) },
+			{ STAGE.任务_迦顿装备2, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.PrimaryFire) }, teamtotal:3) },
+			{ STAGE.任务_拉格装备3, new StageInfo(Mode.佣兵任务, -1, new List<Type> (){typeof(DefaultTeam.PrimaryFire) }, teamtotal:3) },
 			{ STAGE.刷满_小火焰队, new StageInfo(Mode.刷图, 85, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}, targetCoinNeeded:1000, teamtotal:3) },
 			{ STAGE.获得_紫色配合, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
-			{ STAGE.刷空任务栏, new StageInfo(Mode.佣兵任务, -1, null) },
+			{ STAGE.任务_除泰瑞尔, new StageInfo(Mode.佣兵任务, -1, null) },
 			{ STAGE.获得_预设卡组, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.PrimaryFire)}) },
 			{ STAGE.刷满_预设卡组, new StageInfo(Mode.刷图, 85, m_DefaultTeam, targetCoinNeeded:0) },
 			{ STAGE.解锁_5杠5, new StageInfo(Mode.主线任务, -1, null) },
 			{ STAGE.获得_冰火装备, new StageInfo(Mode.解锁装备, -1, null) },
 			{ STAGE.获得_全佣兵, new StageInfo(Mode.神秘人, 72, new List<Type> (){typeof(DefaultTeam.IceFire) }, teamtotal:3) },
+			{ STAGE.任务_泰瑞尔, new StageInfo(Mode.佣兵任务, -1, null) },
 			{ STAGE.解锁_主线, new StageInfo(Mode.主线任务, -1, null) },
 			{ STAGE.解锁_全装备, new StageInfo(Mode.解锁装备, -1, null) },
 			{ STAGE.刷满_全佣兵, new StageInfo(Mode.刷图, 85, null) },
