@@ -1457,7 +1457,7 @@ namespace Mercenary
 							Cache.pvpMercTeam.Add(card.GetEntity().GetName() + '-' + equipment);
 						}
 					}
-					if (null == zonePlay_opposing.GetCards().Find((Card i) => false == i.GetEntity().IsStealthed()))
+					if (null == zonePlay_opposing.GetCards().Find((Card i) => false == i.GetEntity().IsStealthed() && i.GetEntity().GetTag(GAME_TAG.IMMUNE) == 0))
 					{
 						Out.Log("[对局中] 他们都藏起来了？？！！");
 						InputManager.Get().DoEndTurnButton();
