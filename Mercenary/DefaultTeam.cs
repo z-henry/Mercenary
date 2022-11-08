@@ -1,65 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Mercenary.DefaultTeam
 {
-	public class TeamUnit
+	public class TeamManager
 	{
-		public static void RegisterAll()
+		static TeamManager()
 		{
-			foreach (var item in Assembly.GetExecutingAssembly().GetTypes())
+			DirectoryInfo rootStrategy = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BepInEx/plugins/strategy"));
+			List<FileInfo> testList = rootStrategy.GetFiles("*.dll", SearchOption.TopDirectoryOnly).ToList();
+			foreach (var file in testList)
 			{
-				if (item.BaseType?.Name == "TeamBase")
+				Assembly ass = Assembly.LoadFile(file.FullName);
+				foreach (var type_iter in ass.GetTypes())
 				{
-					TeamBase teamBase = (TeamBase)Activator.CreateInstance(item);
-					teamBase.Register();
+					if (type_iter.GetInterfaces().Contains(typeof(ITeam)) &&
+						false == type_iter.Name.Contains(nameof(ITeam)))
+					{
+						ITeam team = (ITeam)Activator.CreateInstance(type_iter);
+						if (!TeamManager.m_teamDict.ContainsKey(team.GetType()))
+						{
+							TeamManager.m_teamDict.Add(team.GetType(), team);
+						}
+					}
 				}
 			}
-			foreach (var iter in _types)
+
+			foreach (var type_iter in Assembly.GetExecutingAssembly().GetTypes())
 			{
+				if (type_iter.GetInterfaces().Contains(typeof(ITeam)) &&
+					false == type_iter.Name.Contains(nameof(ITeam)))
+				{
+					ITeam team = (ITeam)Activator.CreateInstance(type_iter);
+					if (!TeamManager.m_teamDict.ContainsKey(team.GetType()))
+					{
+						TeamManager.m_teamDict.Add(team.GetType(), team);
+					}
+				}
+			}
+			foreach (var iter in m_teamDict)
+			{
+				Console.WriteLine($"{iter.Key}");
 				Out.Log($"[registered_team] {iter.Key}");
 			}
 		}
 
-		public TeamUnit(List<(int id, int equipIndex)> teaminfo)
+		public static ITeam GetTeam(Type teamtype)
 		{
-			TeamInfo = teaminfo;
+			return m_teamDict[teamtype];
 		}
 
-		public static void Register(Type type, TeamUnit teamType)
-		{
-			if (false == _types.ContainsKey(type))
-				_types.Add(type, teamType);
-		}
-
-		public static TeamUnit Get(Type type)
-		{
-			return _types[type];
-		}
-
-		public List<(int id, int equipIndex)> TeamInfo { get; private set; }// 队伍列表
-
-		private static IDictionary<Type, TeamUnit> _types = new Dictionary<Type, TeamUnit>();
+		private static Dictionary<Type, ITeam> m_teamDict = new Dictionary<Type, ITeam>();
 	}
 
-	public class TeamBase
+	public interface ITeam
 	{
-		public void Register()
-		{
-			TeamUnit.Register(GetType(), TeamInfo);
-		}
-
-		public virtual TeamUnit TeamInfo { get; }
+		List<(int id, int equipIndex)> GetMember();
 	}
 
-	public class Ice : TeamBase
+	public class Ice : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.巴琳达_斯通赫尔斯, 1),
 				(MercConst.瓦尔登_晨拥, 2),
@@ -67,16 +73,15 @@ namespace Mercenary.DefaultTeam
 				(MercConst.吉安娜_普罗德摩尔, 2),
 				(MercConst.厨师曲奇, 2),
 				(MercConst.魔像师卡扎库斯, 2)
-			});
+			};
+		}
 	}
 
-	public class IceFire : TeamBase
+	public class IceFire : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.巴琳达_斯通赫尔斯, 1),
 				(MercConst.迦顿男爵, 1),
@@ -84,16 +89,15 @@ namespace Mercenary.DefaultTeam
 				(MercConst.瓦尔登_晨拥, 2),
 				(MercConst.冰雪之王洛克霍拉, 0),
 				(MercConst.吉安娜_普罗德摩尔, 2),
-			});
+			};
+		}
 	}
 
-	public class FireKill : TeamBase
+	public class FireKill : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.巴琳达_斯通赫尔斯, 1),
 				(MercConst.迦顿男爵, 1),
@@ -101,16 +105,15 @@ namespace Mercenary.DefaultTeam
 				(MercConst.瓦莉拉_萨古纳尔, 2),
 				(MercConst.魔像师卡扎库斯, 2),
 				(MercConst.变装大师, 1)
-			});
+			};
+		}
 	}
 
-	public class PirateSnake : TeamBase
+	public class PirateSnake : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.海盗帕奇斯, 1),
 				(MercConst.鞭笞者特里高雷, 1),
@@ -118,16 +121,15 @@ namespace Mercenary.DefaultTeam
 				(MercConst.瓦莉拉_萨古纳尔, 2),
 				(MercConst.变装大师, 1),
 				(MercConst.重拳先生, 1)
-			});
+			};
+		}
 	}
 
-	public class Nature : TeamBase
+	public class Nature : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.奈姆希_灵沼, 0),
 				(MercConst.玛法里奥_怒风, 2),
@@ -135,79 +137,75 @@ namespace Mercenary.DefaultTeam
 				(MercConst.安娜科德拉, 0),
 				(MercConst.厨师曲奇, 2),
 				(MercConst.冰雪之王洛克霍拉, 0),
-			});
+			};
+		}
 	}
 
-	public class Origin0 : TeamBase
+	public class Origin0 : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.米尔豪斯_法力风暴, 0),
 				(MercConst.泽瑞拉, 0),
 				(MercConst.泰兰德_语风, 1),
 				(MercConst.凯瑞尔_罗姆, 0),
-			});
+			};
+		}
 	}
 
-	public class Origin : TeamBase
+	public class Origin : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.米尔豪斯_法力风暴, 0),
 				(MercConst.泽瑞拉, 0),
 				(MercConst.泰兰德_语风, 1),
 				(MercConst.凯瑞尔_罗姆, 0),
 				(MercConst.剑圣萨穆罗, 2),
-			});
+			};
+		}
 	}
 
-	public class AOE : TeamBase
+	public class AOE : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.米尔豪斯_法力风暴, 0),
 				(MercConst.冰雪之王洛克霍拉, 0),
 				(MercConst.瓦尔登_晨拥, 2),
-			});
+			};
+		}
 	}
 
-	public class PrimaryFire : TeamBase
+	public class PrimaryFire : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
 				(MercConst.安东尼达斯, 0),
 				(MercConst.迦顿男爵, 1),
 				(MercConst.拉格纳罗斯, 2),
-			});
+			};
+		}
 	}
 
-	public class DruidsExclusive : TeamBase
+	public class DruidsExclusive : ITeam
 	{
-		public override TeamUnit TeamInfo
-		{ get { return Member; } }
-
-		public static readonly TeamUnit Member = new TeamUnit(
-			new List<(int id, int equipIndex)>()
+		public List<(int id, int equipIndex)> GetMember()
+		{
+			return new List<(int id, int equipIndex)>()
 			{
-				(MercConst.玛法里奥_怒风, 2),
-				(MercConst.米尔豪斯_法力风暴, 0),
-				(MercConst.瓦尔登_晨拥, 2),
-			});
+				(MercConst.安东尼达斯, 0),
+				(MercConst.迦顿男爵, 1),
+				(MercConst.拉格纳罗斯, 2),
+			};
+		}
 	}
 }

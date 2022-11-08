@@ -1,17 +1,16 @@
-﻿using HsMercenaryStrategy;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Mercenary
+namespace Mercenary.Strategy
 {
-	public class DefaultStrategy : IStrategy
+	public class AutoTaskStrategy : DefaultStrategyPVE
 	{
-		public (int hand_index, int play_index) GetEnterOrder(List<Target> hand_mercenaries, List<Target> play_mercenaries, Dictionary<HsMercenaryStrategy.TAG_ROLE, int> dictOppositeRoleCount,
+		public override (int hand_index, int play_index) GetEnterOrder(List<Target> hand_mercenaries, List<Target> play_mercenaries, Dictionary<MY_TAG_ROLE, int> dictOppositeRoleCount,
 			List<Target> targets_opposite, List<Target> targets_opposite_graveyrad)
 		{
 			return (0, play_mercenaries.Count);
 		}
 
-		public List<BattleTarget> GetBattleTargets(int turn, List<Target> targets_opposite_all, List<Target> targets_friendly_all, List<Target> targets_opposite_graveyrad)
+		public override List<BattleTarget> GetBattleTargets(int turn, List<Target> targets_opposite_all, List<Target> targets_friendly_all, List<Target> targets_opposite_graveyrad)
 		{
 			var targets_opposite = targets_opposite_all.FindAll((Target t) => t.Enable == true);
 			var targets_friendly = targets_friendly_all.FindAll((Target t) => t.Enable == true);
@@ -53,7 +52,7 @@ namespace Mercenary
 				//再 设置的优先级队列FirstAbilityName
 				foreach (Skill skill in mercenary.Skills)
 				{
-					if (DefaultStrategy.FirstAbilityName.Contains(skill.Name))
+					if (AutoTaskStrategy.FirstAbilityName.Contains(skill.Name))
 					{
 						merc_battleTargets.Add(new BattleTarget()
 						{
@@ -87,7 +86,7 @@ namespace Mercenary
 			Target target_friend = StrategyUtils.FindMaxLossHealthTarget(targets_friendly) ?? StrategyUtils.FindMinHealthTarget(targets_friendly);
 			foreach (BattleTarget battleTarget in battleTargets)
 			{
-				if (battleTarget.TargetType == HsMercenaryStrategy.TARGETTYPE.FRIENDLY)
+				if (battleTarget.TargetType == TARGETTYPE.FRIENDLY)
 				{
 					battleTarget.TargetId = target_friend?.Id ?? -1;
 					battleTarget.TargetName = target_friend?.Name ?? "";
@@ -102,12 +101,10 @@ namespace Mercenary
 			return battleTargets;
 		}
 
-		public string Name()
+		public override string Name
 		{
-			return DefaultName;
+			get { return "佣兵任务策略"; }
 		}
-
-		public const string DefaultName = "_Sys_Default";
 
 		private static readonly List<string> FirstAbilityName = new List<string>
 		{

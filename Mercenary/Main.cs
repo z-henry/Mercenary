@@ -5,7 +5,8 @@ using Blizzard.T5.Core;
 using HarmonyLib;
 using Hearthstone.DataModels;
 using Hearthstone.Progression;
-using HsMercenaryStrategy;
+using Mercenary.MyInterface;
+using Mercenary.Strategy;
 using PegasusLettuce;
 using PegasusShared;
 using PegasusUtil;
@@ -34,6 +35,11 @@ namespace Mercenary
 				{
 					GUILayout.Width(200f)
 				});
+			else
+				GUILayout.Label(new GUIContent(modeConf.Value), new GUILayoutOption[]
+				{
+					GUILayout.Width(200f)
+				});
 		}
 
 		private void Awake()
@@ -56,10 +62,11 @@ namespace Mercenary
 				Mode.挂机收菜.ToString(),
 				Mode.解锁装备.ToString(),
 				Mode.主线任务.ToString(),
-				Mode.一条龙.ToString()
+				Mode.一条龙.ToString(),
+				Mode.活动任务.ToString()
 			}), Array.Empty<object>()));
 			Main.teamNameConf = confgFile.Bind<string>("配置", "使用的队伍名称", "初始队伍", "使用的队伍名称");
-			Main.strategyConf = confgFile.Bind<string>("配置", "战斗策略", PveNormal.StrategyName, new ConfigDescription("使用的策略,注意只有在非佣兵任务下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
+			Main.strategyConf = confgFile.Bind<string>("配置", "战斗策略", "PVE策略", new ConfigDescription("使用的策略,注意只有在非佣兵任务下才会生效", new AcceptableValueList<string>(StrategyHelper.GetAllStrategiesName().ToArray()), Array.Empty<object>()));
 			Main.mapConf = confgFile.Bind<string>(new ConfigDefinition("配置", "要刷的地图"), "1-1", new ConfigDescription("要刷的地图", new AcceptableValueList<string>(MapUtils.GetMapNameList()), Array.Empty<object>()));
 			Main.autoUpdateSkillConf = confgFile.Bind<bool>("配置", "是否自动升级技能", false, "是否自动升级技能");
 			Main.autoCraftConf = confgFile.Bind<bool>("配置", "是否自动制作佣兵", false, "是否自动制作佣兵");
@@ -111,7 +118,6 @@ namespace Mercenary
 			if (Main.isRunning)
 			{
 				Out.Log("启动");
-				DefaultTeam.TeamUnit.RegisterAll();
 			}
 		}
 
@@ -137,6 +143,7 @@ namespace Mercenary
 			Main.phaseID = phase;
 		}
 
+		// 可删除
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(LettuceMapDisplay), "ShouldShowVisitorSelection")]
 		public static void PostShouldShowVisitorSelection(PegasusLettuce.LettuceMap map, ref bool __result)
@@ -243,24 +250,6 @@ namespace Mercenary
 			}
 			if (lettuceMap.HasPendingTreasureSelection && lettuceMap.PendingTreasureSelection.TreasureOptions.Count > 0)
 			{
-				string[] findTreasure =
-				{
-					//T0
-					"刺杀","强化飞刺","冷酷严冬","自然之噬","雷暴之怒","强化闪电箭",
-					"洄梦仙酒","月之祝福","自然之杖","元素研究","火焰之杖",
-					"火炮轰击","宝箱","灵魂虹吸","吸取灵魂",
-					//T1
-					"火球齐射","蔓延炸弹","便携冰墙","冰霜之杖","冰霜齐射",
-
-					//T2
-					"火舌图腾","元素之力","精灵旗帜","冰霜之环",
-					"部落的旗帜","联盟战争旗帜","暴风城战袍","血之契印","奥格瑞玛战袍",
-					"隐蔽武器","近在眼前",
-					//T3
-					"毒蛇印记","负向平衡","正向平衡",
-					"心能抗原",
-					"不许摸","药膏瓶","强韧","萨隆邪铁护甲","防护之戒","火炮弹幕","乔丹法杖"
-				};
 				List<string> treasureList = new List<string>();
 				foreach (int dbId in lettuceMap.PendingTreasureSelection.TreasureOptions)
 				{
@@ -273,8 +262,14 @@ namespace Mercenary
 					treasureList.Add(name);
 				}
 
+				List<string> treasures = ((ITreasure)StrategyHelper.GetStrategy("PVE策略")).Treasures;
+				if (Main.modeConf.Value == Mode.佣兵任务.ToString() ||
+					Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.佣兵任务)
+					treasures = ((ITreasure)StrategyHelper.GetStrategy("佣兵任务策略")).Treasures;
+				else if (Main.modeConf.Value == Mode.活动任务.ToString() && TaskUtils.GetTasks().Count > 0)
+					treasures = ((ITreasure)StrategyHelper.GetStrategy($"活动_{TaskUtils.GetTasks()[0].mercName}_{TaskUtils.GetTasks()[0].TaskName}")).Treasures;
 				int findIndex = -1;
-				foreach (var iter in findTreasure)
+				foreach (var iter in treasures)
 				{
 					findIndex = treasureList.IndexOf(iter);
 					if (findIndex != -1)
@@ -283,6 +278,7 @@ namespace Mercenary
 				Out.Log($"[地图信息识别] 选择第{findIndex + 1}个宝藏");
 				Network.Get().MakeMercenariesMapTreasureSelection(Math.Max(0, findIndex));
 			}
+			//可删除
 			if (lettuceMap.HasPendingVisitorSelection && lettuceMap.PendingVisitorSelection.VisitorOptions.Count > 0)
 			{
 				Out.Log(string.Format("[地图信息识别] 选择第一个来访者"));
@@ -445,7 +441,7 @@ namespace Mercenary
 			{
 				foreach (var iterTeamType in teamTypes)
 				{
-					foreach (var merc in DefaultTeam.TeamUnit.Get(iterTeamType).TeamInfo)
+					foreach (var merc in DefaultTeam.TeamManager.GetTeam(iterTeamType).GetMember())
 					{
 						if (lettuceTeam.GetMercCount() == numTotal)
 							break;
@@ -834,6 +830,11 @@ namespace Mercenary
 				{
 					TaskUtils.UpdateMainLineTask();
 				}
+				else if (Main.modeConf.Value == Mode.活动任务.ToString())
+				{
+					TaskUtils.UpdateEventTask();
+				}
+
 
 				//参数设置
 				int numCore = coreTeamNumConf.Value, numTotal = teamNumConf.Value,
@@ -856,6 +857,21 @@ namespace Mercenary
 					teamTypes = OnePackageService.TranslateCurrentStage().m_teamTypes ?? teamTypes;
 					mercTargetCoinNeeded = OnePackageService.TranslateCurrentStage().m_TargetCoinNeeded;
 				}
+				else if (Main.modeConf.Value == Mode.活动任务.ToString())
+				{
+					if (TaskUtils.GetTasks().Count <= 0)
+					{
+						UIStatus.Get().AddInfo("无活动任务，请切换模式");
+						Out.Log("无活动任务，请切换模式");
+						Main.isRunning = false;
+						return;
+					}
+					string taskStrategyName = $"活动_{TaskUtils.GetTasks()[0].mercName}_{TaskUtils.GetTasks()[0].TaskName}";
+					numCore = 0;
+					numTotal = ((IEventInfo)StrategyHelper.GetStrategy(taskStrategyName)).Team.GetMember().Count;
+					teamTypes.Add(((IEventInfo)StrategyHelper.GetStrategy(taskStrategyName)).Team.GetType());
+				}
+
 
 				this.AutoChangeTeam(numCore, numTotal, teamTypes, mercTargetCoinNeeded);
 				if ((double)Main.idleTime > 20.0)
@@ -1136,7 +1152,8 @@ namespace Mercenary
 				return EnsureMapHasUnlock(MapUtils.GetMapId("2-5"));
 			}
 			else if (Main.modeConf.Value == Mode.主线任务.ToString() ||
-				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.主线任务)
+				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.主线任务 ||
+				Main.modeConf.Value == Mode.活动任务.ToString())
 			{
 				int taskMap = TaskUtils.GetTaskMap();
 				if (taskMap != -1)
@@ -1261,7 +1278,9 @@ namespace Mercenary
 			string strategy_name = Main.strategyConf.Value;
 			if (Main.modeConf.Value == Mode.佣兵任务.ToString() ||
 				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.佣兵任务)
-				strategy_name = "_Sys_Default";
+				strategy_name = "佣兵任务策略";
+			else if (Main.modeConf.Value == Mode.活动任务.ToString() && TaskUtils.GetTasks().Count > 0)
+				strategy_name = $"活动_{TaskUtils.GetTasks()[0].mercName}_{TaskUtils.GetTasks()[0].TaskName}";
 			List<BattleTarget> battleTargets = StrategyHelper.GetStrategy(strategy_name).GetBattleTargets(
 				GameState.Get().GetTurn(),
 				this.BuildTargetFromCards(ZoneMgr.Get().FindZoneOfType<ZonePlay>(Player.Side.OPPOSING).GetCards(), Player.Side.OPPOSING),
@@ -1317,11 +1336,17 @@ namespace Mercenary
 						card = cards_friend.Find((Card i) => i.GetEntity().GetEntityId() == dict[networkSubOption.ID].TargetId);
 					}
 				}
-
 				if (card == null && cards_opposite.Count != 0)
 				{
-					Out.Log("[对局中] 技能目标 敌方首位");
-					card = cards_opposite[0];
+					MY_TAG_ROLE targetroll = StrategyUtils.restrain_TAG_ROLE((MY_TAG_ROLE)GameState.Get().GetEntity(networkSubOption.ID).GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE));
+					card = cards_opposite.Find(x => x.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE) == (TAG_ROLE)targetroll);
+					if (card != null)
+						Out.Log($"[对局中] 技能目标 克制{targetroll}");
+					else
+					{
+						card = cards_opposite[0];
+						Out.Log("[对局中] 技能目标 敌方首位");
+					}
 				}
 				if (card == null && cards_friend.Count != 0)
 				{
@@ -1356,7 +1381,8 @@ namespace Mercenary
 					}
 
 					// pve上怪
-					if (GameMgr.Get().GetGameType() == GameType.GT_MERCENARIES_PVE)
+					if (GameMgr.Get().GetGameType() == GameType.GT_MERCENARIES_PVE &&
+						modeConf.Value != Mode.活动任务.ToString())
 					{
 						InputManager.Get().DoEndTurnButton();
 						Out.Log("[佣兵登场]");
@@ -1373,18 +1399,18 @@ namespace Mercenary
 
 						if (zoneHand != null)
 						{
-							Dictionary<HsMercenaryStrategy.TAG_ROLE, int> dictOppositeRoleCount = new Dictionary<HsMercenaryStrategy.TAG_ROLE, int>()
+							Dictionary<MY_TAG_ROLE, int> dictOppositeRoleCount = new Dictionary<MY_TAG_ROLE, int>()
 							{
-								{ HsMercenaryStrategy.TAG_ROLE.CASTER, 0 },
-								{ HsMercenaryStrategy.TAG_ROLE.FIGHTER, 0 },
-								{ HsMercenaryStrategy.TAG_ROLE.INVALID, 0 },
-								{ HsMercenaryStrategy.TAG_ROLE.NEUTRAL, 0 },
-								{ HsMercenaryStrategy.TAG_ROLE.TANK, 0 },
+								{ MY_TAG_ROLE.CASTER, 0 },
+								{ MY_TAG_ROLE.FIGHTER, 0 },
+								{ MY_TAG_ROLE.INVALID, 0 },
+								{ MY_TAG_ROLE.NEUTRAL, 0 },
+								{ MY_TAG_ROLE.TANK, 0 },
 							};
 							foreach (Card card_iter in zoneOppositeDeck.GetCards())
-								dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
+								dictOppositeRoleCount[(MY_TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
 							foreach (Card card_iter in zoneOppositeHand.GetCards())
-								dictOppositeRoleCount[(HsMercenaryStrategy.TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
+								dictOppositeRoleCount[(MY_TAG_ROLE)(card_iter.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE))]++;
 
 							(int hand_index, int play_index) = StrategyHelper.GetStrategy(strategy_name).GetEnterOrder(
 								BuildTargetFromCards(zoneHand.GetCards(), Player.Side.FRIENDLY),
@@ -1548,7 +1574,7 @@ namespace Mercenary
 					Speed = card.GetPreparedLettuceAbilitySpeedValue(),
 					DefHealth = card.GetEntity().GetDefHealth(),
 					Attack = card.GetEntity().GetATK(),
-					Role = (HsMercenaryStrategy.TAG_ROLE)card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE),
+					Role = (Strategy.MY_TAG_ROLE)card.GetEntity().GetTag<TAG_ROLE>(GAME_TAG.LETTUCE_ROLE),
 					Enable = flag_avalue,
 					Skills = skills,
 					ForstEnhance = card.GetEntity().GetTag(GAME_TAG.SPELLPOWER_FROST),
@@ -1587,6 +1613,7 @@ namespace Mercenary
 				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.解锁装备 ||
 				Main.modeConf.Value == Mode.主线任务.ToString() ||
 				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.主线任务 ||
+				Main.modeConf.Value == Mode.活动任务.ToString() ||
 				Main.modeConf.Value == Mode.佣兵任务.ToString() && TaskUtils.GetTaskMap() != -1 ||
 				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.佣兵任务 && TaskUtils.GetTaskMap() != -1;
 		}
@@ -1621,6 +1648,7 @@ namespace Mercenary
 			int num = 0;
 			if (Main.modeConf.Value == Mode.主线任务.ToString() ||
 				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.主线任务 ||
+				Main.modeConf.Value == Mode.活动任务.ToString() ||
 				Main.modeConf.Value == Mode.解锁装备.ToString() ||
 				Main.modeConf.Value == Mode.一条龙.ToString() && OnePackageService.TranslateCurrentStage().m_mode == Mode.解锁装备 ||
 				Main.modeConf.Value == Mode.刷图.ToString() && Main.teamNameConf.Value == "刷图")

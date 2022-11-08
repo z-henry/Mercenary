@@ -6,17 +6,38 @@ namespace Mercenary
 {
 	public static class TaskUtils
 	{
-		public static void UpdateMercTask()
+		public static bool UpdateMercTask()
 		{
 			TaskUtils.ClearTaskSpecialNode();
 			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMercTasks());
 			foreach (Task task in TaskUtils.GetTasks())
+			{
+				Out.Log(string.Format("[TID:{0}][M:{1}] {2} {3} {4}",
+					task.Id, task.mercName, task.TaskName, task.TaskDesc, task.ProgressMessage));
 				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
+			}
+			return TaskUtils.GetTasks().Count() > 0;
 		}
 
-		public static void UpdateMainLineTask()
+		public static bool UpdateMainLineTask()
 		{
 			TaskUtils.UpdateTaskInfo(HsGameUtils.GetMainLineTask());
+			foreach (Task task in TaskUtils.GetTasks())
+			{
+				Out.Log($"[主线] {task.TaskDesc}");
+				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
+			}
+			return TaskUtils.GetTasks().Count() > 0;
+		}
+		public static bool UpdateEventTask()
+		{
+			TaskUtils.UpdateTaskInfo(HsGameUtils.GetEventTask());
+			foreach (Task task in TaskUtils.GetTasks())
+			{
+				Out.Log($"[活动任务] [{task.mercName}] {task.TaskName} {task.TaskDesc}");
+				Out.Log($"[TID:{task.Id}] 已持续：{TaskUtils.Current() - task.StartAt}s");
+			}
+			return TaskUtils.GetTasks().Count() > 0;
 		}
 
 		public static void ClearTaskSpecialNode()

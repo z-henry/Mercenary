@@ -2,7 +2,7 @@
 
 namespace Mercenary
 {
-	internal class MercConst
+	public class MercConst
 	{
 		public const int 乌瑟尔_光明使者 = 94;
 		public const int 亚煞极 = 344;
@@ -117,6 +117,7 @@ namespace Mercenary
 		public const int 阿兰娜_逐星 = 414;
 		public const int 麦迪文 = 35;
 		public const int 血骨傀儡 = 410;
+		public const int 芬利爵士 = 339;
 
 		//佣兵优先练满
 		public static readonly List<int> PriorFirst = new List<int>

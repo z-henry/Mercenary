@@ -55,10 +55,6 @@
       <HintPath>E:\Hearthstone\Hearthstone_Data\Managed\Blizzard.T5.Localization.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="HsMercenaryStrategy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\hs-plugin\HsMercenaryStrategy.dll</HintPath>
-    </Reference>
     <Reference Include="HsMod, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\hs-plugin\HsMod.dll</HintPath>
@@ -86,14 +82,21 @@
   <ItemGroup>
     <Compile Include="Cache.cs" />
     <Compile Include="DefaultTeam.cs" />
+    <Compile Include="InterfaceDefaultMethod\DefaultStrategy.cs" />
+    <Compile Include="InterfaceDefaultMethod\DefaultIEventInfo.cs" />
+    <Compile Include="InterfaceDefaultMethod\DefaultTreasure.cs" />
+    <Compile Include="MyInterface\ITreasure.cs" />
+    <Compile Include="MyInterface\IEventInfo.cs" />
     <Compile Include="OnePackageService.cs" />
+    <Compile Include="Strategy\DefaultStrategyPVP.cs" />
+    <Compile Include="Strategy\DefaultStrategyEvent.cs" />
+    <Compile Include="Strategy\DefaultStrategyPVE.cs" />
     <Compile Include="UtilsArgu.cs" />
     <Compile Include="PluginInfo.cs" />
     <Compile Include="Quest.cs" />
     <Compile Include="TaskUtils.cs" />
     <Compile Include="TaskAdapter.cs" />
     <Compile Include="Task.cs" />
-    <Compile Include="StrategyHelper.cs" />
     <Compile Include="Out.cs" />
     <Compile Include="Mode.cs" />
     <Compile Include="MercenaryEntity.cs" />
@@ -101,9 +104,14 @@
     <Compile Include="MapUtils.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="HsGameUtils.cs" />
-    <Compile Include="DefaultStrategy.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Strategy\StrategyHelper.cs" />
+    <Compile Include="Strategy\AutoTaskStrategy.cs" />
+    <Compile Include="Strategy\BattleTarget.cs" />
+    <Compile Include="MyInterface\IStrategy.cs" />
+    <Compile Include="Strategy\Target.cs" />
+    <Compile Include="Strategy\StrategyUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

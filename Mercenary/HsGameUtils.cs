@@ -238,8 +238,14 @@ namespace Mercenary
 				}
 
 				VisitorTaskDbfRecord taskRecordByID = LettuceVillageDataUtil.GetTaskRecordByID(mercenaryVillageTaskItemDataModel.TaskId);
-				TaskAdapter.SetTask(mercenaryVillageTaskItemDataModel.TaskId, mercenaryVillageTaskItemDataModel.MercenaryId, mercenaryVillageTaskItemDataModel.Title,
-					taskRecordByID.TaskDescription.GetString(Locale.zhCN), list, mercenaryVillageTaskItemDataModel.ProgressMessage);
+				Task task = TaskAdapter.SetTask(mercenaryVillageTaskItemDataModel.MercenaryId, mercenaryVillageTaskItemDataModel.Title, taskRecordByID.TaskDescription.GetString(Locale.zhCN));
+				task.Id = mercenaryVillageTaskItemDataModel.TaskId;
+				task.ProgressMessage = mercenaryVillageTaskItemDataModel.ProgressMessage;
+				task.TaskName = mercenaryVillageTaskItemDataModel.Title;
+				task.TaskDesc = mercenaryVillageTaskItemDataModel.Description;
+				task.mercName = GetMercenary(mercenaryVillageTaskItemDataModel.MercenaryId).m_mercName;
+				list.Add(task);
+
 				if (list.Sum(x => x.Mercenaries.Distinct(new MercenaryEntityComparer()).Count()) >= 6)
 					break;
 			}
@@ -252,11 +258,45 @@ namespace Mercenary
 			foreach (MercenariesVisitorState mercenariesVisitorState in NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>().VisitorStates)
 			{
 				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(mercenariesVisitorState.ActiveTaskState, null);
-				if (mercenaryVillageTaskItemDataModel.TaskType == MercenaryVisitor.VillageVisitorType.SPECIAL)
-				{
-					TaskAdapter.SetMainLineTask(list, mercenaryVillageTaskItemDataModel.Description);
+				if (mercenaryVillageTaskItemDataModel.TaskType != MercenaryVisitor.VillageVisitorType.SPECIAL)
+					continue;
+
+				Task task = TaskAdapter.SetMainLineTask(mercenaryVillageTaskItemDataModel.Description);
+				if (task == null)
 					break;
-				}
+
+				task.Id = mercenaryVillageTaskItemDataModel.TaskId;
+				task.ProgressMessage = mercenaryVillageTaskItemDataModel.ProgressMessage;
+				task.TaskName = mercenaryVillageTaskItemDataModel.Title;
+				task.TaskDesc = mercenaryVillageTaskItemDataModel.Description;
+				task.mercName = GetMercenary(mercenaryVillageTaskItemDataModel.MercenaryId).m_mercName;
+				list.Add(task);
+				break;
+			}
+			return list;
+		}
+
+		public static List<Task> GetEventTask()
+		{
+			List<Task> list = new List<Task>();
+			foreach (MercenariesVisitorState mercenariesVisitorState in NetCache.Get().GetNetObject<NetCache.NetCacheMercenariesVillageVisitorInfo>().VisitorStates)
+			{
+				MercenaryVillageTaskItemDataModel mercenaryVillageTaskItemDataModel = LettuceVillageDataUtil.CreateTaskModelFromTaskState(mercenariesVisitorState.ActiveTaskState, null);
+				if (mercenaryVillageTaskItemDataModel.TaskType != MercenaryVisitor.VillageVisitorType.EVENT)
+					continue;
+
+				Task task = TaskAdapter.SetEventTask(mercenaryVillageTaskItemDataModel.Title, GetMercenary(mercenaryVillageTaskItemDataModel.MercenaryId).m_mercName);
+				if (task == null)
+					break;
+
+				task.Id = mercenaryVillageTaskItemDataModel.TaskId;
+				task.ProgressMessage = mercenaryVillageTaskItemDataModel.ProgressMessage;
+				task.TaskName = mercenaryVillageTaskItemDataModel.Title;
+				task.TaskDesc = mercenaryVillageTaskItemDataModel.Description;
+				task.ProgressMessage = mercenaryVillageTaskItemDataModel.ProgressMessage;
+				task.mercName = GetMercenary(mercenaryVillageTaskItemDataModel.MercenaryId).m_mercName;
+				list.Add(task);
+				break;
 			}
 			return list;
 		}

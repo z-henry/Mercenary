@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Mercenary.Strategy;
 
 namespace Mercenary
 {
@@ -9,7 +10,7 @@ namespace Mercenary
 			this.ID = id;
 		}
 
-		public MercenaryEntity(int id, string skill, int eq = 0, int subskillindex = -1, HsMercenaryStrategy.TARGETTYPE targettype = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED)
+		public MercenaryEntity(int id, string skill, int eq = 0, int subskillindex = -1, TARGETTYPE targettype = TARGETTYPE.UNSPECIFIED)
 		{
 			this.ID = id;
 			this.Skill = skill;
@@ -30,7 +31,7 @@ namespace Mercenary
 		public readonly string Skill;
 		public readonly int Equipment;
 		public readonly int SubSkillIndex = 0;
-		public readonly HsMercenaryStrategy.TARGETTYPE TargetType = HsMercenaryStrategy.TARGETTYPE.UNSPECIFIED;
+		public readonly TARGETTYPE TargetType = TARGETTYPE.UNSPECIFIED;
 
 		public readonly string Name;
 	}
